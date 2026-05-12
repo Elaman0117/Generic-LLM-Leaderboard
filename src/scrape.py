@@ -33,6 +33,7 @@ URL = "https://artificialanalysis.ai/leaderboards/models"
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "raw_data.json")
+MIN_MODELS_EXPECTED = 10
 
 # 15 Intelligence sub-metrics (columns 4..18)
 INTEL_METRICS = [
@@ -82,7 +83,7 @@ def scrape_leaderboard():
         print("[2/6] Expanding all column groups ...")
         groups = ["Features", "Intelligence", "Price", "Speed", "Latency", "End-to-End Response Time"]
         for group in groups:
-            btn = page.locator('th button', has_text=group).first
+            btn = page.locator("th").filter(has=page.get_by_role("button", name=group)).locator("button").first
             btn.click()
             page.wait_for_timeout(1000)
 
@@ -152,7 +153,7 @@ def scrape_leaderboard():
 if __name__ == "__main__":
     try:
         data = scrape_leaderboard()
-        if len(data) < 10:
+        if len(data) < MIN_MODELS_EXPECTED:
             print(f"ERROR: Only {len(data)} models scraped.")
             sys.exit(1)
     except Exception as e:

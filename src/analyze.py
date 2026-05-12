@@ -35,6 +35,7 @@ Pareto frontier:
 import json
 import os
 import sys
+from collections import Counter
 
 import numpy as np
 import matplotlib
@@ -90,6 +91,8 @@ METRIC_LABELS = {
     "MMMU_Pro": "MMMU Pro Visual",
 }
 MIN_VALID_METRICS = 5
+MIN_INPUT_OUTPUT_RATIO = 0.01
+MAX_INPUT_OUTPUT_RATIO = 0.99
 
 
 # ── Parsing ──
@@ -191,7 +194,7 @@ def compute_scores(data):
         if (m["input_price"] is not None and m["output_price"] is not None
                 and m["input_price"] != m["output_price"] and m["input_price"] > 0 and m["output_price"] > 0):
             r = (m["blended_price"] - m["output_price"]) / (m["input_price"] - m["output_price"])
-            r = max(0.01, min(0.99, r))
+            r = max(MIN_INPUT_OUTPUT_RATIO, min(MAX_INPUT_OUTPUT_RATIO, r))
             m["input_output_ratio"] = round(r, 4)
 
         # Step 2: Calculate output tokens based on model type
@@ -501,7 +504,6 @@ def main():
         print(f"  Range: ${min(costs):.4f} – ${max(costs):.4f}")
 
     # Cost method breakdown
-    from collections import Counter
     methods = Counter(m.get("cost_method") for m in models if m.get("cost_method"))
     print(f"  Cost methods: {dict(methods)}")
 

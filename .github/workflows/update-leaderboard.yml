@@ -2,6 +2,7 @@ name: LLM Leaderboard Analysis
 
 on:
   schedule:
+    # Daily at 04:00 UTC (12:00 Beijing time)
     - cron: '0 4 * * *'
   workflow_dispatch:
 
