@@ -7,14 +7,14 @@
       "reasoning_with_time": "Output_tokens = (Total - TTFT) × Speed (reasoning already included, NOT additive); Cost = (In × InPrice + Out × OutPrice) / 1M",
       "reasoning_no_time": "Output_tokens = Total × Speed (CoT not visible, first chunk meaningless); Cost = (In × InPrice + Out × OutPrice) / 1M"
     },
-    "total_models": 145,
-    "pareto_count": 14
+    "total_models": 147,
+    "pareto_count": 16
   },
   "metric_ranges": {
     "AA Intelligence Index": {
       "min": 6.0,
       "max": 60.0,
-      "count": 143
+      "count": 145
     },
     "AA Omniscience Index": {
       "min": 1.0,
@@ -23,58 +23,58 @@
     },
     "GDPval-AA Agentic Work": {
       "min": 0.0,
-      "max": 64.0,
-      "count": 137
+      "max": 63.0,
+      "count": 139
     },
     "Terminal-Bench Hard": {
       "min": 0.0,
       "max": 61.0,
-      "count": 145
+      "count": 147
     },
     "τ²-Bench Telecom": {
       "min": 0.0,
       "max": 98.0,
-      "count": 145
+      "count": 147
     },
     "AA-LCR Long Context": {
       "min": 0.0,
       "max": 74.0,
-      "count": 145
+      "count": 147
     },
     "AA-Omniscience Accuracy": {
       "min": 1.0,
       "max": 57.0,
-      "count": 145
+      "count": 147
     },
     "AA-Omniscience Non-Hallucination": {
       "min": 1.0,
       "max": 75.0,
-      "count": 145
+      "count": 147
     },
     "Humanity's Last Exam": {
       "min": 1.0,
       "max": 45.0,
-      "count": 146
+      "count": 148
     },
     "GPQA Diamond": {
       "min": 11.0,
       "max": 94.0,
-      "count": 146
+      "count": 148
     },
     "SciCode Coding": {
       "min": 0.0,
       "max": 59.0,
-      "count": 146
+      "count": 148
     },
     "IFBench Instruction Following": {
-      "min": 22.0,
+      "min": 21.0,
       "max": 81.0,
-      "count": 145
+      "count": 147
     },
     "CritPt Physics": {
       "min": 0.0,
       "max": 27.0,
-      "count": 144
+      "count": 146
     },
     "APEX-Agents-AA Office": {
       "min": 1.0,
@@ -92,15 +92,15 @@
       "rank": 1,
       "model": "GPT-5.5 (xhigh)",
       "is_reasoning": true,
-      "composite_ability": 0.9023,
-      "per_request_cost_usd": 0.312466,
+      "composite_ability": 0.9024,
+      "per_request_cost_usd": 0.28017,
       "input_output_ratio": 0.75,
-      "speed": 72.0,
-      "ttft": 89.54,
-      "total_response": 96.44,
+      "speed": 71.0,
+      "ttft": 80.68,
+      "total_response": 87.69,
       "reasoning_time": null,
-      "total_output_tokens": 6943.7,
-      "input_tokens": 20831.1,
+      "total_output_tokens": 6226.0,
+      "input_tokens": 18678.0,
       "cost_method": "reasoning-no-time",
       "valid_metrics": 15
     },
@@ -108,15 +108,15 @@
       "rank": 2,
       "model": "Gemini 3.1 Pro Preview",
       "is_reasoning": true,
-      "composite_ability": 0.9,
-      "per_request_cost_usd": 0.094435,
+      "composite_ability": 0.9007,
+      "per_request_cost_usd": 0.083502,
       "input_output_ratio": 0.75,
-      "speed": 129.0,
-      "ttft": 36.8,
-      "total_response": 40.67,
+      "speed": 133.0,
+      "ttft": 31.13,
+      "total_response": 34.88,
       "reasoning_time": null,
-      "total_output_tokens": 5246.4,
-      "input_tokens": 15739.2,
+      "total_output_tokens": 4639.0,
+      "input_tokens": 13917.0,
       "cost_method": "reasoning-no-time",
       "valid_metrics": 15
     },
@@ -124,191 +124,223 @@
       "rank": 3,
       "model": "Claude Opus 4.7 (max)",
       "is_reasoning": true,
-      "composite_ability": 0.848,
-      "per_request_cost_usd": 0.055524,
+      "composite_ability": 0.8496,
+      "per_request_cost_usd": 0.068278,
       "input_output_ratio": 0.7499,
       "speed": 72.0,
-      "ttft": 10.65,
-      "total_response": 17.63,
+      "ttft": 14.72,
+      "total_response": 21.68,
       "reasoning_time": null,
-      "total_output_tokens": 1269.4,
-      "input_tokens": 3806.2,
+      "total_output_tokens": 1561.0,
+      "input_tokens": 4680.5,
       "cost_method": "reasoning-no-time",
       "valid_metrics": 14
     },
     {
       "rank": 4,
-      "model": "Grok 4.3",
+      "model": "GPT-5.5 (medium)",
       "is_reasoning": true,
-      "composite_ability": 0.7874,
-      "per_request_cost_usd": 0.007508,
-      "input_output_ratio": 0.752,
-      "speed": 83.0,
-      "ttft": 8.35,
-      "total_response": 14.38,
+      "composite_ability": 0.8357,
+      "per_request_cost_usd": 0.061272,
+      "input_output_ratio": 0.75,
+      "speed": 66.0,
+      "ttft": 13.0,
+      "total_response": 20.63,
       "reasoning_time": null,
-      "total_output_tokens": 1193.5,
-      "input_tokens": 3619.0,
+      "total_output_tokens": 1361.6,
+      "input_tokens": 4084.8,
       "cost_method": "reasoning-no-time",
       "valid_metrics": 14
     },
     {
       "rank": 5,
-      "model": "MiMo-V2.5",
+      "model": "Grok 4.3",
       "is_reasoning": true,
-      "composite_ability": 0.7104,
-      "per_request_cost_usd": 0.007208,
-      "input_output_ratio": 0.75,
-      "speed": 99.0,
-      "ttft": 2.75,
-      "total_response": 28.03,
-      "reasoning_time": 20.22,
-      "total_output_tokens": 2502.7,
-      "input_tokens": 7508.1,
-      "cost_method": "reasoning-with-time",
-      "valid_metrics": 13
-    },
-    {
-      "rank": 6,
-      "model": "DeepSeek V4 Flash (Max)",
-      "is_reasoning": true,
-      "composite_ability": 0.6811,
-      "per_request_cost_usd": 0.003851,
-      "input_output_ratio": 0.7143,
-      "speed": 74.0,
-      "ttft": 1.21,
-      "total_response": 83.8,
-      "reasoning_time": 75.84,
-      "total_output_tokens": 6111.7,
-      "input_tokens": 15280.3,
-      "cost_method": "reasoning-with-time",
-      "valid_metrics": 12
-    },
-    {
-      "rank": 7,
-      "model": "GPT-5.4 nano (xhigh)",
-      "is_reasoning": true,
-      "composite_ability": 0.6567,
-      "per_request_cost_usd": 0.001964,
-      "input_output_ratio": 0.7524,
-      "speed": 155.0,
-      "ttft": 3.6,
-      "total_response": 6.82,
+      "composite_ability": 0.7883,
+      "per_request_cost_usd": 0.008917,
+      "input_output_ratio": 0.752,
+      "speed": 81.0,
+      "ttft": 11.33,
+      "total_response": 17.5,
       "reasoning_time": null,
-      "total_output_tokens": 1057.1,
-      "input_tokens": 3212.3,
+      "total_output_tokens": 1417.5,
+      "input_tokens": 4298.2,
       "cost_method": "reasoning-no-time",
       "valid_metrics": 14
     },
     {
-      "rank": 8,
-      "model": "MiMo-V2-Flash (Feb 2026)",
+      "rank": 6,
+      "model": "MiMo-V2.5",
       "is_reasoning": true,
-      "composite_ability": 0.6112,
-      "per_request_cost_usd": 0.001497,
+      "composite_ability": 0.7118,
+      "per_request_cost_usd": 0.007226,
       "input_output_ratio": 0.75,
-      "speed": 149.0,
-      "ttft": 2.79,
-      "total_response": 19.53,
-      "reasoning_time": 13.4,
-      "total_output_tokens": 2494.3,
-      "input_tokens": 7482.9,
-      "cost_method": "reasoning-with-time",
-      "valid_metrics": 12
-    },
-    {
-      "rank": 9,
-      "model": "Qwen3.5 9B",
-      "is_reasoning": true,
-      "composite_ability": 0.4896,
-      "per_request_cost_usd": 0.001372,
-      "input_output_ratio": 0.8,
-      "speed": 60.0,
-      "ttft": 0.68,
-      "total_response": 42.25,
-      "reasoning_time": 33.26,
-      "total_output_tokens": 2494.2,
-      "input_tokens": 9976.8,
+      "speed": 94.0,
+      "ttft": 3.24,
+      "total_response": 29.93,
+      "reasoning_time": 21.35,
+      "total_output_tokens": 2508.9,
+      "input_tokens": 7526.7,
       "cost_method": "reasoning-with-time",
       "valid_metrics": 13
     },
     {
-      "rank": 10,
-      "model": "DeepSeek V4 Flash",
-      "is_reasoning": false,
-      "composite_ability": 0.4703,
-      "per_request_cost_usd": 0.000314,
+      "rank": 7,
+      "model": "DeepSeek V4 Flash (Max)",
+      "is_reasoning": true,
+      "composite_ability": 0.6821,
+      "per_request_cost_usd": 0.003865,
       "input_output_ratio": 0.7143,
-      "speed": 70.0,
-      "ttft": 1.32,
-      "total_response": 8.43,
+      "speed": 93.0,
+      "ttft": 1.17,
+      "total_response": 67.13,
+      "reasoning_time": 60.57,
+      "total_output_tokens": 6134.3,
+      "input_tokens": 15336.8,
+      "cost_method": "reasoning-with-time",
+      "valid_metrics": 12
+    },
+    {
+      "rank": 8,
+      "model": "GPT-5.4 nano (xhigh)",
+      "is_reasoning": true,
+      "composite_ability": 0.6558,
+      "per_request_cost_usd": 0.002285,
+      "input_output_ratio": 0.7524,
+      "speed": 148.0,
+      "ttft": 4.94,
+      "total_response": 8.31,
       "reasoning_time": null,
-      "total_output_tokens": 497.7,
-      "input_tokens": 1244.3,
-      "cost_method": "non-reasoning",
+      "total_output_tokens": 1229.9,
+      "input_tokens": 3737.4,
+      "cost_method": "reasoning-no-time",
+      "valid_metrics": 14
+    },
+    {
+      "rank": 9,
+      "model": "MiMo-V2-Flash (Feb 2026)",
+      "is_reasoning": true,
+      "composite_ability": 0.612,
+      "per_request_cost_usd": 0.001496,
+      "input_output_ratio": 0.75,
+      "speed": 151.0,
+      "ttft": 2.77,
+      "total_response": 19.28,
+      "reasoning_time": 13.21,
+      "total_output_tokens": 2493.0,
+      "input_tokens": 7479.0,
+      "cost_method": "reasoning-with-time",
+      "valid_metrics": 12
+    },
+    {
+      "rank": 10,
+      "model": "Hy3-preview",
+      "is_reasoning": true,
+      "composite_ability": 0.601,
+      "per_request_cost_usd": 0.001467,
+      "input_output_ratio": 0.7619,
+      "speed": 131.0,
+      "ttft": 3.83,
+      "total_response": 22.87,
+      "reasoning_time": 15.24,
+      "total_output_tokens": 2494.2,
+      "input_tokens": 7981.2,
+      "cost_method": "reasoning-with-time",
       "valid_metrics": 12
     },
     {
       "rank": 11,
-      "model": "MiMo-V2-Flash",
+      "model": "Qwen3.5 9B",
+      "is_reasoning": true,
+      "composite_ability": 0.4901,
+      "per_request_cost_usd": 0.001369,
+      "input_output_ratio": 0.8,
+      "speed": 63.0,
+      "ttft": 0.73,
+      "total_response": 40.23,
+      "reasoning_time": 31.61,
+      "total_output_tokens": 2488.5,
+      "input_tokens": 9954.0,
+      "cost_method": "reasoning-with-time",
+      "valid_metrics": 13
+    },
+    {
+      "rank": 12,
+      "model": "DeepSeek V4 Flash",
       "is_reasoning": false,
-      "composite_ability": 0.3938,
-      "per_request_cost_usd": 0.000299,
-      "input_output_ratio": 0.75,
-      "speed": 148.0,
-      "ttft": 2.46,
-      "total_response": 5.83,
+      "composite_ability": 0.472,
+      "per_request_cost_usd": 0.000316,
+      "input_output_ratio": 0.7143,
+      "speed": 100.0,
+      "ttft": 1.34,
+      "total_response": 6.35,
       "reasoning_time": null,
-      "total_output_tokens": 498.8,
-      "input_tokens": 1496.4,
+      "total_output_tokens": 501.0,
+      "input_tokens": 1252.6,
       "cost_method": "non-reasoning",
       "valid_metrics": 12
     },
     {
-      "rank": 12,
-      "model": "Qwen3.5 4B",
-      "is_reasoning": false,
-      "composite_ability": 0.318,
-      "per_request_cost_usd": 0.00012,
-      "input_output_ratio": 0.75,
-      "speed": 190.0,
-      "ttft": 0.47,
-      "total_response": 3.11,
-      "reasoning_time": null,
-      "total_output_tokens": 501.6,
-      "input_tokens": 1504.8,
-      "cost_method": "non-reasoning",
-      "valid_metrics": 13
-    },
-    {
       "rank": 13,
-      "model": "Qwen3.5 2B",
+      "model": "Hy3-preview",
       "is_reasoning": false,
-      "composite_ability": 0.1863,
-      "per_request_cost_usd": 8e-05,
-      "input_output_ratio": 0.75,
-      "speed": 338.0,
-      "ttft": 0.33,
-      "total_response": 1.81,
+      "composite_ability": 0.4521,
+      "per_request_cost_usd": 0.000293,
+      "input_output_ratio": 0.7619,
+      "speed": 124.0,
+      "ttft": 3.69,
+      "total_response": 7.71,
       "reasoning_time": null,
-      "total_output_tokens": 500.2,
-      "input_tokens": 1500.6,
+      "total_output_tokens": 498.5,
+      "input_tokens": 1595.2,
       "cost_method": "non-reasoning",
-      "valid_metrics": 13
+      "valid_metrics": 12
     },
     {
       "rank": 14,
-      "model": "Qwen3.5 0.8B",
+      "model": "Qwen3.5 4B",
       "is_reasoning": false,
-      "composite_ability": 0.0924,
-      "per_request_cost_usd": 4e-05,
+      "composite_ability": 0.3163,
+      "per_request_cost_usd": 0.00012,
       "input_output_ratio": 0.75,
-      "speed": 290.0,
-      "ttft": 0.4,
-      "total_response": 2.12,
+      "speed": 203.0,
+      "ttft": 0.47,
+      "total_response": 2.93,
+      "reasoning_time": null,
+      "total_output_tokens": 499.4,
+      "input_tokens": 1498.2,
+      "cost_method": "non-reasoning",
+      "valid_metrics": 13
+    },
+    {
+      "rank": 15,
+      "model": "Qwen3.5 2B",
+      "is_reasoning": false,
+      "composite_ability": 0.1874,
+      "per_request_cost_usd": 8e-05,
+      "input_output_ratio": 0.75,
+      "speed": 337.0,
+      "ttft": 0.34,
+      "total_response": 1.82,
       "reasoning_time": null,
       "total_output_tokens": 498.8,
       "input_tokens": 1496.4,
+      "cost_method": "non-reasoning",
+      "valid_metrics": 13
+    },
+    {
+      "rank": 16,
+      "model": "Qwen3.5 0.8B",
+      "is_reasoning": false,
+      "composite_ability": 0.0937,
+      "per_request_cost_usd": 4e-05,
+      "input_output_ratio": 0.75,
+      "speed": 128.0,
+      "ttft": 0.43,
+      "total_response": 4.35,
+      "reasoning_time": null,
+      "total_output_tokens": 501.8,
+      "input_tokens": 1505.4,
       "cost_method": "non-reasoning",
       "valid_metrics": 13
     }
@@ -316,588 +348,602 @@
   "all_models": [
     {
       "model": "GPT-5.5 (xhigh)",
-      "composite_ability": 0.9023,
-      "per_request_cost": 0.312466,
+      "composite_ability": 0.9024,
+      "per_request_cost": 0.28017,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "Gemini 3.1 Pro Preview",
-      "composite_ability": 0.9,
-      "per_request_cost": 0.094435,
+      "composite_ability": 0.9007,
+      "per_request_cost": 0.083502,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "GPT-5.5 (high)",
-      "composite_ability": 0.8729,
-      "per_request_cost": 0.102465,
+      "composite_ability": 0.8742,
+      "per_request_cost": 0.115331,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Claude Opus 4.7 (max)",
-      "composite_ability": 0.848,
-      "per_request_cost": 0.055524,
+      "composite_ability": 0.8496,
+      "per_request_cost": 0.068278,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "GPT-5.5 (medium)",
       "composite_ability": 0.8357,
-      "per_request_cost": 0.057735,
+      "per_request_cost": 0.061272,
       "is_reasoning": true,
-      "is_pareto": false
+      "is_pareto": true
     },
     {
       "model": "Grok 4.3",
-      "composite_ability": 0.7874,
-      "per_request_cost": 0.007508,
+      "composite_ability": 0.7883,
+      "per_request_cost": 0.008917,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "GPT-5.3 Codex (xhigh)",
-      "composite_ability": 0.785,
-      "per_request_cost": 0.228161,
+      "composite_ability": 0.7847,
+      "per_request_cost": 0.179102,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Kimi K2.6",
-      "composite_ability": 0.7623,
-      "per_request_cost": 0.033634,
+      "composite_ability": 0.7621,
+      "per_request_cost": 0.033772,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "DeepSeek V4 Pro (Max)",
-      "composite_ability": 0.76,
-      "per_request_cost": 0.042887,
+      "composite_ability": 0.7598,
+      "per_request_cost": 0.042161,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GPT-5.5 (low)",
-      "composite_ability": 0.7351,
-      "per_request_cost": 0.029223,
+      "composite_ability": 0.7363,
+      "per_request_cost": 0.029304,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "MiMo-V2.5-Pro",
-      "composite_ability": 0.7319,
-      "per_request_cost": 0.014905,
+      "composite_ability": 0.7329,
+      "per_request_cost": 0.01495,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "DeepSeek V4 Pro (High)",
-      "composite_ability": 0.7276,
-      "per_request_cost": 0.022246,
+      "composite_ability": 0.7289,
+      "per_request_cost": 0.021858,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.6 Max Preview",
-      "composite_ability": 0.7245,
-      "per_request_cost": 0.029046,
+      "composite_ability": 0.7255,
+      "per_request_cost": 0.029568,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GPT-5.4 mini (xhigh)",
-      "composite_ability": 0.7212,
-      "per_request_cost": 0.013081,
+      "composite_ability": 0.7213,
+      "per_request_cost": 0.013386,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Claude Sonnet 4.6 (max)",
-      "composite_ability": 0.7194,
-      "per_request_cost": 0.135935,
+      "composite_ability": 0.72,
+      "per_request_cost": 0.185974,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Claude Opus 4.7 (Non-reasoning, high)",
-      "composite_ability": 0.7189,
+      "composite_ability": 0.7199,
       "per_request_cost": 0.021835,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "MiMo-V2.5",
-      "composite_ability": 0.7104,
-      "per_request_cost": 0.007208,
+      "composite_ability": 0.7118,
+      "per_request_cost": 0.007226,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "Gemini 3 Flash",
-      "composite_ability": 0.7057,
-      "per_request_cost": 0.008727,
+      "composite_ability": 0.7063,
+      "per_request_cost": 0.008748,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.6 Plus",
-      "composite_ability": 0.6926,
-      "per_request_cost": 0.027091,
+      "composite_ability": 0.6935,
+      "per_request_cost": 0.027193,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GLM-5.1",
-      "composite_ability": 0.6886,
-      "per_request_cost": 0.036678,
+      "composite_ability": 0.6897,
+      "per_request_cost": 0.037014,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "DeepSeek V4 Flash (Max)",
-      "composite_ability": 0.6811,
-      "per_request_cost": 0.003851,
+      "composite_ability": 0.6821,
+      "per_request_cost": 0.003865,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "GPT-5.4 (low)",
-      "composite_ability": 0.6755,
-      "per_request_cost": 0.015822,
+      "composite_ability": 0.6767,
+      "per_request_cost": 0.015492,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.6 27B",
-      "composite_ability": 0.6663,
-      "per_request_cost": 0.013575,
+      "composite_ability": 0.6662,
+      "per_request_cost": 0.013597,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "DeepSeek V4 Flash (High)",
-      "composite_ability": 0.6576,
+      "composite_ability": 0.6589,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GPT-5.4 nano (xhigh)",
-      "composite_ability": 0.6567,
-      "per_request_cost": 0.001964,
+      "composite_ability": 0.6558,
+      "per_request_cost": 0.002285,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "MiMo-V2-Omni-0327",
-      "composite_ability": 0.654,
-      "per_request_cost": 0.007967,
+      "composite_ability": 0.6529,
+      "per_request_cost": 0.007961,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 397B A17B",
-      "composite_ability": 0.6468,
-      "per_request_cost": 0.019766,
+      "composite_ability": 0.6475,
+      "per_request_cost": 0.019808,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GLM-5",
-      "composite_ability": 0.6391,
-      "per_request_cost": 0.022341,
+      "composite_ability": 0.6401,
+      "per_request_cost": 0.022331,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "MiniMax-M2.7",
-      "composite_ability": 0.6363,
+      "composite_ability": 0.6373,
       "per_request_cost": 0.006294,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.6 35B A3B",
-      "composite_ability": 0.6316,
-      "per_request_cost": 0.005609,
+      "composite_ability": 0.6327,
+      "per_request_cost": 0.005611,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Claude Sonnet 4.6 (Non-reasoning)",
-      "composite_ability": 0.6221,
-      "per_request_cost": 0.013015,
+      "composite_ability": 0.624,
+      "per_request_cost": 0.013031,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 122B A10B",
-      "composite_ability": 0.6219,
-      "per_request_cost": 0.010977,
+      "composite_ability": 0.6226,
+      "per_request_cost": 0.011005,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "MiMo-V2-Flash (Feb 2026)",
-      "composite_ability": 0.6112,
-      "per_request_cost": 0.001497,
+      "composite_ability": 0.612,
+      "per_request_cost": 0.001496,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "Claude Sonnet 4.6 (Non-reasoning, Low Effort)",
-      "composite_ability": 0.6021,
-      "per_request_cost": 0.013246,
+      "composite_ability": 0.6039,
+      "per_request_cost": 0.013073,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
+      "model": "Hy3-preview",
+      "composite_ability": 0.601,
+      "per_request_cost": 0.001467,
+      "is_reasoning": true,
+      "is_pareto": true
+    },
+    {
       "model": "GLM-5.1",
-      "composite_ability": 0.5966,
-      "per_request_cost": 0.004298,
+      "composite_ability": 0.5983,
+      "per_request_cost": 0.00427,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Kimi K2.6",
-      "composite_ability": 0.5946,
-      "per_request_cost": 0.003393,
+      "composite_ability": 0.5949,
+      "per_request_cost": 0.003427,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "o3",
-      "composite_ability": 0.587,
-      "per_request_cost": 0.018708,
+      "composite_ability": 0.5875,
+      "per_request_cost": 0.021731,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GPT-5.5 (Non-reasoning)",
-      "composite_ability": 0.5814,
-      "per_request_cost": 0.022455,
+      "composite_ability": 0.583,
+      "per_request_cost": 0.022568,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 Omni Plus",
-      "composite_ability": 0.5714,
-      "per_request_cost": 0.003014,
+      "composite_ability": 0.5727,
+      "per_request_cost": 0.003005,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Grok 4.1 Fast",
-      "composite_ability": 0.5699,
-      "per_request_cost": 0.001601,
+      "composite_ability": 0.571,
+      "per_request_cost": 0.001801,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GPT-5.4 mini (medium)",
-      "composite_ability": 0.5676,
-      "per_request_cost": 0.012023,
+      "composite_ability": 0.5687,
+      "per_request_cost": 0.01141,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Mistral Medium 3.5",
-      "composite_ability": 0.5634,
-      "per_request_cost": 0.030013,
+      "composite_ability": 0.5643,
+      "per_request_cost": 0.029932,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GPT-5.4 nano",
-      "composite_ability": 0.5585,
-      "per_request_cost": 0.00197,
+      "composite_ability": 0.5595,
+      "per_request_cost": 0.002264,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Gemini 3 Pro Preview (low)",
-      "composite_ability": 0.5567,
+      "composite_ability": 0.5581,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Kimi K2.5",
-      "composite_ability": 0.5524,
-      "per_request_cost": 0.002395,
+      "composite_ability": 0.554,
+      "per_request_cost": 0.002401,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 397B A17B",
-      "composite_ability": 0.5482,
-      "per_request_cost": 0.002693,
+      "composite_ability": 0.5495,
+      "per_request_cost": 0.002702,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "GLM-5",
-      "composite_ability": 0.5474,
-      "per_request_cost": 0.003103,
+      "composite_ability": 0.5488,
+      "per_request_cost": 0.003095,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Gemini 2.5 Pro",
-      "composite_ability": 0.546,
-      "per_request_cost": 0.046872,
+      "composite_ability": 0.5471,
+      "per_request_cost": 0.048655,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Gemini 3 Flash",
-      "composite_ability": 0.5452,
-      "per_request_cost": 0.002233,
+      "composite_ability": 0.5464,
+      "per_request_cost": 0.002236,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Claude 4.5 Haiku",
-      "composite_ability": 0.5436,
-      "per_request_cost": 0.017875,
+      "composite_ability": 0.5449,
+      "per_request_cost": 0.019622,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Nova 2.0 Pro Preview (medium)",
-      "composite_ability": 0.5301,
-      "per_request_cost": 0.034288,
+      "composite_ability": 0.5297,
+      "per_request_cost": 0.034394,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.6 27B",
-      "composite_ability": 0.5283,
-      "per_request_cost": 0.002685,
+      "composite_ability": 0.5287,
+      "per_request_cost": 0.002696,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Gemini 3.1 Flash-Lite Preview",
-      "composite_ability": 0.5255,
-      "per_request_cost": 0.005512,
+      "composite_ability": 0.526,
+      "per_request_cost": 0.006167,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "DeepSeek V4 Pro",
-      "composite_ability": 0.5198,
-      "per_request_cost": 0.004352,
+      "composite_ability": 0.5216,
+      "per_request_cost": 0.004457,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "GPT-5.4 (Non-reasoning)",
-      "composite_ability": 0.5188,
-      "per_request_cost": 0.011175,
+      "composite_ability": 0.5203,
+      "per_request_cost": 0.01131,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Nova 2.0 Lite (high)",
-      "composite_ability": 0.518,
-      "per_request_cost": 0.008462,
+      "composite_ability": 0.5187,
+      "per_request_cost": 0.008507,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 122B A10B",
-      "composite_ability": 0.5171,
-      "per_request_cost": 0.0022,
+      "composite_ability": 0.5184,
+      "per_request_cost": 0.002202,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 9B",
-      "composite_ability": 0.4896,
-      "per_request_cost": 0.001372,
+      "composite_ability": 0.4901,
+      "per_request_cost": 0.001369,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
-      "model": "Nova 2.0 Pro Preview (low)",
-      "composite_ability": 0.4889,
-      "per_request_cost": 0.034366,
-      "is_reasoning": true,
-      "is_pareto": false
-    },
-    {
       "model": "Gemma 4 26B A4B",
-      "composite_ability": 0.4885,
+      "composite_ability": 0.4892,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
+      "model": "Nova 2.0 Pro Preview (low)",
+      "composite_ability": 0.4891,
+      "per_request_cost": 0.034269,
+      "is_reasoning": true,
+      "is_pareto": false
+    },
+    {
       "model": "NVIDIA Nemotron 3 Super",
-      "composite_ability": 0.4873,
-      "per_request_cost": 0.004194,
+      "composite_ability": 0.4867,
+      "per_request_cost": 0.00419,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Grok 3 mini Reasoning (high)",
-      "composite_ability": 0.4825,
-      "per_request_cost": 0.003489,
+      "composite_ability": 0.4833,
+      "per_request_cost": 0.003491,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "MiMo-V2.5-Pro",
-      "composite_ability": 0.4748,
-      "per_request_cost": 0.002998,
+      "composite_ability": 0.4765,
+      "per_request_cost": 0.003012,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "DeepSeek V4 Flash",
-      "composite_ability": 0.4703,
-      "per_request_cost": 0.000314,
+      "composite_ability": 0.472,
+      "per_request_cost": 0.000316,
       "is_reasoning": false,
       "is_pareto": true
     },
     {
       "model": "Mercury 2",
-      "composite_ability": 0.4662,
-      "per_request_cost": 0.004895,
+      "composite_ability": 0.4669,
+      "per_request_cost": 0.006436,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Ling-2.6-1T",
-      "composite_ability": 0.4535,
+      "composite_ability": 0.4546,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Nova 2.0 Lite (medium)",
-      "composite_ability": 0.4522,
-      "per_request_cost": 0.008487,
+      "composite_ability": 0.4526,
+      "per_request_cost": 0.008521,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 35B A3B",
       "composite_ability": 0.4522,
-      "per_request_cost": 0.001372,
+      "per_request_cost": 0.001371,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
-      "model": "gpt-oss-120B (high)",
-      "composite_ability": 0.4498,
-      "per_request_cost": 0.002664,
-      "is_reasoning": true,
-      "is_pareto": false
-    },
-    {
-      "model": "Trinity Large Thinking",
-      "composite_ability": 0.4477,
-      "per_request_cost": 0.003815,
-      "is_reasoning": true,
-      "is_pareto": false
-    },
-    {
-      "model": "Grok 4.3",
-      "composite_ability": 0.4402,
-      "per_request_cost": 0.003134,
+      "model": "Hy3-preview",
+      "composite_ability": 0.4521,
+      "per_request_cost": 0.000293,
       "is_reasoning": false,
       "is_pareto": true
     },
     {
+      "model": "Trinity Large Thinking",
+      "composite_ability": 0.4486,
+      "per_request_cost": 0.003836,
+      "is_reasoning": true,
+      "is_pareto": false
+    },
+    {
+      "model": "gpt-oss-120B (high)",
+      "composite_ability": 0.4475,
+      "per_request_cost": 0.002662,
+      "is_reasoning": true,
+      "is_pareto": false
+    },
+    {
       "model": "Claude 4.5 Haiku",
-      "composite_ability": 0.4401,
-      "per_request_cost": 0.004349,
+      "composite_ability": 0.4407,
+      "per_request_cost": 0.004367,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
+      "model": "Grok 4.3",
+      "composite_ability": 0.4399,
+      "per_request_cost": 0.003139,
+      "is_reasoning": false,
+      "is_pareto": true
+    },
+    {
       "model": "Qwen3.6 35B A3B",
-      "composite_ability": 0.4354,
-      "per_request_cost": 0.001712,
+      "composite_ability": 0.4371,
+      "per_request_cost": 0.001709,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Nova 2.0 Omni (medium)",
-      "composite_ability": 0.4285,
+      "composite_ability": 0.4291,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Grok 4.20 0309 v2",
-      "composite_ability": 0.4233,
-      "per_request_cost": 0.006024,
+      "composite_ability": 0.4245,
+      "per_request_cost": 0.005982,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Mistral Small 4",
-      "composite_ability": 0.4184,
-      "per_request_cost": 0.002653,
+      "composite_ability": 0.4177,
+      "per_request_cost": 0.002662,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Magistral Medium 1.2",
-      "composite_ability": 0.4155,
+      "composite_ability": 0.4164,
       "per_request_cost": 0.027558,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 4B",
-      "composite_ability": 0.4074,
+      "composite_ability": 0.4081,
       "per_request_cost": 0.0006,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
-      "model": "Grok Code Fast 1",
-      "composite_ability": 0.4043,
-      "per_request_cost": 0.002234,
-      "is_reasoning": true,
-      "is_pareto": false
-    },
-    {
-      "model": "Qwen3 Next 80B A3B",
-      "composite_ability": 0.4029,
-      "per_request_cost": 0.018794,
-      "is_reasoning": true,
-      "is_pareto": false
-    },
-    {
       "model": "DeepSeek R1 0528",
-      "composite_ability": 0.4027,
+      "composite_ability": 0.4039,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
+      "model": "Qwen3 Next 80B A3B",
+      "composite_ability": 0.4036,
+      "per_request_cost": 0.01875,
+      "is_reasoning": true,
+      "is_pareto": false
+    },
+    {
+      "model": "Grok Code Fast 1",
+      "composite_ability": 0.4036,
+      "per_request_cost": 0.002031,
+      "is_reasoning": true,
+      "is_pareto": false
+    },
+    {
       "model": "MiMo-V2-Flash",
-      "composite_ability": 0.3938,
-      "per_request_cost": 0.000299,
+      "composite_ability": 0.3954,
+      "per_request_cost": 0.0003,
       "is_reasoning": false,
-      "is_pareto": true
+      "is_pareto": false
     },
     {
       "model": "Nova 2.0 Lite (low)",
-      "composite_ability": 0.382,
-      "per_request_cost": 0.008478,
+      "composite_ability": 0.3812,
+      "per_request_cost": 0.008497,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Nova 2.0 Omni (low)",
-      "composite_ability": 0.3777,
+      "composite_ability": 0.3781,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
@@ -911,35 +957,35 @@
     },
     {
       "model": "Qwen3 Coder Next",
-      "composite_ability": 0.3723,
-      "per_request_cost": 0.001127,
+      "composite_ability": 0.3738,
+      "per_request_cost": 0.001131,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "NVIDIA Nemotron 3 Nano",
-      "composite_ability": 0.3628,
-      "per_request_cost": 0.001003,
+      "composite_ability": 0.3631,
+      "per_request_cost": 0.001002,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Gemini 2.5 Flash-Lite (Sep)",
-      "composite_ability": 0.3586,
+      "composite_ability": 0.3592,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "gpt-oss-120B (low)",
-      "composite_ability": 0.356,
-      "per_request_cost": 0.002659,
+      "composite_ability": 0.3569,
+      "per_request_cost": 0.002654,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Ling 2.6 Flash",
-      "composite_ability": 0.3485,
+      "composite_ability": 0.3494,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
@@ -947,125 +993,125 @@
     {
       "model": "GPT-5.4 mini",
       "composite_ability": 0.3408,
-      "per_request_cost": 0.003376,
+      "per_request_cost": 0.003375,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Mistral Large 3",
-      "composite_ability": 0.3337,
-      "per_request_cost": 0.001507,
+      "composite_ability": 0.335,
+      "per_request_cost": 0.001492,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Nova 2.0 Pro Preview",
-      "composite_ability": 0.3301,
-      "per_request_cost": 0.006879,
+      "composite_ability": 0.3308,
+      "per_request_cost": 0.006865,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "gpt-oss-20B (high)",
-      "composite_ability": 0.327,
-      "per_request_cost": 0.000844,
+      "composite_ability": 0.3275,
+      "per_request_cost": 0.000845,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "GPT-5.4 nano",
-      "composite_ability": 0.3248,
-      "per_request_cost": 0.00093,
+      "composite_ability": 0.3263,
+      "per_request_cost": 0.000929,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Gemini 2.5 Flash-Lite (Sep)",
-      "composite_ability": 0.3247,
+      "composite_ability": 0.3255,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Nemotron 3 Nano Omni 30B A3B Reasoning",
-      "composite_ability": 0.3231,
+      "composite_ability": 0.3237,
       "per_request_cost": 0.001246,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
+      "model": "Grok 4.1 Fast",
+      "composite_ability": 0.3178,
+      "per_request_cost": 0.000526,
+      "is_reasoning": false,
+      "is_pareto": false
+    },
+    {
       "model": "Qwen3.5 4B",
-      "composite_ability": 0.318,
+      "composite_ability": 0.3163,
       "per_request_cost": 0.00012,
       "is_reasoning": false,
       "is_pareto": true
     },
     {
-      "model": "Grok 4.1 Fast",
-      "composite_ability": 0.3179,
-      "per_request_cost": 0.000525,
-      "is_reasoning": false,
-      "is_pareto": false
-    },
-    {
       "model": "Llama 4 Maverick",
-      "composite_ability": 0.3107,
-      "per_request_cost": 0.000982,
+      "composite_ability": 0.3115,
+      "per_request_cost": 0.000983,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Gemma 4 E4B",
-      "composite_ability": 0.305,
-      "per_request_cost": null,
+      "composite_ability": 0.3058,
+      "per_request_cost": 0.005346,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "gpt-oss-20B (low)",
-      "composite_ability": 0.3008,
+      "composite_ability": 0.3001,
       "per_request_cost": 0.000876,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Qwen3 Next 80B A3B",
-      "composite_ability": 0.2924,
-      "per_request_cost": 0.001737,
+      "composite_ability": 0.2935,
+      "per_request_cost": 0.001732,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Llama Nemotron Super 49B v1.5",
-      "composite_ability": 0.2849,
-      "per_request_cost": 0.001673,
-      "is_reasoning": true,
-      "is_pareto": false
-    },
-    {
-      "model": "Magistral Small 1.2",
-      "composite_ability": 0.2729,
-      "per_request_cost": 0.007463,
+      "composite_ability": 0.286,
+      "per_request_cost": 0.001672,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Nova Premier",
-      "composite_ability": 0.2705,
-      "per_request_cost": 0.00997,
+      "composite_ability": 0.2716,
+      "per_request_cost": 0.009836,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
+      "model": "Magistral Small 1.2",
+      "composite_ability": 0.2712,
+      "per_request_cost": 0.007528,
+      "is_reasoning": true,
+      "is_pareto": false
+    },
+    {
       "model": "Llama 3.1 405B",
-      "composite_ability": 0.2683,
-      "per_request_cost": 0.007361,
+      "composite_ability": 0.2692,
+      "per_request_cost": 0.00746,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Nova 2.0 Lite",
-      "composite_ability": 0.2633,
+      "composite_ability": 0.2642,
       "per_request_cost": 0.001703,
       "is_reasoning": false,
       "is_pareto": false
@@ -1073,230 +1119,230 @@
     {
       "model": "Mistral Small 4",
       "composite_ability": 0.2598,
-      "per_request_cost": 0.000531,
+      "per_request_cost": 0.000532,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "ERNIE 4.5 300B A47B",
-      "composite_ability": 0.2535,
-      "per_request_cost": 0.000946,
+      "composite_ability": 0.253,
+      "per_request_cost": 0.000965,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Nova 2.0 Omni",
-      "composite_ability": 0.2508,
+      "composite_ability": 0.2507,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Qwen3 Omni 30B A3B",
-      "composite_ability": 0.2478,
-      "per_request_cost": 0.004302,
+      "composite_ability": 0.2487,
+      "per_request_cost": 0.004295,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "NVIDIA Nemotron Nano 12B v2 VL",
-      "composite_ability": 0.237,
+      "composite_ability": 0.2381,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Gemma 4 E4B",
-      "composite_ability": 0.2305,
-      "per_request_cost": null,
+      "composite_ability": 0.2314,
+      "per_request_cost": 0.001072,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Ring-flash-2.0",
-      "composite_ability": 0.2296,
-      "per_request_cost": 0.002437,
+      "composite_ability": 0.2306,
+      "per_request_cost": 0.002435,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Llama Nemotron Ultra",
-      "composite_ability": 0.2288,
-      "per_request_cost": 0.009072,
+      "composite_ability": 0.2298,
+      "per_request_cost": 0.008989,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Llama 4 Scout",
-      "composite_ability": 0.227,
-      "per_request_cost": 0.000591,
+      "composite_ability": 0.2271,
+      "per_request_cost": 0.000593,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Ministral 3 14B",
-      "composite_ability": 0.2256,
+      "composite_ability": 0.2268,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 2B",
-      "composite_ability": 0.2241,
+      "composite_ability": 0.2239,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": true
     },
     {
       "model": "Ling-flash-2.0",
-      "composite_ability": 0.2173,
-      "per_request_cost": 0.00049,
+      "composite_ability": 0.2184,
+      "per_request_cost": 0.000487,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Llama 3.3 70B",
-      "composite_ability": 0.2142,
-      "per_request_cost": 0.001007,
+      "composite_ability": 0.215,
+      "per_request_cost": 0.001006,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Llama Nemotron Super 49B v1.5",
-      "composite_ability": 0.2112,
-      "per_request_cost": 0.000335,
+      "composite_ability": 0.2123,
+      "per_request_cost": 0.000339,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "NVIDIA Nemotron Nano 9B V2",
-      "composite_ability": 0.21,
-      "per_request_cost": 0.000699,
+      "composite_ability": 0.2112,
+      "per_request_cost": 0.000701,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "DeepSeek R1 Distill Llama 70B",
-      "composite_ability": 0.2047,
-      "per_request_cost": 0.007706,
+      "composite_ability": 0.2062,
+      "per_request_cost": 0.007768,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Command A",
-      "composite_ability": 0.2039,
-      "per_request_cost": 0.008712,
+      "composite_ability": 0.2035,
+      "per_request_cost": 0.008745,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Ministral 3 8B",
-      "composite_ability": 0.2004,
+      "composite_ability": 0.2017,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Llama 3.1 Nemotron 70B",
-      "composite_ability": 0.1901,
+      "composite_ability": 0.1903,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "NVIDIA Nemotron Nano 9B V2",
-      "composite_ability": 0.1868,
-      "per_request_cost": 0.000168,
+      "composite_ability": 0.188,
+      "per_request_cost": 0.000169,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 2B",
-      "composite_ability": 0.1863,
+      "composite_ability": 0.1874,
       "per_request_cost": 8e-05,
       "is_reasoning": false,
       "is_pareto": true
     },
     {
-      "model": "Qwen3 Omni 30B A3B",
-      "composite_ability": 0.1731,
-      "per_request_cost": 0.000864,
-      "is_reasoning": false,
-      "is_pareto": false
-    },
-    {
-      "model": "NVIDIA Nemotron 3 Nano",
-      "composite_ability": 0.172,
-      "per_request_cost": 0.00017,
-      "is_reasoning": false,
-      "is_pareto": false
-    },
-    {
       "model": "Granite 4.1 8B",
-      "composite_ability": 0.172,
+      "composite_ability": 0.173,
       "per_request_cost": 0.00015,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
-      "model": "Jamba 1.7 Large",
-      "composite_ability": 0.1544,
-      "per_request_cost": 0.006951,
+      "model": "Qwen3 Omni 30B A3B",
+      "composite_ability": 0.1728,
+      "per_request_cost": 0.000863,
+      "is_reasoning": false,
+      "is_pareto": false
+    },
+    {
+      "model": "NVIDIA Nemotron 3 Nano",
+      "composite_ability": 0.1716,
+      "per_request_cost": 0.000168,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Phi-4",
-      "composite_ability": 0.154,
-      "per_request_cost": 0.000452,
+      "composite_ability": 0.1555,
+      "per_request_cost": 0.000456,
+      "is_reasoning": false,
+      "is_pareto": false
+    },
+    {
+      "model": "Jamba 1.7 Large",
+      "composite_ability": 0.1546,
+      "per_request_cost": 0.007011,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "NVIDIA Nemotron Nano 12B v2 VL",
-      "composite_ability": 0.1485,
-      "per_request_cost": 0.000597,
-      "is_reasoning": false,
-      "is_pareto": false
-    },
-    {
-      "model": "Granite 4.0 H Small",
-      "composite_ability": 0.1474,
-      "per_request_cost": 0.000209,
+      "composite_ability": 0.148,
+      "per_request_cost": 0.000602,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "LFM2 24B A2B",
-      "composite_ability": 0.1469,
-      "per_request_cost": 0.000112,
+      "composite_ability": 0.1477,
+      "per_request_cost": 0.000113,
+      "is_reasoning": false,
+      "is_pareto": false
+    },
+    {
+      "model": "Granite 4.0 H Small",
+      "composite_ability": 0.1471,
+      "per_request_cost": 0.000209,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Reka Flash 3",
-      "composite_ability": 0.1455,
+      "composite_ability": 0.1468,
       "per_request_cost": null,
       "is_reasoning": true,
       "is_pareto": false
     },
     {
       "model": "Ministral 3 3B",
-      "composite_ability": 0.1421,
+      "composite_ability": 0.1433,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Nova Micro",
-      "composite_ability": 0.139,
+      "composite_ability": 0.1403,
       "per_request_cost": 0.00015,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Llama 3.2 11B (Vision)",
-      "composite_ability": 0.1147,
+      "composite_ability": 0.1159,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
@@ -1310,21 +1356,21 @@
     },
     {
       "model": "Apertus 70B Instruct",
-      "composite_ability": 0.1027,
+      "composite_ability": 0.1021,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
     },
     {
       "model": "Qwen3.5 0.8B",
-      "composite_ability": 0.0924,
+      "composite_ability": 0.0937,
       "per_request_cost": 4e-05,
       "is_reasoning": false,
       "is_pareto": true
     },
     {
       "model": "Apertus 8B Instruct",
-      "composite_ability": 0.0606,
+      "composite_ability": 0.0621,
       "per_request_cost": null,
       "is_reasoning": false,
       "is_pareto": false
