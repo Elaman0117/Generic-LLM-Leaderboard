@@ -4,23 +4,24 @@ Scraper for Artificial Analysis LLM Leaderboard.
 Expands Intelligence + Price + Speed + Latency + End-to-End Response Time
 to capture all timing columns including Reasoning Time.
 
-Column layout (after expanding ALL groups):
+Column layout (after expanding ALL groups) — updated 2026-05-28:
   0:  Model (with lightbulb SVG for reasoning models)
   1:  Context Window
   2:  Creator
-  3:  License (Features)
-  4-18: 15 Intelligence sub-metrics
-  19: Blended USD/1M Tokens
-  20: Input Price USD/1M Tokens
-  21: Output Price USD/1M Tokens
-  22: Median Tokens/s
-  23-26: P5/P25/P75/P95 Tokens/s (Speed detail, ignored)
-  27: Latency First Chunk (s) (TTFT)
-  28: First Answer (s)
-  29-32: P5/P25/P75/P95 First Chunk (s) (ignored)
-  33: Total Response (s)
-  34: Reasoning Time (s)
-  35: Further Analysis (ignored)
+  3:  License (Features — new column)
+  4-18: 15 Intelligence sub-metrics (original)
+  19:  ITBench-AA (new 16th Intelligence metric)
+  20: Blended USD/1M Tokens
+  21: Input Price USD/1M Tokens
+  22: Output Price USD/1M Tokens
+  23: Median Tokens/s
+  24-27: P5/P25/P75/P95 Tokens/s (Speed detail, ignored)
+  28: Latency First Chunk (s) (TTFT)
+  29: First Answer (s)
+  30-33: P5/P25/P75/P95 First Chunk (s) (ignored)
+  34: Total Response (s)
+  35: Reasoning Time (s)
+  36: Further Analysis (ignored)
 """
 
 import json
@@ -35,7 +36,8 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "raw_data.json")
 MIN_MODELS_EXPECTED = 10
 
-# 15 Intelligence sub-metrics (columns 4..18)
+# 16 Intelligence sub-metrics (columns 4..19)
+# ITBench-AA added 2026-05-28 between APEX-Agents-AA and MMMU_Pro
 INTEL_METRICS = [
     "AA_Intelligence_Index",
     "AA_Omniscience_Index",
@@ -51,20 +53,21 @@ INTEL_METRICS = [
     "IFBench",
     "CritPt",
     "APEX_Agents_AA",
+    "ITBench_AA",
     "MMMU_Pro",
 ]
 
 # Key price + timing columns
-# After full expansion, column indices are:
+# After full expansion, column indices are (updated 2026-05-28):
 PRICE_SPEED_LATENCY = {
-    "Blended_Price": 19,
-    "Input_Price": 20,
-    "Output_Price": 21,
-    "Speed_TokensPerSec": 22,
-    "Latency_First_Chunk_s": 27,
-    "First_Answer_s": 28,
-    "Total_Response_s": 33,
-    "Reasoning_Time_s": 34,
+    "Blended_Price": 20,
+    "Input_Price": 21,
+    "Output_Price": 22,
+    "Speed_TokensPerSec": 23,
+    "Latency_First_Chunk_s": 28,
+    "First_Answer_s": 29,
+    "Total_Response_s": 34,
+    "Reasoning_Time_s": 35,
 }
 
 
@@ -90,8 +93,8 @@ def scrape_leaderboard():
         # Verify expansions
         print("[3/6] Verifying expansions ...")
         expected = {
-            "Features": "2", "Intelligence": "15", "Price": "3",
-            "Speed": "6", "Latency": "6", "End-to-End Response Time": "3",
+            "Features": "3", "Intelligence": "16", "Price": "3",
+            "Speed": "5", "Latency": "6", "End-to-End Response Time": "2",
         }
         for name, exp in expected.items():
             th = page.locator('th[colspan]', has_text=name).first
@@ -108,12 +111,12 @@ def scrape_leaderboard():
             const result = [];
             for (const row of rows) {
                 const c = row.querySelectorAll('td');
-                if (c.length < 35) continue;
+                if (c.length < 36) continue;
                 const d = {
                     Model: c[0].textContent.trim(),
                     Is_Reasoning: c[0].querySelector('svg.lucide-lightbulb') !== null,
                 };
-                // Intelligence metrics (columns 4..18)
+                // Intelligence metrics (columns 4..19)
                 for (let i = 0; i < intel.length; i++)
                     d[intel[i]] = c[4 + i].textContent.trim();
                 // Price/Speed/Latency columns (specific indices)

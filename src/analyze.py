@@ -22,6 +22,7 @@ Visualization:
 """
 
 import json
+import math
 import os
 import sys
 from collections import Counter
@@ -62,7 +63,7 @@ METRICS = [
     "Terminal_Bench_Hard", "Tau2_Bench", "AA_LCR",
     "AA_Omniscience_Accuracy", "AA_Omniscience_Non_Hallucination",
     "HLE", "GPQA_Diamond", "SciCode", "IFBench", "CritPt",
-    "APEX_Agents_AA", "MMMU_Pro",
+    "APEX_Agents_AA", "ITBench_AA", "MMMU_Pro",
 ]
 METRIC_LABELS = {
     "AA_Intelligence_Index": "AA Intelligence Index",
@@ -79,6 +80,7 @@ METRIC_LABELS = {
     "IFBench": "IFBench Instruction Following",
     "CritPt": "CritPt Physics",
     "APEX_Agents_AA": "APEX-Agents-AA Office",
+    "ITBench_AA": "ITBench-AA Kubernetes",
     "MMMU_Pro": "MMMU Pro Visual",
 }
 MIN_VALID_METRICS = 5
@@ -238,17 +240,33 @@ def compute_scores(data):
             ) / 1_000_000
             m["per_request_cost"] = cost
 
-    # ── Normalize per-request cost (Fraction min-max) ──
+    # ── Normalize per-request cost (log-scale normalization) ──
+    # Price spans several orders of magnitude ($0.0001 – $3.66),
+    # so linear normalization crushes everything near 0.
+    # Log-normalization spreads the data naturally:
+    #   log_cost = ln(per_request_cost)
+    #   normalized_cost = (log_cost - min_log) / (max_log - min_log)
     priced = [m for m in valid if m.get("per_request_cost") is not None]
     if priced:
         costs = [m["per_request_cost"] for m in priced]
         min_c, max_c = min(costs), max(costs)
         print(f"Per-request cost range: ${float(min_c):.4f} – ${float(max_c):.4f}")
+        # Compute log values
+        log_costs = [math.log(float(c)) for c in costs if float(c) > 0]
+        if len(log_costs) >= 2:
+            min_log, max_log = min(log_costs), max(log_costs)
+        else:
+            min_log, max_log = 0.0, 1.0
+        print(f"Log-normalized cost range: ln({float(min_c):.4f})={min_log:.4f} – ln({float(max_c):.4f})={max_log:.4f}")
         for m in priced:
-            if max_c == min_c:
+            cost_f = float(m["per_request_cost"])
+            if cost_f <= 0 or max_log == min_log:
                 m["normalized_cost"] = Fraction(1, 2)
             else:
-                m["normalized_cost"] = (m["per_request_cost"] - min_c) / (max_c - min_c)
+                log_c = math.log(cost_f)
+                m["normalized_cost"] = Fraction.from_float(
+                    (log_c - min_log) / (max_log - min_log)
+                ).limit_denominator(10**12)
     for m in valid:
         if "normalized_cost" not in m:
             m["normalized_cost"] = None
@@ -396,13 +414,13 @@ def plot_analysis(models, pareto):
                     lim=200)
 
     # ── Axis labels ──
-    ax.set_xlabel("归一化单次请求价格 (0=最便宜, 1=最贵)",
+    ax.set_xlabel("对数归一化单次请求价格 (0=最便宜, 1=最贵)",
                   fontsize=13, color="#FFFFFF", labelpad=10, fontweight="bold")
     ax.set_ylabel("综合能力 (0=最低, 1=最高)",
                   fontsize=13, color="#FFFFFF", labelpad=10, fontweight="bold")
     ax.set_title(
         f"LLM 综合能力 vs 单次请求价格 — Pareto前沿\n"
-        f"（全程Fraction精确运算 | 线性归一化坐标）",
+        f"（全程Fraction精确运算 | X轴对数归一化坐标）",
         fontsize=15, color="#FFFFFF", fontweight="bold", pad=16,
     )
 
@@ -434,8 +452,8 @@ def plot_analysis(models, pareto):
 
     # ── Method annotation ──
     method = (
-        f"线性归一化坐标 | 无指数映射\n"
-        f"★ 全程Fraction精确运算 | 仅在绘图时转float | 共{len(plot_models)}模型"
+        f"X轴: 对数归一化 ln(cost)→[0,1] | Y轴: 综合能力(线性)\n"
+        f"★ 全程Fraction精确运算(至归一化前) | 共{len(plot_models)}模型"
     )
     ax.text(0.98, 0.02, method, transform=ax.transAxes, fontsize=6,
             va="bottom", ha="right", color="#AAAAAA", style="italic",
@@ -472,7 +490,8 @@ def save_results(models, pareto, metric_ranges):
             "methodology": (
                 "15 Intelligence metrics normalized [0,1], averaged → composite ability; "
                 "Pareto = non-dominated by per-request cost; "
-                "Linear normalized coordinates (no exponential mapping)"
+                "X-axis: log-normalized cost (ln(cost) mapped to [0,1]); "
+                "Y-axis: composite ability (linear, direct average)"
             ),
             "arithmetic": (
                 "All intermediate calculations use fractions.Fraction for exact rational arithmetic; "
@@ -574,9 +593,10 @@ def generate_readme(pareto, models):
     lines.append("")
     lines.append("### 坐标说明")
     lines.append("")
-    lines.append("**X轴（归一化价格）**：")
-    lines.append("1. 所有模型单次请求价格 min-max 归一化到 [0,1]")
-    lines.append("2. 0 = 最便宜，1 = 最贵")
+    lines.append("**X轴（对数归一化价格）**：")
+    lines.append("1. 对单次请求价格取自然对数：ln(cost)")
+    lines.append("2. 将 ln(cost) 归一化到 [0,1]：0 = 最便宜，1 = 最贵")
+    lines.append("3. 对数归一化使跨数量级的价格差异在图上更均匀分布")
     lines.append("")
     lines.append("**Y轴（综合能力）**：")
     lines.append("1. 15项Intelligence子指标各自归一化到 [0,1]")
