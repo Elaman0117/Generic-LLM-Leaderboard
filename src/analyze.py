@@ -3,45 +3,30 @@
 Scoring system, per-request cost calculation, and Pareto analysis
 for Artificial Analysis LLM Leaderboard.
 
-**Modified version (v5)**: Three-stage computation pipeline:
+**Modified version (v6)**: Two-stage computation pipeline:
 
   Stage 1 — Exact Fraction arithmetic
     All intermediate calculations use `fractions.Fraction` for exact rational
     arithmetic. No floating-point rounding at any step.
 
-  Stage 2 — Power-law exponential mapping (f(x) = x^p)
-    A continuous mathematical function, NOT a rank reassignment.
-    The power parameter p is determined ONLY from the Pareto frontier
-    models' data distribution (specifically, their median value), so that
-    after mapping, values are centered around 0.5.
-
-    f(x) = x^p where p = log(0.5) / log(median_pareto)
-    - f(0) = 0, f(1) = 1 (endpoints preserved)
-    - f(median) = 0.5 (median maps to center)
-    - The mapping is a smooth monotonic function from [0,1] to [0,1]
-    - No forced uniform distribution, just a mathematical transformation
-
-    X-axis: normalized_cost → x^p_x (p_x from Pareto cost median)
-    Y-axis: ability_rescaled → y^p_y (p_y from Pareto ability median)
-
-  Stage 3 — Float conversion ONLY at matplotlib chart coordinates
+  Stage 2 — Float conversion ONLY at matplotlib chart coordinates
 
 Visualization:
     - Black background, 黑体 (Heiti) white font
     - 1:1 square aspect ratio
     - Boundary frame: axes at x=0 & y=0, boundary lines at x=1 & y=1
+      (all constrained within [0,1] range)
     - Only 0 and 1 on tick marks
-    - Dashed lines from each Pareto model to both axes with pre-mapping values
+    - Faint grid lines at 0.1 intervals (10 divisions)
+    - No secondary normalization or exponential mapping
 """
 
 import json
-import math
 import os
 import sys
 from collections import Counter
 from fractions import Fraction
 
-import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -272,119 +257,20 @@ def compute_scores(data):
 
 
 # ══════════════════════════════════════════════════════════════════════
-# Stage 2: Power-law Exponential Mapping (f(x) = x^p)
+# Stage 2: (Removed — no secondary normalization or exponential mapping)
 # ══════════════════════════════════════════════════════════════════════
 
-def _compute_power_param(pareto_models, value_key):
-    """Compute the power parameter p for the mapping f(x) = x^p,
-    determined ONLY from the Pareto frontier models' data distribution.
-
-    The parameter is chosen so that the median of the Pareto models'
-    values maps to 0.5:
-        median_pareto^p = 0.5
-        p = log(0.5) / log(median_pareto)
-
-    This ensures that after mapping, the Pareto models' values are
-    centered around 0.5 — no forced uniform distribution, just a
-    smooth mathematical function that re-centers the data.
-
-    Returns p (float), or 1.0 if the median is degenerate.
-    """
-    vals = [m.get(value_key) for m in pareto_models if m.get(value_key) is not None]
-    if len(vals) < 2:
-        return 1.0  # identity mapping if insufficient data
-    # Compute median using exact Fraction comparison
-    sorted_vals = sorted(vals)
-    n = len(sorted_vals)
-    if n % 2 == 1:
-        median_frac = sorted_vals[n // 2]
-    else:
-        median_frac = (sorted_vals[n // 2 - 1] + sorted_vals[n // 2]) / 2
-    median_f = float(median_frac)
-    # Edge cases
-    if median_f <= 0.0 or median_f >= 1.0:
-        return 1.0  # identity mapping
-    # p = log(0.5) / log(median)
-    p = math.log(0.5) / math.log(median_f)
-    # Clamp to reasonable range to avoid extreme distortion
-    p = max(0.05, min(20.0, p))
-    return p
-
-
-def apply_index_mapping(models, pareto):
-    """Apply power-law exponential mapping to both axes.
-
-    The mapping function f(x) = x^p is a smooth continuous function
-    from [0,1] to [0,1] with f(0)=0, f(1)=1.
-    The power parameter p is determined ONLY from the Pareto frontier
-    models' median, so that f(median) = 0.5.
-
-    This is NOT a rank reassignment — it is a mathematical function
-    transformation that makes the distribution more centered.
-
-    X-axis: normalized_cost → (normalized_cost)^p_x
-    Y-axis: ability_rescaled → (ability_rescaled)^p_y
+def get_plot_models(models):
+    """Filter models that have valid normalized_cost for plotting.
+    No secondary normalization or exponential mapping is applied.
+    X-axis uses normalized_cost directly; Y-axis uses composite_ability directly.
     """
     plot_models = [m for m in models if m.get("normalized_cost") is not None]
-
-    # ── Y-axis Step 1: Re-normalize composite_ability → ability_rescaled ──
-    abilities = [m["composite_ability"] for m in plot_models if m["composite_ability"] is not None]
-    if abilities:
-        min_a, max_a = min(abilities), max(abilities)
-        for m in plot_models:
-            if m["composite_ability"] is not None:
-                if max_a == min_a:
-                    m["ability_rescaled"] = Fraction(1, 2)
-                else:
-                    m["ability_rescaled"] = (
-                        (m["composite_ability"] - min_a) / (max_a - min_a)
-                    )
-            else:
-                m["ability_rescaled"] = None
-    else:
-        for m in plot_models:
-            m["ability_rescaled"] = None
-
-    # ── Determine power parameters from Pareto models ONLY ──
-    pareto_priced = [m for m in pareto if m.get("normalized_cost") is not None]
-
-    p_x = _compute_power_param(pareto_priced, "normalized_cost")
-    p_y = _compute_power_param(pareto_priced, "ability_rescaled")
-
-    # Compute Pareto medians for reporting
-    pareto_costs = sorted([m["normalized_cost"] for m in pareto_priced])
-    n_pc = len(pareto_costs)
-    median_cost = float(pareto_costs[n_pc // 2]) if n_pc % 2 == 1 else float((pareto_costs[n_pc // 2 - 1] + pareto_costs[n_pc // 2]) / 2)
-
-    pareto_abilities = sorted([m["ability_rescaled"] for m in pareto_priced if m.get("ability_rescaled") is not None])
-    n_pa = len(pareto_abilities)
-    median_ability = float(pareto_abilities[n_pa // 2]) if n_pa % 2 == 1 else float((pareto_abilities[n_pa // 2 - 1] + pareto_abilities[n_pa // 2]) / 2) if n_pa >= 2 else 0.5
-
-    print(f"\n  Power-law exponential mapping (f(x) = x^p):")
-    print(f"  Pareto models: {len(pareto_priced)}")
-    print(f"  X-axis: median(normalized_cost) = {median_cost:.4f} → p_x = {p_x:.4f}")
-    print(f"  Y-axis: median(ability_rescaled) = {median_ability:.4f} → p_y = {p_y:.4f}")
-    print(f"  f(median) = median^p → {median_cost:.4f}^{p_x:.4f} = {median_cost**p_x:.4f} (X), "
-          f"{median_ability:.4f}^{p_y:.4f} = {median_ability**p_y:.4f} (Y)")
-
-    # ── Apply f(x) = x^p to ALL models ──
-    for m in plot_models:
-        # X-axis: exponential_cost = normalized_cost^p_x
-        nc = float(m["normalized_cost"])
-        m["exponential_cost"] = nc ** p_x
-
-        # Y-axis: exponential_ability = ability_rescaled^p_y
-        if m.get("ability_rescaled") is not None:
-            ar = float(m["ability_rescaled"])
-            m["exponential_ability"] = ar ** p_y
-        else:
-            m["exponential_ability"] = None
-
-    print(f"  Mapped {len(plot_models)} total models through power-law function")
-
-    # Store params for JSON output and visualization
-    return plot_models, {"p_x": p_x, "p_y": p_y,
-                         "median_cost": median_cost, "median_ability": median_ability}
+    print(f"\n  Direct linear values (no exponential mapping):")
+    print(f"  {len(plot_models)} models with valid normalized_cost for plotting")
+    print(f"  X-axis: normalized_cost (min-max normalized [0,1])")
+    print(f"  Y-axis: composite_ability (average of [0,1] normalized metrics)")
+    return plot_models
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -416,14 +302,15 @@ def _dominates(a, b):
 # Stage 3: Visualization
 # ══════════════════════════════════════════════════════════════════════
 
-def plot_analysis(models, pareto, mapping_params):
+def plot_analysis(models, pareto):
     """
     Generate the Pareto scatter plot:
     - Black background, 黑体 white font
     - 1:1 square aspect ratio
-    - Axes at x=0 & y=0, boundary lines at x=1 & y=1
+    - Boundary frame: lines constrained within [0,1] range
     - Only 0 and 1 ticks
-    - Dashed lines from Pareto models to axes with pre-mapping values
+    - Faint grid lines at 0.1 intervals (10 divisions)
+    - No exponential mapping: X=normalized_cost, Y=composite_ability
     """
     try:
         from adjustText import adjust_text
@@ -441,68 +328,56 @@ def plot_analysis(models, pareto, mapping_params):
     ax.set_facecolor("#000000")
     ax.set_aspect('equal', adjustable='box')
 
-    # ── 数轴边界线: x=0, y=0 (数轴) + x=1, y=1 (图像边界) ──
-    ax.axhline(y=0, color='#FFFFFF', linewidth=1.5, zorder=1)
-    ax.axvline(x=0, color='#FFFFFF', linewidth=1.5, zorder=1)
-    ax.axhline(y=1, color='#FFFFFF', linewidth=1.5, zorder=1)
-    ax.axvline(x=1, color='#FFFFFF', linewidth=1.5, zorder=1)
+    # ── 数轴边界线: 限制在 [0,1] 值域内 ──
+    # X轴 (y=0): 从 x=0 到 x=1
+    ax.plot([0, 1], [0, 0], color='#FFFFFF', linewidth=1.5, zorder=1)
+    # Y轴 (x=0): 从 y=0 到 y=1
+    ax.plot([0, 0], [0, 1], color='#FFFFFF', linewidth=1.5, zorder=1)
+    # 上边界 (y=1): 从 x=0 到 x=1
+    ax.plot([0, 1], [1, 1], color='#FFFFFF', linewidth=1.5, zorder=1)
+    # 右边界 (x=1): 从 y=0 到 y=1
+    ax.plot([1, 1], [0, 1], color='#FFFFFF', linewidth=1.5, zorder=1)
+
+    # ── 淡色网格线: 十等分 (0.1, 0.2, ..., 0.9) ──
+    grid_color = '#333333'  # 很淡的灰色
+    grid_alpha = 0.5
+    grid_lw = 0.4
+    for v in [i / 10 for i in range(1, 10)]:
+        ax.plot([0, 1], [v, v], color=grid_color, alpha=grid_alpha, linewidth=grid_lw, zorder=0)
+        ax.plot([v, v], [0, 1], color=grid_color, alpha=grid_alpha, linewidth=grid_lw, zorder=0)
 
     # ── Scatter: other models ──
     ax.scatter(
-        [float(m["exponential_cost"]) for m in others],
-        [float(m["exponential_ability"]) for m in others],
+        [float(m["normalized_cost"]) for m in others],
+        [float(m["composite_ability"]) for m in others],
         c="#4A4A4A", s=20, alpha=0.45, zorder=2,
         label=f"其他模型 ({len(others)})",
     )
 
     # ── Scatter: Pareto frontier ──
     ax.scatter(
-        [float(m["exponential_cost"]) for m in pareto],
-        [float(m["exponential_ability"]) for m in pareto],
+        [float(m["normalized_cost"]) for m in pareto],
+        [float(m["composite_ability"]) for m in pareto],
         c="#00E5FF", s=100, alpha=0.95, zorder=4,
         edgecolors="#FFFFFF", linewidth=1.2,
         label=f"Pareto前沿 ({len(pareto)})",
     )
 
     # ── Pareto frontier line ──
-    pf = sorted(pareto, key=lambda m: m["exponential_cost"])
+    pf = sorted(pareto, key=lambda m: m["normalized_cost"])
     ax.plot(
-        [float(m["exponential_cost"]) for m in pf],
-        [float(m["exponential_ability"]) for m in pf],
+        [float(m["normalized_cost"]) for m in pf],
+        [float(m["composite_ability"]) for m in pf],
         c="#00E5FF", linewidth=2.0, alpha=0.35, zorder=3, linestyle="--",
     )
-
-    # ── Dashed lines from each Pareto model to both axes ──
-    for m in pf:
-        x_idx = float(m["exponential_cost"])
-        y_idx = float(m["exponential_ability"])
-        x_pre = float(m["normalized_cost"])
-        y_pre = float(m["ability_rescaled"])
-
-        # 垂直虚线：从点向下连到X轴
-        ax.plot([x_idx, x_idx], [0, y_idx],
-                '--', color='#AAAAAA', alpha=0.40, linewidth=0.6, zorder=1)
-        # 水平虚线：从点向左连到Y轴
-        ax.plot([0, x_idx], [y_idx, y_idx],
-                '--', color='#AAAAAA', alpha=0.40, linewidth=0.6, zorder=1)
-
-        # X轴标注：指数化前的价格小数
-        ax.text(x_idx, -0.035, f"{x_pre:.3f}",
-                ha='center', va='top', fontsize=6,
-                color='#CCCCCC', fontweight='bold', rotation=45)
-
-        # Y轴标注：指数化前的综合性能小数
-        ax.text(-0.03, y_idx, f"{y_pre:.3f}",
-                ha='right', va='center', fontsize=6,
-                color='#CCCCCC', fontweight='bold')
 
     # ── Pareto model labels ──
     texts = []
     for i, m in enumerate(pf):
         label = f"{i+1}. {m['model']}"
         t = ax.text(
-            float(m["exponential_cost"]),
-            float(m["exponential_ability"]),
+            float(m["normalized_cost"]),
+            float(m["composite_ability"]),
             label,
             fontsize=8, ha="left", va="bottom",
             color="#FFFFFF", fontweight="bold", zorder=5,
@@ -521,16 +396,13 @@ def plot_analysis(models, pareto, mapping_params):
                     lim=200)
 
     # ── Axis labels ──
-    ax.set_xlabel("指数化单次价格 (0=最便宜, 1=最贵)",
+    ax.set_xlabel("归一化单次请求价格 (0=最便宜, 1=最贵)",
                   fontsize=13, color="#FFFFFF", labelpad=10, fontweight="bold")
-    ax.set_ylabel("指数化综合能力 (0=最低, 1=最高)",
+    ax.set_ylabel("综合能力 (0=最低, 1=最高)",
                   fontsize=13, color="#FFFFFF", labelpad=10, fontweight="bold")
-    p_x = mapping_params["p_x"]
-    p_y = mapping_params["p_y"]
     ax.set_title(
         f"LLM 综合能力 vs 单次请求价格 — Pareto前沿\n"
-        f"指数化映射 f(x) = x^p | X: p={p_x:.2f}, Y: p={p_y:.2f}\n"
-        f"（映射参数仅由帕累托模型中位数决定 | 虚线标注=映射前小数）",
+        f"（全程Fraction精确运算 | 线性归一化坐标）",
         fontsize=15, color="#FFFFFF", fontweight="bold", pad=16,
     )
 
@@ -549,7 +421,7 @@ def plot_analysis(models, pareto, mapping_params):
     for spine in ax.spines.values():
         spine.set_visible(False)
 
-    # ── No grid ──
+    # ── No matplotlib grid (we drew our own faint grid) ──
     ax.grid(False)
 
     # ── Tick parameters ──
@@ -561,15 +433,9 @@ def plot_analysis(models, pareto, mapping_params):
                        facecolor="#1A1A1A", labelcolor="#FFFFFF")
 
     # ── Method annotation ──
-    p_x = mapping_params["p_x"]
-    p_y = mapping_params["p_y"]
-    med_c = mapping_params["median_cost"]
-    med_a = mapping_params["median_ability"]
     method = (
-        f"指数化映射 f(x) = x^p | 参数仅由帕累托前沿{len(pareto)}模型中位数决定\n"
-        f"X: p_x = {p_x:.3f} (median = {med_c:.3f} → 0.5) | "
-        f"Y: p_y = {p_y:.3f} (median = {med_a:.3f} → 0.5)\n"
-        f"★ 全程Fraction精确运算(至映射前) | 虚线端标注=映射前归一化小数值 | 共{len(plot_models)}模型"
+        f"线性归一化坐标 | 无指数映射\n"
+        f"★ 全程Fraction精确运算 | 仅在绘图时转float | 共{len(plot_models)}模型"
     )
     ax.text(0.98, 0.02, method, transform=ax.transAxes, fontsize=6,
             va="bottom", ha="right", color="#AAAAAA", style="italic",
@@ -606,20 +472,12 @@ def save_results(models, pareto, metric_ranges):
             "methodology": (
                 "15 Intelligence metrics normalized [0,1], averaged → composite ability; "
                 "Pareto = non-dominated by per-request cost; "
-                "Power-law exponential mapping f(x) = x^p where p = log(0.5)/log(median_pareto)"
+                "Linear normalized coordinates (no exponential mapping)"
             ),
             "arithmetic": (
-                "All intermediate calculations use fractions.Fraction for exact rational arithmetic "
-                "up to the point before the power-law mapping; the mapping f(x) = x^p with "
-                "non-integer p inherently requires float, but the parameter p is determined "
-                "by exact Fraction median of Pareto models"
+                "All intermediate calculations use fractions.Fraction for exact rational arithmetic; "
+                "float conversion only at matplotlib coordinate input and JSON serialization"
             ),
-            "index_mapping": {
-                "type": "power-law: f(x) = x^p where p = log(0.5) / log(median_pareto)",
-                "x_axis": f"p_x determined by median normalized_cost of Pareto models",
-                "y_axis": f"p_y determined by median ability_rescaled of Pareto models",
-                "note": "f(0)=0, f(1)=1 always; f(median)=0.5; smooth continuous monotonic function",
-            },
             "per_request_cost": {
                 "non_reasoning": "Output_tokens = (Total - TTFT) × Speed; Cost = (In × InPrice + Out × OutPrice) / 1M",
                 "reasoning_with_time": "Output_tokens = (Total - TTFT) × Speed; Cost = (In × InPrice + Out × OutPrice) / 1M",
@@ -644,10 +502,8 @@ def save_results(models, pareto, metric_ranges):
                 "model": m["model"],
                 "composite_ability": float(m["composite_ability"]),
                 "composite_ability_fraction": str(m["composite_ability"]),
-                "ability_rescaled": _frac_to_json(m.get("ability_rescaled")),
-                "ability_rescaled_fraction": str(m["ability_rescaled"]) if m.get("ability_rescaled") is not None else None,
-                "exponential_cost": _frac_to_json(m.get("exponential_cost")),
-                "exponential_ability": _frac_to_json(m.get("exponential_ability")),
+                "normalized_cost": _frac_to_json(m.get("normalized_cost")),
+                "normalized_cost_fraction": str(m["normalized_cost"]) if m.get("normalized_cost") is not None else None,
                 "per_request_cost": _frac_to_json(m.get("per_request_cost")),
                 "per_request_cost_fraction": str(m["per_request_cost"]) if m.get("per_request_cost") is not None else None,
                 "is_reasoning": m["is_reasoning"],
@@ -672,10 +528,6 @@ def _export_model(m, rank):
         "is_reasoning": m["is_reasoning"],
         "composite_ability": float(m["composite_ability"]),
         "composite_ability_fraction": str(m["composite_ability"]),
-        "ability_rescaled": _frac_to_json(m.get("ability_rescaled")),
-        "ability_rescaled_fraction": str(m.get("ability_rescaled")) if m.get("ability_rescaled") is not None else None,
-        "exponential_cost": _frac_to_json(m.get("exponential_cost")),
-        "exponential_ability": _frac_to_json(m.get("exponential_ability")),
         "per_request_cost_usd": _frac_to_json(m.get("per_request_cost")),
         "per_request_cost_fraction": str(m["per_request_cost"]) if m.get("per_request_cost") is not None else None,
         "normalized_cost": _frac_to_json(m.get("normalized_cost")),
@@ -700,20 +552,17 @@ def generate_readme(pareto, models):
     lines.append("# LLM Leaderboard Pareto Analysis\n")
     lines.append("![Pareto Analysis](output/pareto_analysis.png)\n")
     lines.append("## Pareto 前沿模型（综合能力从高到低）\n")
-    lines.append("| # | 模型 | 综合能力 | 再归一化 | 指数化能力 | 单次价格 (USD) | 归一化价格 | 指数化价格 | 推理 |")
-    lines.append("|---|------|---------|---------|-----------|---------------|-----------|-----------|------|")
+    lines.append("| # | 模型 | 综合能力 | 单次价格 (USD) | 归一化价格 | 推理 |")
+    lines.append("|---|------|---------|---------------|-----------|------|")
 
     for i, m in enumerate(pareto):
         prc = m.get("per_request_cost")
         prc_str = f"${float(prc):.4f}" if prc is not None else "--"
         reas = "Y" if m["is_reasoning"] else "N"
-        ab_rescaled = f"{float(m['ability_rescaled']):.4f}" if m.get("ability_rescaled") is not None else "--"
-        exp_ab = f"{float(m['exponential_ability']):.4f}" if m.get("exponential_ability") is not None else "--"
         norm_c = f"{float(m['normalized_cost']):.4f}" if m.get("normalized_cost") is not None else "--"
-        exp_c = f"{float(m['exponential_cost']):.4f}" if m.get("exponential_cost") is not None else "--"
         lines.append(
             f"| {i+1} | {m['model']} | {float(m['composite_ability']):.4f} "
-            f"| {ab_rescaled} | {exp_ab} | {prc_str} | {norm_c} | {exp_c} | {reas} |"
+            f"| {prc_str} | {norm_c} | {reas} |"
         )
 
     lines.append("")
@@ -723,31 +572,21 @@ def generate_readme(pareto, models):
     lines.append("2. **综合能力值** = 所有有效归一化分数的算术平均")
     lines.append("3. **Pareto前沿** = 不被任何其他模型支配的模型")
     lines.append("")
-    lines.append("### 指数化映射方法")
+    lines.append("### 坐标说明")
     lines.append("")
-    lines.append("**映射函数**：f(x) = x^p，其中 p = log(0.5) / log(median_pareto)")
-    lines.append("")
-    lines.append("**核心原则**：")
-    lines.append("- 映射是连续数学函数，不是排名重分配")
-    lines.append("- f(0) = 0, f(1) = 1（端点不变）")
-    lines.append("- f(median) = 0.5（中位数映射到0.5，使分布以0.5为中心）")
-    lines.append("- 参数 p 仅由帕累托前沿模型的数据分布决定")
-    lines.append("")
-    lines.append("**X轴（价格）**：")
+    lines.append("**X轴（归一化价格）**：")
     lines.append("1. 所有模型单次请求价格 min-max 归一化到 [0,1]")
-    lines.append("2. 仅取帕累托前沿模型的归一化价格中位数，计算 p_x")
-    lines.append("3. 对所有模型应用 exponential_cost = normalized_cost^p_x")
+    lines.append("2. 0 = 最便宜，1 = 最贵")
     lines.append("")
     lines.append("**Y轴（综合能力）**：")
-    lines.append("1. 综合能力再归一化：最低=0，最高=1")
-    lines.append("2. 仅取帕累托前沿模型的再归一化中位数，计算 p_y")
-    lines.append("3. 对所有模型应用 exponential_ability = ability_rescaled^p_y")
+    lines.append("1. 15项Intelligence子指标各自归一化到 [0,1]")
+    lines.append("2. 综合能力 = 所有有效归一化分数的算术平均（已在 [0,1] 范围内）")
+    lines.append("3. 0 = 最低，1 = 最高")
     lines.append("")
     lines.append("### 精确分数计算")
     lines.append("")
     lines.append("全程使用 Python `fractions.Fraction` 进行精确有理数运算：")
     lines.append("- 所有解析值、归一化、均值、比值、价格计算均使用精确分数")
-    lines.append("- 幂函数映射 f(x) = x^p 参数由 Fraction 中位数确定，映射本身因非整数指数需用 float")
     lines.append("- 仅在绘图坐标传入 matplotlib 及 JSON 序列化时转为浮点数")
     lines.append("")
     lines.append("### 单次请求价格计算")
@@ -802,13 +641,13 @@ def main():
     pareto = compute_pareto(models)
     print(f"  Pareto frontier: {len(pareto)} models")
 
-    # ── Stage 2 ──
-    print("\n[Stage 2] Applying power-law exponential mapping (f(x) = x^p)...")
-    plot_models, mapping_params = apply_index_mapping(models, pareto)
+    # ── Stage 2 (removed: no exponential mapping) ──
+    print("\n[Stage 2] Preparing plot models (direct linear values, no mapping)...")
+    plot_models = get_plot_models(models)
 
     # ── Stage 3 ──
     print("\n[Stage 3] Generating visualization...")
-    plot_analysis(plot_models, pareto, mapping_params)
+    plot_analysis(plot_models, pareto)
 
     print("\nSaving results...")
     save_results(models, pareto, metric_ranges)
@@ -817,20 +656,16 @@ def main():
     print(f"\n{'='*120}")
     print(f"PARETO FRONTIER ({len(pareto)} models) — ranked by composite ability")
     print(f"{'='*120}")
-    print(f"{'#':<3} {'Model':<36} {'Ability':>8} {'Rescaled':>9} "
-          f"{'Exp.Ab':>7} {'PerReq$':>10} {'NormCost':>9} {'Exp.Cost':>8} {'Reas':>4}")
-    print(f"{'-'*3} {'-'*36} {'-'*8} {'-'*9} {'-'*7} {'-'*10} {'-'*9} {'-'*8} {'-'*4}")
+    print(f"{'#':<3} {'Model':<36} {'Ability':>8} {'PerReq$':>10} {'NormCost':>9} {'Reas':>4}")
+    print(f"{'-'*3} {'-'*36} {'-'*8} {'-'*10} {'-'*9} {'-'*4}")
     for i, m in enumerate(pareto):
         prc = f"${float(m['per_request_cost']):.4f}" if m.get("per_request_cost") else "--"
-        ab_r = f"{float(m['ability_rescaled']):.4f}" if m.get("ability_rescaled") else "--"
-        exp_ab = f"{float(m['exponential_ability']):.4f}" if m.get("exponential_ability") else "--"
         nc = f"{float(m['normalized_cost']):.4f}" if m.get("normalized_cost") else "--"
-        exp_c = f"{float(m['exponential_cost']):.4f}" if m.get("exponential_cost") else "--"
         reas = "Y" if m["is_reasoning"] else "N"
         print(f"{i+1:<3} {m['model']:<36} {float(m['composite_ability']):>8.4f} "
-              f"{ab_r:>9} {exp_ab:>7} {prc:>10} {nc:>9} {exp_c:>8} {reas:>4}")
+              f"{prc:>10} {nc:>9} {reas:>4}")
 
-    print("\nDone! (Power-law exponential mapping → square 1:1 plot)")
+    print("\nDone! (Linear normalized coordinates → square 1:1 plot)")
 
 
 if __name__ == "__main__":
