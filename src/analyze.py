@@ -435,13 +435,9 @@ def plot_analysis(models, pareto):
     ax.set_xticklabels(["0", "1"], color="#FFFFFF", fontsize=12, fontweight="bold")
     ax.set_yticklabels(["0", "1"], color="#FFFFFF", fontsize=12, fontweight="bold")
 
-    # ── Axis limits: X may exceed 1 (models costlier than most-expensive Pareto),
-    #    so compute actual X range. Y stays within [0,1].
-    #    Leave small margin for labels.
-    all_x = [float(m["normalized_cost"]) for m in plot_models if m.get("normalized_cost") is not None]
-    x_max = max(all_x) if all_x else 1.0
+    # ── Axis limits: [0,1] 框内，超出不显示 ──
     margin = 0.07
-    ax.set_xlim(-margin, max(x_max + margin, 1 + margin))
+    ax.set_xlim(-margin, 1 + margin)
     ax.set_ylim(-margin, 1 + margin)
 
     # ── Spines: 隐藏（由边界线替代） ──
@@ -606,7 +602,7 @@ def generate_readme(pareto, models):
     lines.append("1. 归一化基准 = 帕累托前沿中最贵模型的单次请求价格")
     lines.append("2. 归一化价格 = 单次请求价格 / 基准价格")
     lines.append("3. 0 = 免费，1 = 最贵的帕累托前沿模型")
-    lines.append("4. 部分非帕累托模型可能超过1（比最贵帕累托模型更贵但能力更低）")
+    lines.append("4. 超出 [0,1] 范围的模型不在图中显示")
     lines.append("")
     lines.append("**Y轴（综合能力）**：")
     lines.append("1. 15项Intelligence子指标各自归一化到 [0,1]")
