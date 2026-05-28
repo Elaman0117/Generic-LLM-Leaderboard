@@ -3,13 +3,18 @@
 Scoring system, per-request cost calculation, and Pareto analysis
 for Artificial Analysis LLM Leaderboard.
 
-**Modified version (v6)**: Two-stage computation pipeline:
+**Modified version (v7)**: Two-stage computation pipeline:
 
   Stage 1 — Exact Fraction arithmetic
     All intermediate calculations use `fractions.Fraction` for exact rational
     arithmetic. No floating-point rounding at any step.
 
   Stage 2 — Float conversion ONLY at matplotlib chart coordinates
+
+Normalization:
+    - Y-axis (composite ability): min-max normalized per metric → averaged
+    - X-axis (cost): linear normalization, most-expensive Pareto model = 1,
+      price 0 = 0. No log mapping.
 
 Visualization:
     - Black background, 黑体 (Heiti) white font
@@ -22,7 +27,6 @@ Visualization:
 """
 
 import json
-import math
 import os
 import sys
 from collections import Counter
@@ -240,33 +244,34 @@ def compute_scores(data):
             ) / 1_000_000
             m["per_request_cost"] = cost
 
-    # ── Normalize per-request cost (log-scale normalization) ──
-    # Price spans several orders of magnitude ($0.0001 – $3.66),
-    # so linear normalization crushes everything near 0.
-    # Log-normalization spreads the data naturally:
-    #   log_cost = ln(per_request_cost)
-    #   normalized_cost = (log_cost - min_log) / (max_log - min_log)
+    # ── Normalize per-request cost (linear, Pareto max = 1) ──
+    # Simple linear normalization: most expensive Pareto model → 1, price 0 → 0.
+    # First compute Pareto frontier to find the max cost on the frontier.
     priced = [m for m in valid if m.get("per_request_cost") is not None]
     if priced:
-        costs = [m["per_request_cost"] for m in priced]
-        min_c, max_c = min(costs), max(costs)
-        print(f"Per-request cost range: ${float(min_c):.4f} – ${float(max_c):.4f}")
-        # Compute log values
-        log_costs = [math.log(float(c)) for c in costs if float(c) > 0]
-        if len(log_costs) >= 2:
-            min_log, max_log = min(log_costs), max(log_costs)
+        # Compute a preliminary Pareto to find the max cost on the frontier
+        sorted_priced = sorted(priced, key=lambda m: (m["per_request_cost"], -m["composite_ability"]))
+        prelim_frontier = []
+        for m in sorted_priced:
+            if any(_dominates(o, m) for o in prelim_frontier):
+                continue
+            prelim_frontier = [p for p in prelim_frontier if not _dominates(m, p)]
+            prelim_frontier.append(m)
+
+        # Max cost on the Pareto frontier is the normalization ceiling
+        if prelim_frontier:
+            max_pareto_cost = max(m["per_request_cost"] for m in prelim_frontier)
         else:
-            min_log, max_log = 0.0, 1.0
-        print(f"Log-normalized cost range: ln({float(min_c):.4f})={min_log:.4f} – ln({float(max_c):.4f})={max_log:.4f}")
+            max_pareto_cost = max(m["per_request_cost"] for m in priced)
+
+        print(f"Per-request cost range: ${float(min(m['per_request_cost'] for m in priced)):.4f} – ${float(max(m['per_request_cost'] for m in priced)):.4f}")
+        print(f"Max Pareto frontier cost (normalization ceiling): ${float(max_pareto_cost):.4f}")
+
         for m in priced:
-            cost_f = float(m["per_request_cost"])
-            if cost_f <= 0 or max_log == min_log:
-                m["normalized_cost"] = Fraction(1, 2)
+            if max_pareto_cost > 0:
+                m["normalized_cost"] = m["per_request_cost"] / max_pareto_cost
             else:
-                log_c = math.log(cost_f)
-                m["normalized_cost"] = Fraction.from_float(
-                    (log_c - min_log) / (max_log - min_log)
-                ).limit_denominator(10**12)
+                m["normalized_cost"] = Fraction(1, 2)
     for m in valid:
         if "normalized_cost" not in m:
             m["normalized_cost"] = None
@@ -280,13 +285,13 @@ def compute_scores(data):
 
 def get_plot_models(models):
     """Filter models that have valid normalized_cost for plotting.
-    No secondary normalization or exponential mapping is applied.
-    X-axis uses normalized_cost directly; Y-axis uses composite_ability directly.
+    X-axis: linear-normalized cost (cost / max_pareto_cost), range [0, ~1+].
+    Y-axis: composite_ability directly.
     """
     plot_models = [m for m in models if m.get("normalized_cost") is not None]
-    print(f"\n  Direct linear values (no exponential mapping):")
+    print(f"\n  Linear normalization (most-expensive Pareto model = 1):")
     print(f"  {len(plot_models)} models with valid normalized_cost for plotting")
-    print(f"  X-axis: normalized_cost (min-max normalized [0,1])")
+    print(f"  X-axis: normalized_cost = cost / max(Pareto cost)")
     print(f"  Y-axis: composite_ability (average of [0,1] normalized metrics)")
     return plot_models
 
@@ -414,13 +419,13 @@ def plot_analysis(models, pareto):
                     lim=200)
 
     # ── Axis labels ──
-    ax.set_xlabel("对数归一化单次请求价格 (0=最便宜, 1=最贵)",
+    ax.set_xlabel("归一化单次请求价格 (0=免费, 1=最贵帕累托模型)",
                   fontsize=13, color="#FFFFFF", labelpad=10, fontweight="bold")
     ax.set_ylabel("综合能力 (0=最低, 1=最高)",
                   fontsize=13, color="#FFFFFF", labelpad=10, fontweight="bold")
     ax.set_title(
         f"LLM 综合能力 vs 单次请求价格 — Pareto前沿\n"
-        f"（全程Fraction精确运算 | X轴对数归一化坐标）",
+        f"（全程Fraction精确运算 | X轴线性归一化坐标）",
         fontsize=15, color="#FFFFFF", fontweight="bold", pad=16,
     )
 
@@ -430,9 +435,13 @@ def plot_analysis(models, pareto):
     ax.set_xticklabels(["0", "1"], color="#FFFFFF", fontsize=12, fontweight="bold")
     ax.set_yticklabels(["0", "1"], color="#FFFFFF", fontsize=12, fontweight="bold")
 
-    # ── Axis limits: 留小边距放标注 ──
+    # ── Axis limits: X may exceed 1 (models costlier than most-expensive Pareto),
+    #    so compute actual X range. Y stays within [0,1].
+    #    Leave small margin for labels.
+    all_x = [float(m["normalized_cost"]) for m in plot_models if m.get("normalized_cost") is not None]
+    x_max = max(all_x) if all_x else 1.0
     margin = 0.07
-    ax.set_xlim(-margin, 1 + margin)
+    ax.set_xlim(-margin, max(x_max + margin, 1 + margin))
     ax.set_ylim(-margin, 1 + margin)
 
     # ── Spines: 隐藏（由边界线替代） ──
@@ -452,8 +461,8 @@ def plot_analysis(models, pareto):
 
     # ── Method annotation ──
     method = (
-        f"X轴: 对数归一化 ln(cost)→[0,1] | Y轴: 综合能力(线性)\n"
-        f"★ 全程Fraction精确运算(至归一化前) | 共{len(plot_models)}模型"
+        f"X轴: 线性归一化 cost/max(Pareto成本)→[0,1] | Y轴: 综合能力(线性)\n"
+        f"★ 全程Fraction精确运算 | 共{len(plot_models)}模型"
     )
     ax.text(0.98, 0.02, method, transform=ax.transAxes, fontsize=6,
             va="bottom", ha="right", color="#AAAAAA", style="italic",
@@ -490,7 +499,7 @@ def save_results(models, pareto, metric_ranges):
             "methodology": (
                 "15 Intelligence metrics normalized [0,1], averaged → composite ability; "
                 "Pareto = non-dominated by per-request cost; "
-                "X-axis: log-normalized cost (ln(cost) mapped to [0,1]); "
+                "X-axis: linear-normalized cost (cost/max(Pareto cost) → [0,1]); "
                 "Y-axis: composite ability (linear, direct average)"
             ),
             "arithmetic": (
@@ -593,10 +602,11 @@ def generate_readme(pareto, models):
     lines.append("")
     lines.append("### 坐标说明")
     lines.append("")
-    lines.append("**X轴（对数归一化价格）**：")
-    lines.append("1. 对单次请求价格取自然对数：ln(cost)")
-    lines.append("2. 将 ln(cost) 归一化到 [0,1]：0 = 最便宜，1 = 最贵")
-    lines.append("3. 对数归一化使跨数量级的价格差异在图上更均匀分布")
+    lines.append("**X轴（线性归一化价格）**：")
+    lines.append("1. 归一化基准 = 帕累托前沿中最贵模型的单次请求价格")
+    lines.append("2. 归一化价格 = 单次请求价格 / 基准价格")
+    lines.append("3. 0 = 免费，1 = 最贵的帕累托前沿模型")
+    lines.append("4. 部分非帕累托模型可能超过1（比最贵帕累托模型更贵但能力更低）")
     lines.append("")
     lines.append("**Y轴（综合能力）**：")
     lines.append("1. 15项Intelligence子指标各自归一化到 [0,1]")
