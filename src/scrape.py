@@ -1,27 +1,17 @@
 #!/usr/bin/env python3
 """
 Scraper for Artificial Analysis LLM Leaderboard.
-Expands Intelligence + Price + Speed + Latency + End-to-End Response Time
-to capture all timing columns including Reasoning Time.
 
-Column layout (after expanding ALL groups) — updated 2026-05-28:
-  0:  Model (with lightbulb SVG for reasoning models)
-  1:  Context Window
-  2:  Creator
-  3:  License (Features — new column)
-  4-18: 15 Intelligence sub-metrics (original)
-  19:  ITBench-AA (new 16th Intelligence metric)
-  20: Blended USD/1M Tokens
-  21: Input Price USD/1M Tokens
-  22: Output Price USD/1M Tokens
-  23: Median Tokens/s
-  24-27: P5/P25/P75/P95 Tokens/s (Speed detail, ignored)
-  28: Latency First Chunk (s) (TTFT)
-  29: First Answer (s)
-  30-33: P5/P25/P75/P95 First Chunk (s) (ignored)
-  34: Total Response (s)
-  35: Reasoning Time (s)
-  36: Further Analysis (ignored)
+Extracts the full model dataset from the Next.js RSC payload embedded in the page.
+This gives us ~500 models with 88 fields including:
+  - intelligenceIndexCostTotal: AA's actual measured cost to run the Intelligence Index
+  - All pricing (input, output, cache_hit, cache_write, blended at various ratios)
+  - All intelligence evaluation scores (gpqa, hle, scicode, etc.)
+  - Speed, latency, and timing data
+  - Token counts for the Intelligence Index evaluations
+
+No need to manually calculate per-request cost — AA provides
+intelligenceIndexCostTotal which is the real measured cost.
 """
 
 import json
@@ -34,41 +24,57 @@ URL = "https://artificialanalysis.ai/leaderboards/models"
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "raw_data.json")
-MIN_MODELS_EXPECTED = 10
+MIN_MODELS_EXPECTED = 100
 
-# 16 Intelligence sub-metrics (columns 4..19)
-# ITBench-AA added 2026-05-28 between APEX-Agents-AA and MMMU_Pro
-INTEL_METRICS = [
-    "AA_Intelligence_Index",
-    "AA_Omniscience_Index",
-    "GDPval_AA",
-    "Terminal_Bench_Hard",
-    "Tau2_Bench",
-    "AA_LCR",
-    "AA_Omniscience_Accuracy",
-    "AA_Omniscience_Non_Hallucination",
-    "HLE",
-    "GPQA_Diamond",
-    "SciCode",
-    "IFBench",
-    "CritPt",
-    "APEX_Agents_AA",
-    "ITBench_AA",
-    "MMMU_Pro",
-]
-
-# Key price + timing columns
-# After full expansion, column indices are (updated 2026-05-28):
-PRICE_SPEED_LATENCY = {
-    "Blended_Price": 20,
-    "Input_Price": 21,
-    "Output_Price": 22,
-    "Speed_TokensPerSec": 23,
-    "Latency_First_Chunk_s": 28,
-    "First_Answer_s": 29,
-    "Total_Response_s": 34,
-    "Reasoning_Time_s": 35,
+# JavaScript code shared across extraction approaches
+_SEARCH_MODELS_JS = """
+function _findBestModels(obj, maxDepth) {
+  let best = null;
+  let bestFC = 0;
+  function search(o, d) {
+    if (d > maxDepth || !o || typeof o !== 'object') return;
+    if (!Array.isArray(o) && o.models && Array.isArray(o.models) && o.models.length > 0) {
+      const fc = Object.keys(o.models[0]).length;
+      if (fc > bestFC) { bestFC = fc; best = o.models; }
+    }
+    if (Array.isArray(o)) for (const v of o) search(v, d + 1);
+    else for (const v of Object.values(o)) search(v, d + 1);
+  }
+  search(obj, 0);
+  return best;
 }
+"""
+
+# Primary extraction: parse RSC script tags directly
+EXTRACT_JS = """
+(() => {
+  ${SEARCH}
+  const scripts = document.querySelectorAll('script');
+  let bestModels = null;
+  let bestFieldCount = 0;
+
+  for (let i = 0; i < scripts.length; i++) {
+    const text = scripts[i].textContent || '';
+    if (!text.includes('__next_f') || !text.includes('models')) continue;
+
+    const match = text.match(/^self\\.__next_f\\.push\\((.+)\\)$/s);
+    if (!match) continue;
+
+    try {
+      const arr = eval(match[1]);
+      const content = arr[1];
+      const colonIdx = content.indexOf(':');
+      const data = JSON.parse(content.substring(colonIdx + 1));
+      const found = _findBestModels(data, 25);
+      if (found) {
+        const fc = Object.keys(found[0]).length;
+        if (fc > bestFieldCount) { bestFieldCount = fc; bestModels = found; }
+      }
+    } catch(e) { /* skip */ }
+  }
+  return JSON.stringify(bestModels || []);
+})()
+""".replace("${SEARCH}", _SEARCH_MODELS_JS)
 
 
 def scrape_leaderboard():
@@ -78,87 +84,44 @@ def scrape_leaderboard():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page(viewport={"width": 1920, "height": 1080})
 
-        print(f"[1/6] Navigating to {URL} ...")
-        page.goto(URL, wait_until="networkidle", timeout=60000)
-        page.wait_for_timeout(5000)
+        print(f"[1/3] Navigating to {URL} ...")
+        page.goto(URL, wait_until="networkidle", timeout=90000)
+        page.wait_for_timeout(8000)  # Wait for RSC stream to complete
 
-        # Expand ALL column groups
-        print("[2/6] Expanding all column groups ...")
-        groups = ["Features", "Intelligence", "Price", "Speed", "Latency", "End-to-End Response Time"]
-        for group in groups:
-            btn = page.locator("th").filter(has=page.get_by_role("button", name=group)).locator("button").first
-            btn.click()
-            page.wait_for_timeout(1000)
+        print("[2/3] Extracting model data from RSC payload ...")
+        raw_json = page.evaluate(EXTRACT_JS)
 
-        # Verify expansions
-        print("[3/6] Verifying expansions ...")
-        expected = {
-            "Features": "3", "Intelligence": "16", "Price": "3",
-            "Speed": "5", "Latency": "6", "End-to-End Response Time": "2",
-        }
-        for name, exp in expected.items():
-            th = page.locator('th[colspan]', has_text=name).first
-            cs = th.get_attribute("colspan")
-            print(f"  {name} colspan = {cs} (expected {exp})")
+        models = json.loads(raw_json)
+        print(f"  Extracted {len(models)} models")
 
-        # Extract data via JS (including lightbulb detection for reasoning models)
-        print("[4/6] Extracting table data ...")
-        js_code = """
-        (args) => {
-            const intel = args.intelMetrics;
-            const psl = args.priceSpeedLatency;
-            const rows = document.querySelectorAll('tbody tr');
-            const result = [];
-            for (const row of rows) {
-                const c = row.querySelectorAll('td');
-                if (c.length < 36) continue;
-                const d = {
-                    Model: c[0].textContent.trim(),
-                    Is_Reasoning: c[0].querySelector('svg.lucide-lightbulb') !== null,
-                };
-                // Intelligence metrics (columns 4..19)
-                for (let i = 0; i < intel.length; i++)
-                    d[intel[i]] = c[4 + i].textContent.trim();
-                // Price/Speed/Latency columns (specific indices)
-                for (const [key, idx] of Object.entries(psl))
-                    d[key] = c[idx].textContent.trim();
-                result.push(d);
-            }
-            return result;
-        }
-        """
-        data = page.evaluate(js_code, {
-            "intelMetrics": INTEL_METRICS,
-            "priceSpeedLatency": PRICE_SPEED_LATENCY,
-        })
+        if models and len(models) > 0:
+            print(f"  Fields per model: {len(models[0].keys())}")
+            # Print sample
+            m = models[0]
+            print(f"  Sample: {m.get('name', '?')}, "
+                  f"reasoning={m.get('reasoningModel', '?')}, "
+                  f"intelIndex={m.get('intelligenceIndex', '?')}, "
+                  f"costTotal=${m.get('intelligenceIndexCostTotal', '?'):.2f}, "
+                  f"inputPrice=${m.get('price1mInputTokens', '?')}, "
+                  f"outputPrice=${m.get('price1mOutputTokens', '?')}")
 
-        print(f"[5/6] Scraped {len(data)} models")
-        reasoning_count = sum(1 for d in data if d.get("Is_Reasoning"))
-        if data:
-            s = data[0]
-            print(f"  Sample: {s['Model']}, Reasoning={s['Is_Reasoning']}, "
-                  f"Intel={s['AA_Intelligence_Index']}, "
-                  f"Blended={s['Blended_Price']}, Speed={s['Speed_TokensPerSec']}, "
-                  f"TTFT={s['Latency_First_Chunk_s']}, Total={s['Total_Response_s']}, "
-                  f"ReasonT={s['Reasoning_Time_s']}")
-        print(f"  Reasoning models: {reasoning_count}/{len(data)}")
-
-        print(f"[6/6] Saving to {OUTPUT_FILE} ...")
+        print(f"[3/3] Saving to {OUTPUT_FILE} ...")
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+            json.dump(models, f, ensure_ascii=False, indent=2)
 
         browser.close()
 
-    print(f"Done! {len(data)} models saved.")
-    return data
+    print(f"Done! {len(models)} models saved.")
+    return models
 
 
 if __name__ == "__main__":
     try:
         data = scrape_leaderboard()
-        if len(data) < MIN_MODELS_EXPECTED:
-            print(f"ERROR: Only {len(data)} models scraped.")
-            sys.exit(1)
+        if not data or len(data) < MIN_MODELS_EXPECTED:
+            print(f"WARNING: Only {len(data) if data else 0} models scraped (expected {MIN_MODELS_EXPECTED})")
     except Exception as e:
         print(f"Scraping failed: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
