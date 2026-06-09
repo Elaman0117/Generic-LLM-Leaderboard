@@ -22,9 +22,9 @@
     "Input_Price": "$6.25",
     "Output_Price": "$25.00",
     "Speed_TokensPerSec": "67",
-    "Latency_First_Chunk_s": "25.91",
-    "First_Answer_s": "25.91",
-    "Total_Response_s": "33.39",
+    "Latency_First_Chunk_s": "32.38",
+    "First_Answer_s": "32.38",
+    "Total_Response_s": "39.86",
     "Reasoning_Time_s": "--"
   },
   {
@@ -49,10 +49,10 @@
     "Blended_Price": "$4.35",
     "Input_Price": "$5.00",
     "Output_Price": "$30.00",
-    "Speed_TokensPerSec": "66",
-    "Latency_First_Chunk_s": "78.77",
-    "First_Answer_s": "78.77",
-    "Total_Response_s": "86.36",
+    "Speed_TokensPerSec": "63",
+    "Latency_First_Chunk_s": "76.27",
+    "First_Answer_s": "76.27",
+    "Total_Response_s": "84.23",
     "Reasoning_Time_s": "--"
   },
   {
@@ -77,10 +77,10 @@
     "Blended_Price": "$4.35",
     "Input_Price": "$5.00",
     "Output_Price": "$30.00",
-    "Speed_TokensPerSec": "55",
-    "Latency_First_Chunk_s": "27.37",
-    "First_Answer_s": "27.37",
-    "Total_Response_s": "36.44",
+    "Speed_TokensPerSec": "52",
+    "Latency_First_Chunk_s": "28.07",
+    "First_Answer_s": "28.07",
+    "Total_Response_s": "37.77",
     "Reasoning_Time_s": "--"
   },
   {
@@ -105,10 +105,10 @@
     "Blended_Price": "$4.10",
     "Input_Price": "$6.25",
     "Output_Price": "$25.00",
-    "Speed_TokensPerSec": "54",
-    "Latency_First_Chunk_s": "17.62",
-    "First_Answer_s": "17.62",
-    "Total_Response_s": "26.94",
+    "Speed_TokensPerSec": "48",
+    "Latency_First_Chunk_s": "20.07",
+    "First_Answer_s": "20.07",
+    "Total_Response_s": "30.39",
     "Reasoning_Time_s": "--"
   },
   {
@@ -133,10 +133,10 @@
     "Blended_Price": "$1.74",
     "Input_Price": "$2.00",
     "Output_Price": "$12.00",
-    "Speed_TokensPerSec": "141",
-    "Latency_First_Chunk_s": "26.81",
-    "First_Answer_s": "26.81",
-    "Total_Response_s": "30.36",
+    "Speed_TokensPerSec": "132",
+    "Latency_First_Chunk_s": "22.54",
+    "First_Answer_s": "22.54",
+    "Total_Response_s": "26.32",
     "Reasoning_Time_s": "--"
   },
   {
@@ -161,10 +161,10 @@
     "Blended_Price": "$4.35",
     "Input_Price": "$5.00",
     "Output_Price": "$30.00",
-    "Speed_TokensPerSec": "55",
-    "Latency_First_Chunk_s": "9.89",
-    "First_Answer_s": "9.89",
-    "Total_Response_s": "18.98",
+    "Speed_TokensPerSec": "51",
+    "Latency_First_Chunk_s": "9.58",
+    "First_Answer_s": "9.58",
+    "Total_Response_s": "19.39",
     "Reasoning_Time_s": "--"
   },
   {
@@ -189,11 +189,11 @@
     "Blended_Price": "$1.43",
     "Input_Price": "$2.50",
     "Output_Price": "$7.50",
-    "Speed_TokensPerSec": "106",
-    "Latency_First_Chunk_s": "2.64",
-    "First_Answer_s": "25.27",
-    "Total_Response_s": "29.97",
-    "Reasoning_Time_s": "22.63"
+    "Speed_TokensPerSec": "117",
+    "Latency_First_Chunk_s": "2.62",
+    "First_Answer_s": "23.28",
+    "Total_Response_s": "27.56",
+    "Reasoning_Time_s": "20.65"
   },
   {
     "Model": "Gemini 3.5 Flash",
@@ -217,10 +217,10 @@
     "Blended_Price": "$1.31",
     "Input_Price": "$1.50",
     "Output_Price": "$9.00",
-    "Speed_TokensPerSec": "192",
-    "Latency_First_Chunk_s": "18.87",
-    "First_Answer_s": "18.87",
-    "Total_Response_s": "21.47",
+    "Speed_TokensPerSec": "175",
+    "Latency_First_Chunk_s": "18.98",
+    "First_Answer_s": "18.98",
+    "Total_Response_s": "21.84",
     "Reasoning_Time_s": "--"
   },
   {
@@ -245,10 +245,10 @@
     "Blended_Price": "$1.31",
     "Input_Price": "$1.50",
     "Output_Price": "$9.00",
-    "Speed_TokensPerSec": "182",
-    "Latency_First_Chunk_s": "15.91",
-    "First_Answer_s": "15.91",
-    "Total_Response_s": "18.65",
+    "Speed_TokensPerSec": "175",
+    "Latency_First_Chunk_s": "14.26",
+    "First_Answer_s": "14.26",
+    "Total_Response_s": "17.12",
     "Reasoning_Time_s": "--"
   },
   {
@@ -273,11 +273,11 @@
     "Blended_Price": "$0.22",
     "Input_Price": "$0.30",
     "Output_Price": "$1.20",
-    "Speed_TokensPerSec": "43",
-    "Latency_First_Chunk_s": "2.58",
-    "First_Answer_s": "48.73",
-    "Total_Response_s": "60.27",
-    "Reasoning_Time_s": "46.15"
+    "Speed_TokensPerSec": "44",
+    "Latency_First_Chunk_s": "2.46",
+    "First_Answer_s": "47.99",
+    "Total_Response_s": "59.37",
+    "Reasoning_Time_s": "45.52"
   },
   {
     "Model": "Kimi K2.6",
@@ -301,11 +301,11 @@
     "Blended_Price": "$0.70",
     "Input_Price": "$0.95",
     "Output_Price": "$4.00",
-    "Speed_TokensPerSec": "44",
-    "Latency_First_Chunk_s": "2.94",
-    "First_Answer_s": "102.99",
-    "Total_Response_s": "114.22",
-    "Reasoning_Time_s": "100.05"
+    "Speed_TokensPerSec": "57",
+    "Latency_First_Chunk_s": "2.42",
+    "First_Answer_s": "79.90",
+    "Total_Response_s": "88.60",
+    "Reasoning_Time_s": "77.48"
   },
   {
     "Model": "MiMo-V2.5-Pro",
@@ -329,11 +329,11 @@
     "Blended_Price": "$0.18",
     "Input_Price": "$0.43",
     "Output_Price": "$0.87",
-    "Speed_TokensPerSec": "43",
-    "Latency_First_Chunk_s": "3.48",
-    "First_Answer_s": "50.13",
-    "Total_Response_s": "61.79",
-    "Reasoning_Time_s": "46.65"
+    "Speed_TokensPerSec": "41",
+    "Latency_First_Chunk_s": "3.19",
+    "First_Answer_s": "51.82",
+    "Total_Response_s": "63.97",
+    "Reasoning_Time_s": "48.63"
   },
   {
     "Model": "GPT-5.3 Codex (xhigh)",
@@ -357,10 +357,10 @@
     "Blended_Price": "$1.87",
     "Input_Price": "$1.75",
     "Output_Price": "$14.00",
-    "Speed_TokensPerSec": "111",
-    "Latency_First_Chunk_s": "102.97",
-    "First_Answer_s": "102.97",
-    "Total_Response_s": "107.46",
+    "Speed_TokensPerSec": "93",
+    "Latency_First_Chunk_s": "89.44",
+    "First_Answer_s": "89.44",
+    "Total_Response_s": "94.82",
     "Reasoning_Time_s": "--"
   },
   {
@@ -386,10 +386,10 @@
     "Input_Price": "$0.40",
     "Output_Price": "$1.16",
     "Speed_TokensPerSec": "53",
-    "Latency_First_Chunk_s": "2.38",
-    "First_Answer_s": "40.10",
-    "Total_Response_s": "49.53",
-    "Reasoning_Time_s": "37.72"
+    "Latency_First_Chunk_s": "2.43",
+    "First_Answer_s": "40.38",
+    "Total_Response_s": "49.87",
+    "Reasoning_Time_s": "37.95"
   },
   {
     "Model": "Grok 4.3 (high)",
@@ -413,10 +413,10 @@
     "Blended_Price": "$0.64",
     "Input_Price": "$1.25",
     "Output_Price": "$2.50",
-    "Speed_TokensPerSec": "220",
-    "Latency_First_Chunk_s": "14.28",
-    "First_Answer_s": "14.28",
-    "Total_Response_s": "16.55",
+    "Speed_TokensPerSec": "175",
+    "Latency_First_Chunk_s": "12.57",
+    "First_Answer_s": "12.57",
+    "Total_Response_s": "15.42",
     "Reasoning_Time_s": "--"
   },
   {
@@ -469,10 +469,10 @@
     "Blended_Price": "$4.10",
     "Input_Price": "$6.25",
     "Output_Price": "$25.00",
-    "Speed_TokensPerSec": "46",
-    "Latency_First_Chunk_s": "1.17",
-    "First_Answer_s": "1.17",
-    "Total_Response_s": "12.01",
+    "Speed_TokensPerSec": "45",
+    "Latency_First_Chunk_s": "1.08",
+    "First_Answer_s": "1.08",
+    "Total_Response_s": "12.07",
     "Reasoning_Time_s": "--"
   },
   {
@@ -497,10 +497,10 @@
     "Blended_Price": "$2.46",
     "Input_Price": "$3.75",
     "Output_Price": "$15.00",
-    "Speed_TokensPerSec": "57",
-    "Latency_First_Chunk_s": "153.09",
-    "First_Answer_s": "153.09",
-    "Total_Response_s": "161.84",
+    "Speed_TokensPerSec": "62",
+    "Latency_First_Chunk_s": "148.84",
+    "First_Answer_s": "148.84",
+    "Total_Response_s": "156.87",
     "Reasoning_Time_s": "--"
   },
   {
@@ -525,11 +525,11 @@
     "Blended_Price": "$0.18",
     "Input_Price": "$0.43",
     "Output_Price": "$0.87",
-    "Speed_TokensPerSec": "60",
+    "Speed_TokensPerSec": "61",
     "Latency_First_Chunk_s": "1.95",
-    "First_Answer_s": "74.58",
-    "Total_Response_s": "82.88",
-    "Reasoning_Time_s": "72.63"
+    "First_Answer_s": "74.04",
+    "Total_Response_s": "82.28",
+    "Reasoning_Time_s": "72.10"
   },
   {
     "Model": "GLM-5.1",
@@ -553,11 +553,11 @@
     "Blended_Price": "$0.90",
     "Input_Price": "$1.40",
     "Output_Price": "$4.40",
-    "Speed_TokensPerSec": "78",
-    "Latency_First_Chunk_s": "1.37",
-    "First_Answer_s": "49.74",
-    "Total_Response_s": "56.12",
-    "Reasoning_Time_s": "48.37"
+    "Speed_TokensPerSec": "83",
+    "Latency_First_Chunk_s": "1.35",
+    "First_Answer_s": "46.79",
+    "Total_Response_s": "52.79",
+    "Reasoning_Time_s": "45.44"
   },
   {
     "Model": "GPT-5.5 (low)",
@@ -581,10 +581,10 @@
     "Blended_Price": "$4.35",
     "Input_Price": "$5.00",
     "Output_Price": "$30.00",
-    "Speed_TokensPerSec": "57",
-    "Latency_First_Chunk_s": "2.29",
-    "First_Answer_s": "2.29",
-    "Total_Response_s": "11.00",
+    "Speed_TokensPerSec": "50",
+    "Latency_First_Chunk_s": "2.17",
+    "First_Answer_s": "2.17",
+    "Total_Response_s": "12.15",
     "Reasoning_Time_s": "--"
   },
   {
@@ -609,11 +609,11 @@
     "Blended_Price": "$0.43",
     "Input_Price": "$0.50",
     "Output_Price": "$3.00",
-    "Speed_TokensPerSec": "53",
-    "Latency_First_Chunk_s": "2.89",
-    "First_Answer_s": "107.43",
-    "Total_Response_s": "116.85",
-    "Reasoning_Time_s": "104.54"
+    "Speed_TokensPerSec": "52",
+    "Latency_First_Chunk_s": "2.92",
+    "First_Answer_s": "109.10",
+    "Total_Response_s": "118.67",
+    "Reasoning_Time_s": "106.19"
   },
   {
     "Model": "DeepSeek V4 Pro (High)",
@@ -637,11 +637,11 @@
     "Blended_Price": "$0.18",
     "Input_Price": "$0.43",
     "Output_Price": "$0.87",
-    "Speed_TokensPerSec": "60",
-    "Latency_First_Chunk_s": "1.96",
-    "First_Answer_s": "35.05",
-    "Total_Response_s": "43.35",
-    "Reasoning_Time_s": "33.09"
+    "Speed_TokensPerSec": "61",
+    "Latency_First_Chunk_s": "1.95",
+    "First_Answer_s": "34.40",
+    "Total_Response_s": "42.54",
+    "Reasoning_Time_s": "32.45"
   },
   {
     "Model": "MiniMax-M2.7",
@@ -665,11 +665,11 @@
     "Blended_Price": "$0.22",
     "Input_Price": "$0.30",
     "Output_Price": "$1.20",
-    "Speed_TokensPerSec": "111",
-    "Latency_First_Chunk_s": "1.29",
-    "First_Answer_s": "23.45",
-    "Total_Response_s": "27.95",
-    "Reasoning_Time_s": "22.16"
+    "Speed_TokensPerSec": "61",
+    "Latency_First_Chunk_s": "1.60",
+    "First_Answer_s": "41.76",
+    "Total_Response_s": "49.92",
+    "Reasoning_Time_s": "40.17"
   },
   {
     "Model": "MiMo-V2.5",
@@ -694,10 +694,10 @@
     "Input_Price": "$0.14",
     "Output_Price": "$0.28",
     "Speed_TokensPerSec": "76",
-    "Latency_First_Chunk_s": "2.91",
-    "First_Answer_s": "29.16",
-    "Total_Response_s": "35.72",
-    "Reasoning_Time_s": "26.25"
+    "Latency_First_Chunk_s": "3.22",
+    "First_Answer_s": "29.43",
+    "Total_Response_s": "35.99",
+    "Reasoning_Time_s": "26.21"
   },
   {
     "Model": "GPT-5.4 mini (xhigh)",
@@ -721,10 +721,10 @@
     "Blended_Price": "$0.65",
     "Input_Price": "$0.75",
     "Output_Price": "$4.50",
-    "Speed_TokensPerSec": "179",
-    "Latency_First_Chunk_s": "10.73",
-    "First_Answer_s": "10.73",
-    "Total_Response_s": "13.51",
+    "Speed_TokensPerSec": "167",
+    "Latency_First_Chunk_s": "7.83",
+    "First_Answer_s": "7.83",
+    "Total_Response_s": "10.82",
     "Reasoning_Time_s": "--"
   },
   {
@@ -749,10 +749,10 @@
     "Blended_Price": "$0.64",
     "Input_Price": "$1.25",
     "Output_Price": "$2.50",
-    "Speed_TokensPerSec": "203",
+    "Speed_TokensPerSec": "170",
     "Latency_First_Chunk_s": "8.21",
     "First_Answer_s": "8.21",
-    "Total_Response_s": "10.68",
+    "Total_Response_s": "11.16",
     "Reasoning_Time_s": "--"
   },
   {
@@ -777,11 +777,11 @@
     "Blended_Price": "$0.52",
     "Input_Price": "$0.60",
     "Output_Price": "$2.60",
-    "Speed_TokensPerSec": "154",
+    "Speed_TokensPerSec": "163",
     "Latency_First_Chunk_s": "1.10",
-    "First_Answer_s": "15.89",
-    "Total_Response_s": "19.14",
-    "Reasoning_Time_s": "14.79"
+    "First_Answer_s": "15.05",
+    "Total_Response_s": "18.11",
+    "Reasoning_Time_s": "13.94"
   },
   {
     "Model": "GLM-5-Turbo",
@@ -833,11 +833,11 @@
     "Blended_Price": "$0.06",
     "Input_Price": "$0.14",
     "Output_Price": "$0.28",
-    "Speed_TokensPerSec": "113",
-    "Latency_First_Chunk_s": "1.24",
-    "First_Answer_s": "50.94",
-    "Total_Response_s": "55.37",
-    "Reasoning_Time_s": "49.70"
+    "Speed_TokensPerSec": "100",
+    "Latency_First_Chunk_s": "1.28",
+    "First_Answer_s": "57.28",
+    "Total_Response_s": "62.27",
+    "Reasoning_Time_s": "56.00"
   },
   {
     "Model": "DeepSeek V4 Flash (High)",
@@ -890,10 +890,10 @@
     "Input_Price": "$0.60",
     "Output_Price": "$3.60",
     "Speed_TokensPerSec": "61",
-    "Latency_First_Chunk_s": "3.84",
-    "First_Answer_s": "97.05",
-    "Total_Response_s": "105.26",
-    "Reasoning_Time_s": "93.21"
+    "Latency_First_Chunk_s": "3.83",
+    "First_Answer_s": "96.50",
+    "Total_Response_s": "104.66",
+    "Reasoning_Time_s": "92.67"
   },
   {
     "Model": "Qwen3.5 397B A17B",
@@ -917,11 +917,11 @@
     "Blended_Price": "$0.90",
     "Input_Price": "$0.60",
     "Output_Price": "$3.60",
-    "Speed_TokensPerSec": "53",
+    "Speed_TokensPerSec": "52",
     "Latency_First_Chunk_s": "2.49",
-    "First_Answer_s": "62.94",
-    "Total_Response_s": "72.43",
-    "Reasoning_Time_s": "60.46"
+    "First_Answer_s": "63.38",
+    "Total_Response_s": "72.94",
+    "Reasoning_Time_s": "60.89"
   },
   {
     "Model": "MiMo-V2-Omni-0327",
@@ -945,11 +945,11 @@
     "Blended_Price": "$0.34",
     "Input_Price": "$0.40",
     "Output_Price": "$2.00",
-    "Speed_TokensPerSec": "77",
-    "Latency_First_Chunk_s": "3.33",
-    "First_Answer_s": "29.19",
-    "Total_Response_s": "35.66",
-    "Reasoning_Time_s": "25.86"
+    "Speed_TokensPerSec": "78",
+    "Latency_First_Chunk_s": "3.11",
+    "First_Answer_s": "28.64",
+    "Total_Response_s": "35.02",
+    "Reasoning_Time_s": "25.53"
   },
   {
     "Model": "Claude Sonnet 4.6 (Non-reasoning)",
@@ -973,10 +973,10 @@
     "Blended_Price": "$2.46",
     "Input_Price": "$3.75",
     "Output_Price": "$15.00",
-    "Speed_TokensPerSec": "44",
-    "Latency_First_Chunk_s": "1.56",
-    "First_Answer_s": "1.56",
-    "Total_Response_s": "12.83",
+    "Speed_TokensPerSec": "45",
+    "Latency_First_Chunk_s": "1.43",
+    "First_Answer_s": "1.43",
+    "Total_Response_s": "12.62",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1001,10 +1001,10 @@
     "Blended_Price": "$0.18",
     "Input_Price": "$0.20",
     "Output_Price": "$1.25",
-    "Speed_TokensPerSec": "157",
-    "Latency_First_Chunk_s": "5.87",
-    "First_Answer_s": "5.87",
-    "Total_Response_s": "9.04",
+    "Speed_TokensPerSec": "163",
+    "Latency_First_Chunk_s": "7.09",
+    "First_Answer_s": "7.09",
+    "Total_Response_s": "10.16",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1030,9 +1030,9 @@
     "Input_Price": "$1.40",
     "Output_Price": "$4.40",
     "Speed_TokensPerSec": "80",
-    "Latency_First_Chunk_s": "1.72",
-    "First_Answer_s": "1.72",
-    "Total_Response_s": "7.96",
+    "Latency_First_Chunk_s": "1.69",
+    "First_Answer_s": "1.69",
+    "Total_Response_s": "7.94",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1057,11 +1057,11 @@
     "Blended_Price": "$0.37",
     "Input_Price": "$0.25",
     "Output_Price": "$1.49",
-    "Speed_TokensPerSec": "184",
-    "Latency_First_Chunk_s": "2.44",
-    "First_Answer_s": "31.75",
-    "Total_Response_s": "34.47",
-    "Reasoning_Time_s": "29.32"
+    "Speed_TokensPerSec": "179",
+    "Latency_First_Chunk_s": "2.46",
+    "First_Answer_s": "32.57",
+    "Total_Response_s": "35.36",
+    "Reasoning_Time_s": "30.11"
   },
   {
     "Model": "MiMo-V2-Omni",
@@ -1085,11 +1085,11 @@
     "Blended_Price": "$0.00",
     "Input_Price": "$0.00",
     "Output_Price": "$0.00",
-    "Speed_TokensPerSec": "73",
-    "Latency_First_Chunk_s": "3.47",
-    "First_Answer_s": "30.88",
-    "Total_Response_s": "37.74",
-    "Reasoning_Time_s": "27.41"
+    "Speed_TokensPerSec": "74",
+    "Latency_First_Chunk_s": "3.60",
+    "First_Answer_s": "30.53",
+    "Total_Response_s": "37.26",
+    "Reasoning_Time_s": "26.93"
   },
   {
     "Model": "Gemini 3.5 Flash (minimal)",
@@ -1113,10 +1113,10 @@
     "Blended_Price": "$1.31",
     "Input_Price": "$1.50",
     "Output_Price": "$9.00",
-    "Speed_TokensPerSec": "184",
-    "Latency_First_Chunk_s": "0.81",
-    "First_Answer_s": "0.81",
-    "Total_Response_s": "3.53",
+    "Speed_TokensPerSec": "169",
+    "Latency_First_Chunk_s": "0.85",
+    "First_Answer_s": "0.85",
+    "Total_Response_s": "3.80",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1141,10 +1141,10 @@
     "Blended_Price": "$0.70",
     "Input_Price": "$0.95",
     "Output_Price": "$4.00",
-    "Speed_TokensPerSec": "41",
-    "Latency_First_Chunk_s": "2.23",
-    "First_Answer_s": "2.23",
-    "Total_Response_s": "14.46",
+    "Speed_TokensPerSec": "45",
+    "Latency_First_Chunk_s": "2.26",
+    "First_Answer_s": "2.26",
+    "Total_Response_s": "13.33",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1152,7 +1152,7 @@
     "Is_Reasoning": true,
     "AA_Intelligence_Index": "43",
     "AA_Omniscience_Index": "−19",
-    "GDPval_AA": "42%",
+    "GDPval_AA": "41%",
     "Terminal_Bench_Hard": "33%",
     "Tau2_Bench": "99%",
     "AA_LCR": "61%",
@@ -1198,9 +1198,9 @@
     "Input_Price": "$3.75",
     "Output_Price": "$15.00",
     "Speed_TokensPerSec": "44",
-    "Latency_First_Chunk_s": "1.32",
-    "First_Answer_s": "1.32",
-    "Total_Response_s": "12.81",
+    "Latency_First_Chunk_s": "1.40",
+    "First_Answer_s": "1.40",
+    "Total_Response_s": "12.79",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1225,11 +1225,11 @@
     "Blended_Price": "$0.18",
     "Input_Price": "$0.20",
     "Output_Price": "$1.15",
-    "Speed_TokensPerSec": "111",
-    "Latency_First_Chunk_s": "1.31",
-    "First_Answer_s": "19.31",
-    "Total_Response_s": "23.81",
-    "Reasoning_Time_s": "18.00"
+    "Speed_TokensPerSec": "186",
+    "Latency_First_Chunk_s": "1.18",
+    "First_Answer_s": "11.95",
+    "Total_Response_s": "14.64",
+    "Reasoning_Time_s": "10.77"
   },
   {
     "Model": "Hy3-preview",
@@ -1253,11 +1253,11 @@
     "Blended_Price": "$0.10",
     "Input_Price": "$0.12",
     "Output_Price": "$0.43",
-    "Speed_TokensPerSec": "98",
-    "Latency_First_Chunk_s": "3.78",
-    "First_Answer_s": "24.16",
-    "Total_Response_s": "29.25",
-    "Reasoning_Time_s": "20.37"
+    "Speed_TokensPerSec": "95",
+    "Latency_First_Chunk_s": "4.02",
+    "First_Answer_s": "25.15",
+    "Total_Response_s": "30.44",
+    "Reasoning_Time_s": "21.13"
   },
   {
     "Model": "GPT-5.5 Instant (May 2026)",
@@ -1309,11 +1309,11 @@
     "Blended_Price": "$0.68",
     "Input_Price": "$0.40",
     "Output_Price": "$3.20",
-    "Speed_TokensPerSec": "138",
-    "Latency_First_Chunk_s": "2.56",
-    "First_Answer_s": "17.01",
-    "Total_Response_s": "20.63",
-    "Reasoning_Time_s": "14.46"
+    "Speed_TokensPerSec": "137",
+    "Latency_First_Chunk_s": "2.51",
+    "First_Answer_s": "17.10",
+    "Total_Response_s": "20.75",
+    "Reasoning_Time_s": "14.59"
   },
   {
     "Model": "MiMo-V2-Flash (Feb 2026)",
@@ -1337,11 +1337,11 @@
     "Blended_Price": "$0.06",
     "Input_Price": "$0.10",
     "Output_Price": "$0.30",
-    "Speed_TokensPerSec": "140",
+    "Speed_TokensPerSec": "143",
     "Latency_First_Chunk_s": "2.01",
-    "First_Answer_s": "16.26",
-    "Total_Response_s": "19.82",
-    "Reasoning_Time_s": "14.25"
+    "First_Answer_s": "15.95",
+    "Total_Response_s": "19.44",
+    "Reasoning_Time_s": "13.95"
   },
   {
     "Model": "GPT-5.5 (Non-reasoning)",
@@ -1365,10 +1365,10 @@
     "Blended_Price": "$4.35",
     "Input_Price": "$5.00",
     "Output_Price": "$30.00",
-    "Speed_TokensPerSec": "53",
+    "Speed_TokensPerSec": "50",
     "Latency_First_Chunk_s": "0.94",
     "First_Answer_s": "0.94",
-    "Total_Response_s": "10.29",
+    "Total_Response_s": "11.00",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1396,7 +1396,7 @@
     "Speed_TokensPerSec": "53",
     "Latency_First_Chunk_s": "2.45",
     "First_Answer_s": "2.45",
-    "Total_Response_s": "11.85",
+    "Total_Response_s": "11.93",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1421,10 +1421,10 @@
     "Blended_Price": "$0.18",
     "Input_Price": "$0.43",
     "Output_Price": "$0.87",
-    "Speed_TokensPerSec": "61",
-    "Latency_First_Chunk_s": "1.71",
-    "First_Answer_s": "1.71",
-    "Total_Response_s": "9.95",
+    "Speed_TokensPerSec": "60",
+    "Latency_First_Chunk_s": "1.74",
+    "First_Answer_s": "1.74",
+    "Total_Response_s": "10.02",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1449,11 +1449,11 @@
     "Blended_Price": "$2.10",
     "Input_Price": "$1.50",
     "Output_Price": "$7.50",
-    "Speed_TokensPerSec": "108",
-    "Latency_First_Chunk_s": "2.15",
-    "First_Answer_s": "20.68",
-    "Total_Response_s": "25.31",
-    "Reasoning_Time_s": "18.53"
+    "Speed_TokensPerSec": "149",
+    "Latency_First_Chunk_s": "2.09",
+    "First_Answer_s": "15.48",
+    "Total_Response_s": "18.83",
+    "Reasoning_Time_s": "13.39"
   },
   {
     "Model": "Gemma 4 31B",
@@ -1478,10 +1478,10 @@
     "Input_Price": "$0.00",
     "Output_Price": "$0.00",
     "Speed_TokensPerSec": "35",
-    "Latency_First_Chunk_s": "1.10",
-    "First_Answer_s": "50.14",
-    "Total_Response_s": "64.27",
-    "Reasoning_Time_s": "49.04"
+    "Latency_First_Chunk_s": "1.11",
+    "First_Answer_s": "50.35",
+    "Total_Response_s": "64.53",
+    "Reasoning_Time_s": "49.24"
   },
   {
     "Model": "Qwen3.5 Omni Plus",
@@ -1506,9 +1506,9 @@
     "Input_Price": "$0.40",
     "Output_Price": "$4.80",
     "Speed_TokensPerSec": "49",
-    "Latency_First_Chunk_s": "2.57",
-    "First_Answer_s": "2.57",
-    "Total_Response_s": "12.72",
+    "Latency_First_Chunk_s": "2.55",
+    "First_Answer_s": "2.55",
+    "Total_Response_s": "12.80",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1516,7 +1516,7 @@
     "Is_Reasoning": true,
     "AA_Intelligence_Index": "38",
     "AA_Omniscience_Index": "−44",
-    "GDPval_AA": "29%",
+    "GDPval_AA": "28%",
     "Terminal_Bench_Hard": "33%",
     "Tau2_Bench": "87%",
     "AA_LCR": "54%",
@@ -1533,11 +1533,11 @@
     "Blended_Price": "$0.06",
     "Input_Price": "$0.10",
     "Output_Price": "$0.30",
-    "Speed_TokensPerSec": "170",
-    "Latency_First_Chunk_s": "10.05",
-    "First_Answer_s": "21.84",
-    "Total_Response_s": "24.78",
-    "Reasoning_Time_s": "11.79"
+    "Speed_TokensPerSec": "177",
+    "Latency_First_Chunk_s": "9.45",
+    "First_Answer_s": "20.73",
+    "Total_Response_s": "23.56",
+    "Reasoning_Time_s": "11.28"
   },
   {
     "Model": "Ring-2.6-1T",
@@ -1562,10 +1562,10 @@
     "Input_Price": "$0.30",
     "Output_Price": "$2.50",
     "Speed_TokensPerSec": "127",
-    "Latency_First_Chunk_s": "3.51",
-    "First_Answer_s": "19.21",
-    "Total_Response_s": "23.14",
-    "Reasoning_Time_s": "15.71"
+    "Latency_First_Chunk_s": "3.49",
+    "First_Answer_s": "19.26",
+    "Total_Response_s": "23.20",
+    "Reasoning_Time_s": "15.77"
   },
   {
     "Model": "o3",
@@ -1589,10 +1589,10 @@
     "Blended_Price": "$1.55",
     "Input_Price": "$2.00",
     "Output_Price": "$8.00",
-    "Speed_TokensPerSec": "157",
-    "Latency_First_Chunk_s": "5.89",
-    "First_Answer_s": "5.89",
-    "Total_Response_s": "9.08",
+    "Speed_TokensPerSec": "145",
+    "Latency_First_Chunk_s": "6.07",
+    "First_Answer_s": "6.07",
+    "Total_Response_s": "9.53",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1617,10 +1617,10 @@
     "Blended_Price": "$0.18",
     "Input_Price": "$0.20",
     "Output_Price": "$1.25",
-    "Speed_TokensPerSec": "153",
-    "Latency_First_Chunk_s": "4.03",
-    "First_Answer_s": "4.03",
-    "Total_Response_s": "7.29",
+    "Speed_TokensPerSec": "151",
+    "Latency_First_Chunk_s": "6.10",
+    "First_Answer_s": "6.10",
+    "Total_Response_s": "9.40",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1645,10 +1645,10 @@
     "Blended_Price": "$0.65",
     "Input_Price": "$0.75",
     "Output_Price": "$4.50",
-    "Speed_TokensPerSec": "175",
-    "Latency_First_Chunk_s": "8.43",
-    "First_Answer_s": "8.43",
-    "Total_Response_s": "11.29",
+    "Speed_TokensPerSec": "171",
+    "Latency_First_Chunk_s": "5.65",
+    "First_Answer_s": "5.65",
+    "Total_Response_s": "8.57",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1701,10 +1701,10 @@
     "Blended_Price": "$0.90",
     "Input_Price": "$0.60",
     "Output_Price": "$3.60",
-    "Speed_TokensPerSec": "61",
-    "Latency_First_Chunk_s": "3.77",
-    "First_Answer_s": "3.77",
-    "Total_Response_s": "11.91",
+    "Speed_TokensPerSec": "59",
+    "Latency_First_Chunk_s": "3.85",
+    "First_Answer_s": "3.85",
+    "Total_Response_s": "12.39",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1729,10 +1729,10 @@
     "Blended_Price": "$0.82",
     "Input_Price": "$1.25",
     "Output_Price": "$5.00",
-    "Speed_TokensPerSec": "95",
-    "Latency_First_Chunk_s": "24.49",
-    "First_Answer_s": "24.49",
-    "Total_Response_s": "29.76",
+    "Speed_TokensPerSec": "98",
+    "Latency_First_Chunk_s": "14.42",
+    "First_Answer_s": "14.42",
+    "Total_Response_s": "19.51",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1757,10 +1757,10 @@
     "Blended_Price": "$0.06",
     "Input_Price": "$0.14",
     "Output_Price": "$0.28",
-    "Speed_TokensPerSec": "107",
-    "Latency_First_Chunk_s": "1.22",
-    "First_Answer_s": "1.22",
-    "Total_Response_s": "5.90",
+    "Speed_TokensPerSec": "99",
+    "Latency_First_Chunk_s": "1.30",
+    "First_Answer_s": "1.30",
+    "Total_Response_s": "6.36",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1813,11 +1813,11 @@
     "Blended_Price": "$0.28",
     "Input_Price": "$0.30",
     "Output_Price": "$0.75",
-    "Speed_TokensPerSec": "159",
-    "Latency_First_Chunk_s": "1.05",
-    "First_Answer_s": "13.66",
-    "Total_Response_s": "16.81",
-    "Reasoning_Time_s": "12.61"
+    "Speed_TokensPerSec": "160",
+    "Latency_First_Chunk_s": "1.09",
+    "First_Answer_s": "13.62",
+    "Total_Response_s": "16.75",
+    "Reasoning_Time_s": "12.53"
   },
   {
     "Model": "Qwen3.5 122B A10B",
@@ -1841,10 +1841,10 @@
     "Blended_Price": "$0.68",
     "Input_Price": "$0.40",
     "Output_Price": "$3.20",
-    "Speed_TokensPerSec": "161",
-    "Latency_First_Chunk_s": "2.44",
-    "First_Answer_s": "2.44",
-    "Total_Response_s": "5.54",
+    "Speed_TokensPerSec": "163",
+    "Latency_First_Chunk_s": "2.38",
+    "First_Answer_s": "2.38",
+    "Total_Response_s": "5.45",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1870,9 +1870,9 @@
     "Input_Price": "$1.25",
     "Output_Price": "$10.00",
     "Speed_TokensPerSec": "120",
-    "Latency_First_Chunk_s": "13.12",
-    "First_Answer_s": "29.79",
-    "Total_Response_s": "33.96",
+    "Latency_First_Chunk_s": "13.81",
+    "First_Answer_s": "30.49",
+    "Total_Response_s": "34.66",
     "Reasoning_Time_s": "16.68"
   },
   {
@@ -1897,10 +1897,10 @@
     "Blended_Price": "$0.58",
     "Input_Price": "$0.90",
     "Output_Price": "$2.70",
-    "Speed_TokensPerSec": "55",
-    "Latency_First_Chunk_s": "3.10",
-    "First_Answer_s": "3.10",
-    "Total_Response_s": "12.24",
+    "Speed_TokensPerSec": "56",
+    "Latency_First_Chunk_s": "3.11",
+    "First_Answer_s": "3.11",
+    "Total_Response_s": "11.98",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1925,10 +1925,10 @@
     "Blended_Price": "$1.34",
     "Input_Price": "$1.25",
     "Output_Price": "$10.00",
-    "Speed_TokensPerSec": "143",
-    "Latency_First_Chunk_s": "24.67",
-    "First_Answer_s": "24.67",
-    "Total_Response_s": "28.17",
+    "Speed_TokensPerSec": "135",
+    "Latency_First_Chunk_s": "24.62",
+    "First_Answer_s": "24.62",
+    "Total_Response_s": "28.33",
     "Reasoning_Time_s": "--"
   },
   {
@@ -1953,11 +1953,11 @@
     "Blended_Price": "$0.52",
     "Input_Price": "$0.30",
     "Output_Price": "$2.50",
-    "Speed_TokensPerSec": "112",
-    "Latency_First_Chunk_s": "27.45",
-    "First_Answer_s": "45.28",
-    "Total_Response_s": "49.73",
-    "Reasoning_Time_s": "17.82"
+    "Speed_TokensPerSec": "124",
+    "Latency_First_Chunk_s": "24.60",
+    "First_Answer_s": "40.70",
+    "Total_Response_s": "44.72",
+    "Reasoning_Time_s": "16.10"
   },
   {
     "Model": "Hy3-preview",
@@ -1981,10 +1981,10 @@
     "Blended_Price": "$0.10",
     "Input_Price": "$0.12",
     "Output_Price": "$0.43",
-    "Speed_TokensPerSec": "96",
-    "Latency_First_Chunk_s": "3.83",
-    "First_Answer_s": "3.83",
-    "Total_Response_s": "9.05",
+    "Speed_TokensPerSec": "93",
+    "Latency_First_Chunk_s": "3.99",
+    "First_Answer_s": "3.99",
+    "Total_Response_s": "9.36",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2065,10 +2065,10 @@
     "Blended_Price": "$0.22",
     "Input_Price": "$0.25",
     "Output_Price": "$1.50",
-    "Speed_TokensPerSec": "317",
-    "Latency_First_Chunk_s": "5.93",
-    "First_Answer_s": "5.93",
-    "Total_Response_s": "7.51",
+    "Speed_TokensPerSec": "295",
+    "Latency_First_Chunk_s": "5.71",
+    "First_Answer_s": "5.71",
+    "Total_Response_s": "7.41",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2093,11 +2093,11 @@
     "Blended_Price": "$0.20",
     "Input_Price": "$0.15",
     "Output_Price": "$0.60",
-    "Speed_TokensPerSec": "348",
-    "Latency_First_Chunk_s": "0.88",
-    "First_Answer_s": "6.63",
-    "Total_Response_s": "8.07",
-    "Reasoning_Time_s": "5.75"
+    "Speed_TokensPerSec": "353",
+    "Latency_First_Chunk_s": "0.89",
+    "First_Answer_s": "6.56",
+    "Total_Response_s": "7.97",
+    "Reasoning_Time_s": "5.66"
   },
   {
     "Model": "Mercury 2",
@@ -2121,10 +2121,10 @@
     "Blended_Price": "$0.14",
     "Input_Price": "$0.25",
     "Output_Price": "$0.75",
-    "Speed_TokensPerSec": "793",
-    "Latency_First_Chunk_s": "3.93",
-    "First_Answer_s": "3.93",
-    "Total_Response_s": "4.57",
+    "Speed_TokensPerSec": "777",
+    "Latency_First_Chunk_s": "3.15",
+    "First_Answer_s": "3.15",
+    "Total_Response_s": "3.79",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2149,11 +2149,11 @@
     "Blended_Price": "$0.11",
     "Input_Price": "$0.10",
     "Output_Price": "$0.15",
-    "Speed_TokensPerSec": "80",
-    "Latency_First_Chunk_s": "2.13",
-    "First_Answer_s": "27.11",
-    "Total_Response_s": "33.36",
-    "Reasoning_Time_s": "24.99"
+    "Speed_TokensPerSec": "68",
+    "Latency_First_Chunk_s": "2.28",
+    "First_Answer_s": "31.79",
+    "Total_Response_s": "39.17",
+    "Reasoning_Time_s": "29.51"
   },
   {
     "Model": "Gemma 4 31B",
@@ -2177,10 +2177,10 @@
     "Blended_Price": "$0.17",
     "Input_Price": "$0.14",
     "Output_Price": "$0.40",
-    "Speed_TokensPerSec": "46",
-    "Latency_First_Chunk_s": "2.50",
-    "First_Answer_s": "2.50",
-    "Total_Response_s": "13.34",
+    "Speed_TokensPerSec": "44",
+    "Latency_First_Chunk_s": "2.60",
+    "First_Answer_s": "2.60",
+    "Total_Response_s": "13.96",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2233,11 +2233,11 @@
     "Blended_Price": "$2.13",
     "Input_Price": "$1.25",
     "Output_Price": "$10.00",
-    "Speed_TokensPerSec": "118",
-    "Latency_First_Chunk_s": "10.66",
-    "First_Answer_s": "27.56",
-    "Total_Response_s": "31.78",
-    "Reasoning_Time_s": "16.90"
+    "Speed_TokensPerSec": "123",
+    "Latency_First_Chunk_s": "11.07",
+    "First_Answer_s": "27.27",
+    "Total_Response_s": "31.32",
+    "Reasoning_Time_s": "16.20"
   },
   {
     "Model": "Trinity Large Thinking",
@@ -2261,11 +2261,11 @@
     "Blended_Price": "$0.24",
     "Input_Price": "$0.23",
     "Output_Price": "$0.88",
-    "Speed_TokensPerSec": "198",
-    "Latency_First_Chunk_s": "1.31",
-    "First_Answer_s": "11.40",
-    "Total_Response_s": "13.93",
-    "Reasoning_Time_s": "10.09"
+    "Speed_TokensPerSec": "207",
+    "Latency_First_Chunk_s": "1.32",
+    "First_Answer_s": "10.97",
+    "Total_Response_s": "13.39",
+    "Reasoning_Time_s": "9.66"
   },
   {
     "Model": "Qwen3.6 35B A3B",
@@ -2289,10 +2289,10 @@
     "Blended_Price": "$0.56",
     "Input_Price": "$0.38",
     "Output_Price": "$2.25",
-    "Speed_TokensPerSec": "193",
-    "Latency_First_Chunk_s": "2.40",
-    "First_Answer_s": "2.40",
-    "Total_Response_s": "4.99",
+    "Speed_TokensPerSec": "192",
+    "Latency_First_Chunk_s": "2.42",
+    "First_Answer_s": "2.42",
+    "Total_Response_s": "5.02",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2345,10 +2345,10 @@
     "Blended_Price": "$0.82",
     "Input_Price": "$1.25",
     "Output_Price": "$5.00",
-    "Speed_TokensPerSec": "92",
-    "Latency_First_Chunk_s": "0.85",
-    "First_Answer_s": "0.85",
-    "Total_Response_s": "6.30",
+    "Speed_TokensPerSec": "93",
+    "Latency_First_Chunk_s": "0.81",
+    "First_Answer_s": "0.81",
+    "Total_Response_s": "6.16",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2373,10 +2373,10 @@
     "Blended_Price": "$0.64",
     "Input_Price": "$1.25",
     "Output_Price": "$2.50",
-    "Speed_TokensPerSec": "176",
-    "Latency_First_Chunk_s": "0.73",
-    "First_Answer_s": "0.73",
-    "Total_Response_s": "3.57",
+    "Speed_TokensPerSec": "159",
+    "Latency_First_Chunk_s": "0.74",
+    "First_Answer_s": "0.74",
+    "Total_Response_s": "3.88",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2401,9 +2401,9 @@
     "Blended_Price": "$0.42",
     "Input_Price": "$0.25",
     "Output_Price": "$2.00",
-    "Speed_TokensPerSec": "186",
-    "Latency_First_Chunk_s": "2.33",
-    "First_Answer_s": "2.33",
+    "Speed_TokensPerSec": "184",
+    "Latency_First_Chunk_s": "2.31",
+    "First_Answer_s": "2.31",
     "Total_Response_s": "5.02",
     "Reasoning_Time_s": "--"
   },
@@ -2429,10 +2429,10 @@
     "Blended_Price": "$0.12",
     "Input_Price": "$0.10",
     "Output_Price": "$0.30",
-    "Speed_TokensPerSec": "136",
-    "Latency_First_Chunk_s": "2.01",
-    "First_Answer_s": "2.01",
-    "Total_Response_s": "5.67",
+    "Speed_TokensPerSec": "149",
+    "Latency_First_Chunk_s": "1.96",
+    "First_Answer_s": "1.96",
+    "Total_Response_s": "5.33",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2485,11 +2485,11 @@
     "Blended_Price": "$0.52",
     "Input_Price": "$0.30",
     "Output_Price": "$2.50",
-    "Speed_TokensPerSec": "102",
-    "Latency_First_Chunk_s": "25.47",
-    "First_Answer_s": "45.01",
-    "Total_Response_s": "49.90",
-    "Reasoning_Time_s": "19.54"
+    "Speed_TokensPerSec": "106",
+    "Latency_First_Chunk_s": "23.77",
+    "First_Answer_s": "42.61",
+    "Total_Response_s": "47.32",
+    "Reasoning_Time_s": "18.84"
   },
   {
     "Model": "ERNIE 5.0 Thinking Preview",
@@ -2569,10 +2569,10 @@
     "Blended_Price": "$0.43",
     "Input_Price": "$0.35",
     "Output_Price": "$1.20",
-    "Speed_TokensPerSec": "112",
-    "Latency_First_Chunk_s": "1.89",
-    "First_Answer_s": "1.89",
-    "Total_Response_s": "6.35",
+    "Speed_TokensPerSec": "113",
+    "Latency_First_Chunk_s": "1.96",
+    "First_Answer_s": "1.96",
+    "Total_Response_s": "6.39",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2625,11 +2625,11 @@
     "Blended_Price": "$0.20",
     "Input_Price": "$0.15",
     "Output_Price": "$0.60",
-    "Speed_TokensPerSec": "175",
-    "Latency_First_Chunk_s": "0.84",
-    "First_Answer_s": "12.26",
-    "Total_Response_s": "15.12",
-    "Reasoning_Time_s": "11.42"
+    "Speed_TokensPerSec": "173",
+    "Latency_First_Chunk_s": "0.75",
+    "First_Answer_s": "12.31",
+    "Total_Response_s": "15.20",
+    "Reasoning_Time_s": "11.57"
   },
   {
     "Model": "Qwen3.5 9B",
@@ -2682,10 +2682,10 @@
     "Input_Price": "$2.00",
     "Output_Price": "$5.00",
     "Speed_TokensPerSec": "40",
-    "Latency_First_Chunk_s": "1.74",
-    "First_Answer_s": "51.13",
-    "Total_Response_s": "63.47",
-    "Reasoning_Time_s": "49.39"
+    "Latency_First_Chunk_s": "1.82",
+    "First_Answer_s": "51.63",
+    "Total_Response_s": "64.08",
+    "Reasoning_Time_s": "49.81"
   },
   {
     "Model": "Gemma 4 26B A4B",
@@ -2709,10 +2709,10 @@
     "Blended_Price": "$0.16",
     "Input_Price": "$0.13",
     "Output_Price": "$0.40",
-    "Speed_TokensPerSec": "71",
-    "Latency_First_Chunk_s": "1.52",
-    "First_Answer_s": "1.52",
-    "Total_Response_s": "8.59",
+    "Speed_TokensPerSec": "61",
+    "Latency_First_Chunk_s": "1.55",
+    "First_Answer_s": "1.55",
+    "Total_Response_s": "9.69",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2737,11 +2737,11 @@
     "Blended_Price": "$0.04",
     "Input_Price": "$0.03",
     "Output_Price": "$0.15",
-    "Speed_TokensPerSec": "203",
+    "Speed_TokensPerSec": "201",
     "Latency_First_Chunk_s": "0.45",
-    "First_Answer_s": "10.31",
-    "Total_Response_s": "12.77",
-    "Reasoning_Time_s": "9.85"
+    "First_Answer_s": "10.42",
+    "Total_Response_s": "12.91",
+    "Reasoning_Time_s": "9.96"
   },
   {
     "Model": "Qwen3 Next 80B A3B",
@@ -2765,11 +2765,11 @@
     "Blended_Price": "$1.05",
     "Input_Price": "$0.50",
     "Output_Price": "$6.00",
-    "Speed_TokensPerSec": "164",
-    "Latency_First_Chunk_s": "2.14",
-    "First_Answer_s": "14.37",
-    "Total_Response_s": "17.42",
-    "Reasoning_Time_s": "12.23"
+    "Speed_TokensPerSec": "169",
+    "Latency_First_Chunk_s": "2.16",
+    "First_Answer_s": "14.02",
+    "Total_Response_s": "16.98",
+    "Reasoning_Time_s": "11.85"
   },
   {
     "Model": "Ling 2.6 Flash",
@@ -2849,10 +2849,10 @@
     "Blended_Price": "$0.17",
     "Input_Price": "$0.10",
     "Output_Price": "$0.80",
-    "Speed_TokensPerSec": "247",
+    "Speed_TokensPerSec": "234",
     "Latency_First_Chunk_s": "2.02",
     "First_Answer_s": "2.02",
-    "Total_Response_s": "4.05",
+    "Total_Response_s": "4.16",
     "Reasoning_Time_s": "--"
   },
   {
@@ -2905,11 +2905,11 @@
     "Blended_Price": "$0.52",
     "Input_Price": "$0.30",
     "Output_Price": "$2.50",
-    "Speed_TokensPerSec": "114",
-    "Latency_First_Chunk_s": "9.82",
-    "First_Answer_s": "27.42",
-    "Total_Response_s": "31.82",
-    "Reasoning_Time_s": "17.60"
+    "Speed_TokensPerSec": "123",
+    "Latency_First_Chunk_s": "10.59",
+    "First_Answer_s": "26.86",
+    "Total_Response_s": "30.93",
+    "Reasoning_Time_s": "16.28"
   },
   {
     "Model": "gpt-oss-20B (high)",
@@ -2934,9 +2934,9 @@
     "Input_Price": "$0.05",
     "Output_Price": "$0.20",
     "Speed_TokensPerSec": "240",
-    "Latency_First_Chunk_s": "0.75",
-    "First_Answer_s": "9.07",
-    "Total_Response_s": "11.15",
+    "Latency_First_Chunk_s": "0.76",
+    "First_Answer_s": "9.08",
+    "Total_Response_s": "11.16",
     "Reasoning_Time_s": "8.32"
   },
   {
@@ -2944,7 +2944,7 @@
     "Is_Reasoning": true,
     "AA_Intelligence_Index": "24",
     "AA_Omniscience_Index": "−50",
-    "GDPval_AA": "17%",
+    "GDPval_AA": "16%",
     "Terminal_Bench_Hard": "5%",
     "Tau2_Bench": "45%",
     "AA_LCR": "44%",
@@ -2961,11 +2961,11 @@
     "Blended_Price": "$0.20",
     "Input_Price": "$0.15",
     "Output_Price": "$0.60",
-    "Speed_TokensPerSec": "351",
+    "Speed_TokensPerSec": "356",
     "Latency_First_Chunk_s": "0.90",
-    "First_Answer_s": "6.60",
-    "Total_Response_s": "8.02",
-    "Reasoning_Time_s": "5.70"
+    "First_Answer_s": "6.52",
+    "Total_Response_s": "7.93",
+    "Reasoning_Time_s": "5.62"
   },
   {
     "Model": "GPT-5.4 nano",
@@ -2990,8 +2990,8 @@
     "Input_Price": "$0.20",
     "Output_Price": "$1.25",
     "Speed_TokensPerSec": "160",
-    "Latency_First_Chunk_s": "0.59",
-    "First_Answer_s": "0.59",
+    "Latency_First_Chunk_s": "0.61",
+    "First_Answer_s": "0.61",
     "Total_Response_s": "3.73",
     "Reasoning_Time_s": "--"
   },
@@ -3017,11 +3017,11 @@
     "Blended_Price": "$0.07",
     "Input_Price": "$0.06",
     "Output_Price": "$0.22",
-    "Speed_TokensPerSec": "167",
-    "Latency_First_Chunk_s": "1.33",
-    "First_Answer_s": "13.30",
-    "Total_Response_s": "16.30",
-    "Reasoning_Time_s": "11.97"
+    "Speed_TokensPerSec": "168",
+    "Latency_First_Chunk_s": "1.83",
+    "First_Answer_s": "13.73",
+    "Total_Response_s": "16.71",
+    "Reasoning_Time_s": "11.90"
   },
   {
     "Model": "LongCat Flash Lite",
@@ -3101,10 +3101,10 @@
     "Blended_Price": "$0.65",
     "Input_Price": "$0.75",
     "Output_Price": "$4.50",
-    "Speed_TokensPerSec": "164",
-    "Latency_First_Chunk_s": "0.76",
-    "First_Answer_s": "0.76",
-    "Total_Response_s": "3.80",
+    "Speed_TokensPerSec": "162",
+    "Latency_First_Chunk_s": "0.78",
+    "First_Answer_s": "0.78",
+    "Total_Response_s": "3.88",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3157,10 +3157,10 @@
     "Blended_Price": "$2.13",
     "Input_Price": "$1.25",
     "Output_Price": "$10.00",
-    "Speed_TokensPerSec": "118",
+    "Speed_TokensPerSec": "119",
     "Latency_First_Chunk_s": "1.06",
     "First_Answer_s": "1.06",
-    "Total_Response_s": "5.29",
+    "Total_Response_s": "5.26",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3213,10 +3213,10 @@
     "Blended_Price": "$0.60",
     "Input_Price": "$0.50",
     "Output_Price": "$1.50",
-    "Speed_TokensPerSec": "52",
-    "Latency_First_Chunk_s": "1.08",
-    "First_Answer_s": "1.08",
-    "Total_Response_s": "10.65",
+    "Speed_TokensPerSec": "53",
+    "Latency_First_Chunk_s": "1.09",
+    "First_Answer_s": "1.09",
+    "Total_Response_s": "10.48",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3241,10 +3241,10 @@
     "Blended_Price": "$0.04",
     "Input_Price": "$0.03",
     "Output_Price": "$0.15",
-    "Speed_TokensPerSec": "210",
-    "Latency_First_Chunk_s": "0.48",
-    "First_Answer_s": "0.48",
-    "Total_Response_s": "2.85",
+    "Speed_TokensPerSec": "208",
+    "Latency_First_Chunk_s": "0.46",
+    "First_Answer_s": "0.46",
+    "Total_Response_s": "2.86",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3252,7 +3252,7 @@
     "Is_Reasoning": true,
     "AA_Intelligence_Index": "22",
     "AA_Omniscience_Index": "−51",
-    "GDPval_AA": "13%",
+    "GDPval_AA": "12%",
     "Terminal_Bench_Hard": "9%",
     "Tau2_Bench": "27%",
     "AA_LCR": "32%",
@@ -3297,10 +3297,10 @@
     "Blended_Price": "$0.00",
     "Input_Price": "$0.00",
     "Output_Price": "$0.00",
-    "Speed_TokensPerSec": "68",
-    "Latency_First_Chunk_s": "1.24",
-    "First_Answer_s": "1.24",
-    "Total_Response_s": "8.58",
+    "Speed_TokensPerSec": "61",
+    "Latency_First_Chunk_s": "1.40",
+    "First_Answer_s": "1.40",
+    "Total_Response_s": "9.64",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3353,18 +3353,18 @@
     "Blended_Price": "$0.10",
     "Input_Price": "$0.07",
     "Output_Price": "$0.30",
-    "Speed_TokensPerSec": "301",
-    "Latency_First_Chunk_s": "1.00",
-    "First_Answer_s": "7.65",
-    "Total_Response_s": "9.31",
-    "Reasoning_Time_s": "6.65"
+    "Speed_TokensPerSec": "296",
+    "Latency_First_Chunk_s": "1.05",
+    "First_Answer_s": "7.81",
+    "Total_Response_s": "9.50",
+    "Reasoning_Time_s": "6.76"
   },
   {
     "Model": "gpt-oss-20B (low)",
     "Is_Reasoning": true,
     "AA_Intelligence_Index": "21",
     "AA_Omniscience_Index": "−60",
-    "GDPval_AA": "3%",
+    "GDPval_AA": "2%",
     "Terminal_Bench_Hard": "5%",
     "Tau2_Bench": "50%",
     "AA_LCR": "31%",
@@ -3381,11 +3381,11 @@
     "Blended_Price": "$0.07",
     "Input_Price": "$0.06",
     "Output_Price": "$0.20",
-    "Speed_TokensPerSec": "247",
+    "Speed_TokensPerSec": "244",
     "Latency_First_Chunk_s": "0.77",
-    "First_Answer_s": "8.85",
-    "Total_Response_s": "10.87",
-    "Reasoning_Time_s": "8.08"
+    "First_Answer_s": "8.98",
+    "Total_Response_s": "11.03",
+    "Reasoning_Time_s": "8.21"
   },
   {
     "Model": "Qwen3 Next 80B A3B",
@@ -3410,9 +3410,9 @@
     "Input_Price": "$0.50",
     "Output_Price": "$2.00",
     "Speed_TokensPerSec": "149",
-    "Latency_First_Chunk_s": "2.34",
-    "First_Answer_s": "2.34",
-    "Total_Response_s": "5.70",
+    "Latency_First_Chunk_s": "2.39",
+    "First_Answer_s": "2.39",
+    "Total_Response_s": "5.74",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3437,10 +3437,10 @@
     "Blended_Price": "$0.00",
     "Input_Price": "$0.00",
     "Output_Price": "$0.00",
-    "Speed_TokensPerSec": "62",
-    "Latency_First_Chunk_s": "1.19",
-    "First_Answer_s": "1.19",
-    "Total_Response_s": "9.25",
+    "Speed_TokensPerSec": "52",
+    "Latency_First_Chunk_s": "1.23",
+    "First_Answer_s": "1.23",
+    "Total_Response_s": "10.89",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3494,9 +3494,9 @@
     "Input_Price": "$2.50",
     "Output_Price": "$12.50",
     "Speed_TokensPerSec": "32",
-    "Latency_First_Chunk_s": "3.03",
-    "First_Answer_s": "3.03",
-    "Total_Response_s": "18.88",
+    "Latency_First_Chunk_s": "2.99",
+    "First_Answer_s": "2.99",
+    "Total_Response_s": "18.42",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3549,11 +3549,11 @@
     "Blended_Price": "$0.13",
     "Input_Price": "$0.10",
     "Output_Price": "$0.40",
-    "Speed_TokensPerSec": "46",
+    "Speed_TokensPerSec": "48",
     "Latency_First_Chunk_s": "1.33",
-    "First_Answer_s": "44.49",
-    "Total_Response_s": "55.27",
-    "Reasoning_Time_s": "43.15"
+    "First_Answer_s": "43.06",
+    "Total_Response_s": "53.49",
+    "Reasoning_Time_s": "41.73"
   },
   {
     "Model": "Mistral Small 4",
@@ -3577,10 +3577,10 @@
     "Blended_Price": "$0.20",
     "Input_Price": "$0.15",
     "Output_Price": "$0.60",
-    "Speed_TokensPerSec": "168",
-    "Latency_First_Chunk_s": "0.77",
-    "First_Answer_s": "0.77",
-    "Total_Response_s": "3.73",
+    "Speed_TokensPerSec": "164",
+    "Latency_First_Chunk_s": "0.75",
+    "First_Answer_s": "0.75",
+    "Total_Response_s": "3.80",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3605,10 +3605,10 @@
     "Blended_Price": "$0.34",
     "Input_Price": "$0.35",
     "Output_Price": "$0.85",
-    "Speed_TokensPerSec": "113",
-    "Latency_First_Chunk_s": "0.98",
-    "First_Answer_s": "0.98",
-    "Total_Response_s": "5.42",
+    "Speed_TokensPerSec": "111",
+    "Latency_First_Chunk_s": "1.00",
+    "First_Answer_s": "1.00",
+    "Total_Response_s": "5.49",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3661,11 +3661,11 @@
     "Blended_Price": "$0.60",
     "Input_Price": "$0.50",
     "Output_Price": "$1.50",
-    "Speed_TokensPerSec": "110",
-    "Latency_First_Chunk_s": "0.83",
-    "First_Answer_s": "19.06",
-    "Total_Response_s": "23.62",
-    "Reasoning_Time_s": "18.23"
+    "Speed_TokensPerSec": "109",
+    "Latency_First_Chunk_s": "0.82",
+    "First_Answer_s": "19.16",
+    "Total_Response_s": "23.74",
+    "Reasoning_Time_s": "18.33"
   },
   {
     "Model": "Sarvam 105B (high)",
@@ -3689,11 +3689,11 @@
     "Blended_Price": "$0.04",
     "Input_Price": "$0.04",
     "Output_Price": "$0.17",
-    "Speed_TokensPerSec": "112",
-    "Latency_First_Chunk_s": "2.08",
-    "First_Answer_s": "19.90",
-    "Total_Response_s": "24.36",
-    "Reasoning_Time_s": "17.82"
+    "Speed_TokensPerSec": "107",
+    "Latency_First_Chunk_s": "2.11",
+    "First_Answer_s": "20.72",
+    "Total_Response_s": "25.37",
+    "Reasoning_Time_s": "18.61"
   },
   {
     "Model": "Nova 2.0 Lite",
@@ -3717,10 +3717,10 @@
     "Blended_Price": "$0.52",
     "Input_Price": "$0.30",
     "Output_Price": "$2.50",
-    "Speed_TokensPerSec": "130",
-    "Latency_First_Chunk_s": "1.23",
-    "First_Answer_s": "1.23",
-    "Total_Response_s": "5.07",
+    "Speed_TokensPerSec": "133",
+    "Latency_First_Chunk_s": "1.33",
+    "First_Answer_s": "1.33",
+    "Total_Response_s": "5.08",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3773,10 +3773,10 @@
     "Blended_Price": "$3.13",
     "Input_Price": "$2.75",
     "Output_Price": "$6.50",
-    "Speed_TokensPerSec": "60",
+    "Speed_TokensPerSec": "64",
     "Latency_First_Chunk_s": "2.40",
     "First_Answer_s": "2.40",
-    "Total_Response_s": "10.72",
+    "Total_Response_s": "10.18",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3913,10 +3913,10 @@
     "Blended_Price": "$0.20",
     "Input_Price": "$0.20",
     "Output_Price": "$0.20",
-    "Speed_TokensPerSec": "84",
-    "Latency_First_Chunk_s": "0.81",
-    "First_Answer_s": "0.81",
-    "Total_Response_s": "6.73",
+    "Speed_TokensPerSec": "81",
+    "Latency_First_Chunk_s": "0.79",
+    "First_Answer_s": "0.79",
+    "Total_Response_s": "7.00",
     "Reasoning_Time_s": "--"
   },
   {
@@ -3969,11 +3969,11 @@
     "Blended_Price": "$0.32",
     "Input_Price": "$0.25",
     "Output_Price": "$0.97",
-    "Speed_TokensPerSec": "81",
-    "Latency_First_Chunk_s": "2.07",
-    "First_Answer_s": "26.90",
-    "Total_Response_s": "33.10",
-    "Reasoning_Time_s": "24.83"
+    "Speed_TokensPerSec": "86",
+    "Latency_First_Chunk_s": "1.97",
+    "First_Answer_s": "25.28",
+    "Total_Response_s": "31.11",
+    "Reasoning_Time_s": "23.32"
   },
   {
     "Model": "Step3 VL 10B",
@@ -4055,9 +4055,9 @@
     "Output_Price": "$1.80",
     "Speed_TokensPerSec": "52",
     "Latency_First_Chunk_s": "2.38",
-    "First_Answer_s": "40.94",
-    "Total_Response_s": "50.58",
-    "Reasoning_Time_s": "38.56"
+    "First_Answer_s": "40.75",
+    "Total_Response_s": "50.34",
+    "Reasoning_Time_s": "38.36"
   },
   {
     "Model": "ERNIE 4.5 300B A47B",
@@ -4137,11 +4137,11 @@
     "Blended_Price": "$0.24",
     "Input_Price": "$0.20",
     "Output_Price": "$0.60",
-    "Speed_TokensPerSec": "287",
-    "Latency_First_Chunk_s": "0.55",
-    "First_Answer_s": "7.52",
-    "Total_Response_s": "9.26",
-    "Reasoning_Time_s": "6.97"
+    "Speed_TokensPerSec": "286",
+    "Latency_First_Chunk_s": "0.52",
+    "First_Answer_s": "7.51",
+    "Total_Response_s": "9.25",
+    "Reasoning_Time_s": "6.99"
   },
   {
     "Model": "Ministral 3 8B",
@@ -4166,9 +4166,9 @@
     "Input_Price": "$0.15",
     "Output_Price": "$0.15",
     "Speed_TokensPerSec": "106",
-    "Latency_First_Chunk_s": "0.65",
-    "First_Answer_s": "0.65",
-    "Total_Response_s": "5.38",
+    "Latency_First_Chunk_s": "0.66",
+    "First_Answer_s": "0.66",
+    "Total_Response_s": "5.37",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4221,11 +4221,11 @@
     "Blended_Price": "$0.05",
     "Input_Price": "$0.04",
     "Output_Price": "$0.16",
-    "Speed_TokensPerSec": "119",
-    "Latency_First_Chunk_s": "0.73",
-    "First_Answer_s": "17.53",
-    "Total_Response_s": "21.73",
-    "Reasoning_Time_s": "16.80"
+    "Speed_TokensPerSec": "122",
+    "Latency_First_Chunk_s": "0.72",
+    "First_Answer_s": "17.13",
+    "Total_Response_s": "21.23",
+    "Reasoning_Time_s": "16.41"
   },
   {
     "Model": "Granite 4.1 30B",
@@ -4305,10 +4305,10 @@
     "Blended_Price": "$0.03",
     "Input_Price": "$0.02",
     "Output_Price": "$0.10",
-    "Speed_TokensPerSec": "353",
-    "Latency_First_Chunk_s": "0.38",
-    "First_Answer_s": "0.38",
-    "Total_Response_s": "1.80",
+    "Speed_TokensPerSec": "344",
+    "Latency_First_Chunk_s": "0.37",
+    "First_Answer_s": "0.37",
+    "Total_Response_s": "1.83",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4333,10 +4333,10 @@
     "Blended_Price": "$0.13",
     "Input_Price": "$0.10",
     "Output_Price": "$0.40",
-    "Speed_TokensPerSec": "48",
+    "Speed_TokensPerSec": "49",
     "Latency_First_Chunk_s": "1.29",
     "First_Answer_s": "1.29",
-    "Total_Response_s": "11.80",
+    "Total_Response_s": "11.59",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4361,10 +4361,10 @@
     "Blended_Price": "$0.59",
     "Input_Price": "$0.58",
     "Output_Price": "$0.71",
-    "Speed_TokensPerSec": "83",
-    "Latency_First_Chunk_s": "1.61",
-    "First_Answer_s": "1.61",
-    "Total_Response_s": "7.66",
+    "Speed_TokensPerSec": "86",
+    "Latency_First_Chunk_s": "1.59",
+    "First_Answer_s": "1.59",
+    "Total_Response_s": "7.39",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4473,10 +4473,10 @@
     "Blended_Price": "$0.22",
     "Input_Price": "$0.17",
     "Output_Price": "$0.66",
-    "Speed_TokensPerSec": "110",
+    "Speed_TokensPerSec": "101",
     "Latency_First_Chunk_s": "0.90",
     "First_Answer_s": "0.90",
-    "Total_Response_s": "5.47",
+    "Total_Response_s": "5.84",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4504,7 +4504,7 @@
     "Speed_TokensPerSec": "66",
     "Latency_First_Chunk_s": "1.59",
     "First_Answer_s": "1.59",
-    "Total_Response_s": "9.15",
+    "Total_Response_s": "9.21",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4529,10 +4529,10 @@
     "Blended_Price": "$1.20",
     "Input_Price": "$1.20",
     "Output_Price": "$1.20",
-    "Speed_TokensPerSec": "301",
-    "Latency_First_Chunk_s": "4.91",
-    "First_Answer_s": "4.91",
-    "Total_Response_s": "6.57",
+    "Speed_TokensPerSec": "300",
+    "Latency_First_Chunk_s": "5.32",
+    "First_Answer_s": "5.32",
+    "Total_Response_s": "6.99",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4557,10 +4557,10 @@
     "Blended_Price": "$0.07",
     "Input_Price": "$0.05",
     "Output_Price": "$0.20",
-    "Speed_TokensPerSec": "93",
+    "Speed_TokensPerSec": "94",
     "Latency_First_Chunk_s": "0.45",
     "First_Answer_s": "0.45",
-    "Total_Response_s": "5.85",
+    "Total_Response_s": "5.80",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4585,10 +4585,10 @@
     "Blended_Price": "$0.06",
     "Input_Price": "$0.05",
     "Output_Price": "$0.20",
-    "Speed_TokensPerSec": "137",
-    "Latency_First_Chunk_s": "1.00",
-    "First_Answer_s": "1.00",
-    "Total_Response_s": "4.65",
+    "Speed_TokensPerSec": "131",
+    "Latency_First_Chunk_s": "1.06",
+    "First_Answer_s": "1.06",
+    "Total_Response_s": "4.89",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4641,10 +4641,10 @@
     "Blended_Price": "$0.06",
     "Input_Price": "$0.05",
     "Output_Price": "$0.10",
-    "Speed_TokensPerSec": "123",
+    "Speed_TokensPerSec": "122",
     "Latency_First_Chunk_s": "0.77",
     "First_Answer_s": "0.77",
-    "Total_Response_s": "4.84",
+    "Total_Response_s": "4.86",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4671,9 +4671,9 @@
     "Output_Price": "$0.11",
     "Speed_TokensPerSec": "166",
     "Latency_First_Chunk_s": "1.93",
-    "First_Answer_s": "13.94",
-    "Total_Response_s": "16.94",
-    "Reasoning_Time_s": "12.01"
+    "First_Answer_s": "13.98",
+    "Total_Response_s": "17.00",
+    "Reasoning_Time_s": "12.05"
   },
   {
     "Model": "Gemma 4 E2B",
@@ -4754,9 +4754,9 @@
     "Input_Price": "$1.38",
     "Output_Price": "$1.38",
     "Speed_TokensPerSec": "59",
-    "Latency_First_Chunk_s": "1.22",
-    "First_Answer_s": "1.22",
-    "Total_Response_s": "9.70",
+    "Latency_First_Chunk_s": "1.21",
+    "First_Answer_s": "1.21",
+    "Total_Response_s": "9.65",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4809,10 +4809,10 @@
     "Blended_Price": "$0.10",
     "Input_Price": "$0.10",
     "Output_Price": "$0.10",
-    "Speed_TokensPerSec": "177",
+    "Speed_TokensPerSec": "178",
     "Latency_First_Chunk_s": "0.52",
     "First_Answer_s": "0.52",
-    "Total_Response_s": "3.34",
+    "Total_Response_s": "3.33",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4838,9 +4838,9 @@
     "Input_Price": "$2.00",
     "Output_Price": "$8.00",
     "Speed_TokensPerSec": "60",
-    "Latency_First_Chunk_s": "1.56",
-    "First_Answer_s": "1.56",
-    "Total_Response_s": "9.89",
+    "Latency_First_Chunk_s": "1.64",
+    "First_Answer_s": "1.64",
+    "Total_Response_s": "9.99",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4865,10 +4865,10 @@
     "Blended_Price": "$0.08",
     "Input_Price": "$0.06",
     "Output_Price": "$0.25",
-    "Speed_TokensPerSec": "388",
-    "Latency_First_Chunk_s": "10.30",
-    "First_Answer_s": "10.30",
-    "Total_Response_s": "11.59",
+    "Speed_TokensPerSec": "357",
+    "Latency_First_Chunk_s": "10.26",
+    "First_Answer_s": "10.26",
+    "Total_Response_s": "11.67",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4893,10 +4893,10 @@
     "Blended_Price": "$0.32",
     "Input_Price": "$0.25",
     "Output_Price": "$0.97",
-    "Speed_TokensPerSec": "93",
-    "Latency_First_Chunk_s": "1.89",
-    "First_Answer_s": "1.89",
-    "Total_Response_s": "7.28",
+    "Speed_TokensPerSec": "94",
+    "Latency_First_Chunk_s": "1.94",
+    "First_Answer_s": "1.94",
+    "Total_Response_s": "7.27",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4950,9 +4950,9 @@
     "Input_Price": "$0.03",
     "Output_Price": "$0.12",
     "Speed_TokensPerSec": "120",
-    "Latency_First_Chunk_s": "0.64",
-    "First_Answer_s": "0.64",
-    "Total_Response_s": "4.80",
+    "Latency_First_Chunk_s": "0.58",
+    "First_Answer_s": "0.58",
+    "Total_Response_s": "4.75",
     "Reasoning_Time_s": "--"
   },
   {
@@ -4978,9 +4978,9 @@
     "Input_Price": "$0.13",
     "Output_Price": "$0.50",
     "Speed_TokensPerSec": "33",
-    "Latency_First_Chunk_s": "2.23",
-    "First_Answer_s": "2.23",
-    "Total_Response_s": "17.25",
+    "Latency_First_Chunk_s": "2.20",
+    "First_Answer_s": "2.20",
+    "Total_Response_s": "17.27",
     "Reasoning_Time_s": "--"
   },
   {
@@ -5005,10 +5005,10 @@
     "Blended_Price": "$0.03",
     "Input_Price": "$0.04",
     "Output_Price": "$0.14",
-    "Speed_TokensPerSec": "285",
-    "Latency_First_Chunk_s": "1.10",
-    "First_Answer_s": "1.10",
-    "Total_Response_s": "2.86",
+    "Speed_TokensPerSec": "301",
+    "Latency_First_Chunk_s": "1.07",
+    "First_Answer_s": "1.07",
+    "Total_Response_s": "2.73",
     "Reasoning_Time_s": "--"
   },
   {
@@ -5033,10 +5033,10 @@
     "Blended_Price": "$0.24",
     "Input_Price": "$0.20",
     "Output_Price": "$0.60",
-    "Speed_TokensPerSec": "227",
-    "Latency_First_Chunk_s": "0.85",
-    "First_Answer_s": "0.85",
-    "Total_Response_s": "3.05",
+    "Speed_TokensPerSec": "222",
+    "Latency_First_Chunk_s": "0.70",
+    "First_Answer_s": "0.70",
+    "Total_Response_s": "2.95",
     "Reasoning_Time_s": "--"
   },
   {
@@ -5062,9 +5062,9 @@
     "Input_Price": "$0.00",
     "Output_Price": "$0.00",
     "Speed_TokensPerSec": "17",
-    "Latency_First_Chunk_s": "0.86",
-    "First_Answer_s": "0.86",
-    "Total_Response_s": "30.78",
+    "Latency_First_Chunk_s": "0.89",
+    "First_Answer_s": "0.89",
+    "Total_Response_s": "30.98",
     "Reasoning_Time_s": "--"
   },
   {
@@ -5089,10 +5089,10 @@
     "Blended_Price": "$0.01",
     "Input_Price": "$0.01",
     "Output_Price": "$0.05",
-    "Speed_TokensPerSec": "88",
+    "Speed_TokensPerSec": "91",
     "Latency_First_Chunk_s": "0.45",
     "First_Answer_s": "0.45",
-    "Total_Response_s": "6.13",
+    "Total_Response_s": "5.92",
     "Reasoning_Time_s": "--"
   },
   {
@@ -5201,10 +5201,10 @@
     "Blended_Price": "$0.25",
     "Input_Price": "$0.24",
     "Output_Price": "$0.24",
-    "Speed_TokensPerSec": "52",
+    "Speed_TokensPerSec": "51",
     "Latency_First_Chunk_s": "0.70",
     "First_Answer_s": "0.70",
-    "Total_Response_s": "10.38",
+    "Total_Response_s": "10.55",
     "Reasoning_Time_s": "--"
   },
   {
@@ -5258,9 +5258,9 @@
     "Input_Price": "$0.00",
     "Output_Price": "$0.00",
     "Speed_TokensPerSec": "22",
-    "Latency_First_Chunk_s": "1.56",
-    "First_Answer_s": "1.56",
-    "Total_Response_s": "24.80",
+    "Latency_First_Chunk_s": "1.21",
+    "First_Answer_s": "1.21",
+    "Total_Response_s": "24.46",
     "Reasoning_Time_s": "--"
   },
   {
@@ -5810,6 +5810,34 @@
     "GPQA_Diamond": "72%",
     "SciCode": "30%",
     "IFBench": "46%",
+    "CritPt": "0%",
+    "APEX_Agents_AA": "--",
+    "ITBench_AA": "--",
+    "MMMU_Pro": "--",
+    "Blended_Price": "--",
+    "Input_Price": "--",
+    "Output_Price": "--",
+    "Speed_TokensPerSec": "--",
+    "Latency_First_Chunk_s": "--",
+    "First_Answer_s": "--",
+    "Total_Response_s": "--",
+    "Reasoning_Time_s": "--"
+  },
+  {
+    "Model": "LFM2.5-8B-A1B",
+    "Is_Reasoning": true,
+    "AA_Intelligence_Index": "--",
+    "AA_Omniscience_Index": "−33",
+    "GDPval_AA": "0%",
+    "Terminal_Bench_Hard": "5%",
+    "Tau2_Bench": "--",
+    "AA_LCR": "0%",
+    "AA_Omniscience_Accuracy": "9%",
+    "AA_Omniscience_Non_Hallucination": "53%",
+    "HLE": "7%",
+    "GPQA_Diamond": "51%",
+    "SciCode": "8%",
+    "IFBench": "56%",
     "CritPt": "0%",
     "APEX_Agents_AA": "--",
     "ITBench_AA": "--",
