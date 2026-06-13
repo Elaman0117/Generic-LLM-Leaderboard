@@ -8,14 +8,14 @@
 |---|------|---------|---------------------------|-----------|------|
 | 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9348 | $9939.80 | 1.0000 | Y |
 | 2 | GPT-5.5 (xhigh) | 0.8751 | $3357.00 | 0.3377 | Y |
-| 3 | GPT-5.5 (high) | 0.8564 | $2159.38 | 0.2172 | Y |
+| 3 | GPT-5.5 (high) | 0.8565 | $2159.38 | 0.2172 | Y |
 | 4 | Gemini 3.1 Pro Preview | 0.8228 | $892.28 | 0.0898 | Y |
-| 5 | MiniMax-M3 | 0.7520 | $308.34 | 0.0310 | Y |
+| 5 | MiniMax-M3 | 0.7521 | $308.34 | 0.0310 | Y |
 | 6 | DeepSeek V4 Pro (Reasoning, Max Effort) | 0.7152 | $267.82 | 0.0269 | Y |
-| 7 | Grok 4.3 (medium) | 0.7010 | $161.48 | 0.0162 | Y |
+| 7 | Grok 4.3 (medium) | 0.7009 | $161.48 | 0.0162 | Y |
 | 8 | MiMo-V2.5-Pro | 0.7003 | $160.82 | 0.0162 | Y |
 | 9 | MiMo-V2.5 | 0.6743 | $49.30 | 0.0050 | Y |
-| 10 | DeepSeek V4 Flash (Non-reasoning) | 0.4795 | $40.05 | 0.0040 | N |
+| 10 | DeepSeek V4 Flash (Non-reasoning) | 0.4796 | $40.05 | 0.0040 | N |
 | 11 | Gemma 4 31B (Non-reasoning) | 0.4535 | $19.43 | 0.0020 | N |
 | 12 | gpt-oss-120b (low) | 0.3365 | $15.90 | 0.0016 | Y |
 | 13 | gpt-oss-20B (low) | 0.2842 | $7.68 | 0.0008 | Y |
