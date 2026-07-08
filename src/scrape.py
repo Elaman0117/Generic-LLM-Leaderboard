@@ -96,12 +96,26 @@ def scrape_leaderboard():
 
         if models and len(models) > 0:
             print(f"  Fields per model: {len(models[0].keys())}")
-            # Print sample
+        if models and len(models) > 0:
+            print(f"  Fields per model: {len(models[0].keys())}")
+            
+            # Print sample (安全格式化，防止 '?' 或 '--' 导致 ValueError)
             m = models[0]
+            
+            raw_cost = m.get('intelligenceIndexCostTotal')
+            try:
+                # 如果是 None、空字符串或 '--'，则降级为 '?'，否则转为浮点数格式化
+                if raw_cost in (None, "", "--", "?"):
+                    cost_str = "$?"
+                else:
+                    cost_str = f"${float(raw_cost):.2f}"
+            except (ValueError, TypeError):
+                cost_str = "$?"
+
             print(f"  Sample: {m.get('name', '?')}, "
                   f"reasoning={m.get('reasoningModel', '?')}, "
                   f"intelIndex={m.get('intelligenceIndex', '?')}, "
-                  f"costTotal=${m.get('intelligenceIndexCostTotal', '?'):.2f}, "
+                  f"costTotal={cost_str}, "
                   f"inputPrice=${m.get('price1mInputTokens', '?')}, "
                   f"outputPrice=${m.get('price1mOutputTokens', '?')}")
 
