@@ -6,21 +6,21 @@
 
 | # | 模型 | 综合能力 | Intelligence Index成本 (USD) | 归一化成本 | 推理 |
 |---|------|---------|---------------------------|-----------|------|
-| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9348 | $9939.80 | 1.0000 | Y |
-| 2 | GPT-5.5 (xhigh) | 0.8751 | $3357.00 | 0.3377 | Y |
-| 3 | GPT-5.5 (high) | 0.8565 | $2159.38 | 0.2172 | Y |
-| 4 | Gemini 3.1 Pro Preview | 0.8228 | $892.28 | 0.0898 | Y |
-| 5 | MiniMax-M3 | 0.7521 | $308.34 | 0.0310 | Y |
-| 6 | DeepSeek V4 Pro (Reasoning, Max Effort) | 0.7152 | $267.82 | 0.0269 | Y |
-| 7 | Grok 4.3 (medium) | 0.7009 | $161.48 | 0.0162 | Y |
-| 8 | MiMo-V2.5-Pro | 0.7003 | $160.82 | 0.0162 | Y |
-| 9 | MiMo-V2.5 | 0.6743 | $49.30 | 0.0050 | Y |
-| 10 | DeepSeek V4 Flash (Non-reasoning) | 0.4796 | $40.05 | 0.0040 | N |
-| 11 | Gemma 4 31B (Non-reasoning) | 0.4535 | $19.43 | 0.0020 | N |
-| 12 | gpt-oss-120b (low) | 0.3365 | $15.90 | 0.0016 | Y |
-| 13 | gpt-oss-20B (low) | 0.2842 | $7.68 | 0.0008 | Y |
-| 14 | Granite 4.1 8B | 0.1682 | $7.48 | 0.0008 | N |
-| 15 | Granite 4.0 H Small | 0.1492 | $4.48 | 0.0005 | N |
+| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9348 | $5630.52 | 1.0000 | N |
+| 2 | GPT-5.5 (xhigh) | 0.8667 | $2630.04 | 0.4671 | N |
+| 3 | GPT-5.5 (high) | 0.8443 | $1654.59 | 0.2939 | N |
+| 4 | Gemini 3.5 Flash (high) | 0.8107 | $1040.88 | 0.1849 | N |
+| 5 | GLM-5.2 (max) | 0.8047 | $820.38 | 0.1457 | N |
+| 6 | Gemini 3.1 Pro Preview | 0.7879 | $815.11 | 0.1448 | N |
+| 7 | MiniMax-M3 | 0.7311 | $203.86 | 0.0362 | N |
+| 8 | DeepSeek V4 Pro (Reasoning, Max Effort) | 0.6991 | $176.34 | 0.0313 | N |
+| 9 | Qwen3.7 Plus | 0.6735 | $149.47 | 0.0265 | N |
+| 10 | MiMo-V2.5-Pro | 0.6714 | $98.47 | 0.0175 | N |
+| 11 | DeepSeek V4 Flash (Reasoning, Max Effort) | 0.6363 | $74.31 | 0.0132 | N |
+| 12 | Gemma 4 26B A4B (Reasoning) | 0.4403 | $51.92 | 0.0092 | N |
+| 13 | HyperNova 60B 2605 | 0.3514 | $30.18 | 0.0054 | N |
+| 14 | gpt-oss-20b (high) | 0.2817 | $29.87 | 0.0053 | N |
+| 15 | Llama 4 Scout | 0.2114 | $11.39 | 0.0020 | N |
 
 ### 评分方法
 
@@ -43,4 +43,4 @@
 
 **数据来源**: [Artificial Analysis](https://artificialanalysis.ai/leaderboards/models)  
 **方法论**: [AA Methodology](https://artificialanalysis.ai/methodology)  
-**模型总数**: 212  
+**模型总数**: 236  
