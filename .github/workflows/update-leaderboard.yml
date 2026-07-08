@@ -50,6 +50,9 @@ jobs:
       - name: Scrape leaderboard data
         run: python src/scrape.py
 
+      - name: Scrape Cache Hit Rate from coding-agents page
+        run: python src/cache_hit_rate.py
+
       - name: Run analysis
         run: python src/analyze.py
 
