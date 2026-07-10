@@ -6,19 +6,21 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9348 | 586504.29 | 1.0000 | N |
-| 2 | GPT-5.5 (xhigh) | 0.8667 | 235662.51 | 0.4018 | N |
-| 3 | Claude Opus 4.8 (Adaptive Reasoning, Max Effort) | 0.8575 | 78651.07 | 0.1341 | N |
-| 4 | Grok 4.5 (high) | 0.8258 | 18175.21 | 0.0310 | N |
-| 5 | GLM-5.2 (max) | 0.8048 | 14743.16 | 0.0251 | N |
-| 6 | MiniMax-M3 | 0.7311 | 3915.87 | 0.0067 | N |
-| 7 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6723 | 2636.64 | 0.0045 | N |
-| 8 | MiMo-V2.5 | 0.6534 | 865.58 | 0.0015 | N |
-| 9 | Gemma 4 12B (Reasoning) | 0.4467 | 850.28 | 0.0014 | N |
-| 10 | DeepSeek V4 Flash (Non-reasoning) | 0.4320 | 344.93 | 0.0006 | N |
-| 11 | Qwen3.5 4B (Non-reasoning) | 0.3147 | 110.57 | 0.0002 | N |
-| 12 | Granite 4.1 8B | 0.1798 | 110.48 | 0.0002 | N |
-| 13 | LFM2 24B A2B | 0.1635 | 98.10 | 0.0002 | N |
+| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9254 | 550139.10 | 1.0000 | N |
+| 2 | GPT-5.6 Sol (max) | 0.9045 | 482251.12 | 0.8766 | N |
+| 3 | GPT-5.6 Sol (xhigh) | 0.8720 | 116562.01 | 0.2119 | N |
+| 4 | GPT-5.6 Sol (high) | 0.8511 | 41323.23 | 0.0751 | N |
+| 5 | GPT-5.6 Sol (medium) | 0.8275 | 33644.01 | 0.0612 | N |
+| 6 | Grok 4.5 (high) | 0.8206 | 16977.71 | 0.0309 | N |
+| 7 | GLM-5.2 (max) | 0.7890 | 14786.55 | 0.0269 | N |
+| 8 | MiniMax-M3 | 0.7269 | 3927.86 | 0.0071 | N |
+| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6683 | 2653.05 | 0.0048 | N |
+| 10 | MiMo-V2.5 | 0.6407 | 870.80 | 0.0016 | N |
+| 11 | Gemma 4 12B (Reasoning) | 0.4457 | 854.08 | 0.0016 | N |
+| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4299 | 349.61 | 0.0006 | N |
+| 13 | Gemma 4 12B (Non-reasoning) | 0.3264 | 288.35 | 0.0005 | N |
+| 14 | Qwen3.5 4B (Non-reasoning) | 0.3136 | 110.12 | 0.0002 | N |
+| 15 | LFM2 24B A2B | 0.1635 | 99.82 | 0.0002 | N |
 
 ### 评分方法
 
@@ -40,7 +42,7 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 
 | 参数 | 来源 | 说明 |
 |------|------|------|
-| CacheHitRate | [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents) | 全部模型-Agent搭配的 `cacheHitRate` 求平均（24 个有效值，均值 = 0.8997），对所有模型统一使用 |
+| CacheHitRate | [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents) | 全部模型-Agent搭配的 `cacheHitRate` 求平均（42 个有效值，均值 = 0.8959），对所有模型统一使用 |
 | CacheHitPrice | AA `cacheHitPrice` | 缓存命中的输入价格 (USD / 1M tokens) |
 | CacheWritePrice | AA `cacheWritePrice` | 若缺失，回退到 `price1mInputTokens` (普通输入价格) |
 | InputTokens | `10000` | AA 默认的 10k input-token 工作负载（[方法论](https://artificialanalysis.ai/methodology/performance-benchmarking)） |
@@ -64,4 +66,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 237  
+**模型总数**: 258  

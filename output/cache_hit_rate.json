@@ -3,12 +3,12 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 24,
-    "valid_count": 24
+    "total_combinations": 42,
+    "valid_count": 42
   },
-  "cache_hit_rate": 0.8997226417600258,
-  "valid_count": 24,
-  "total_count": 24,
+  "cache_hit_rate": 0.8959170846211638,
+  "valid_count": 42,
+  "total_count": 42,
   "combinations": [
     {
       "agent": "Claude Code",
@@ -19,7 +19,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 6486491.9968553465
+      "total_tokens": 6486491.99685533
     },
     {
       "agent": "Claude Code",
@@ -30,7 +30,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 8695924.406022847
+      "total_tokens": 8695924.406022852
     },
     {
       "agent": "Claude Code",
@@ -41,7 +41,18 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 9754762.149532711
+      "total_tokens": 9754762.149532717
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_opal-alpha",
+      "display_label": "Codex - GPT-5.6 Luna (low)",
+      "cache_hit_rate": 0.8418646158860226,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 1504521.291796471
     },
     {
       "agent": "Cursor CLI",
@@ -52,18 +63,51 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3783034.3680491196
+      "total_tokens": 3783034.3680491154
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_nova-alpha",
+      "display_label": "Codex - GPT-5.6 Terra (none)",
+      "cache_hit_rate": 0.8525667301504501,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 1116050.1651090332
     },
     {
       "agent": "Gemini CLI",
       "model_slug": "google_gemini-3-1-pro_ai-studio",
       "display_label": "Gemini CLI - Gemini 3.1 Pro (high)",
-      "cache_hit_rate": 0.8703212190645248,
+      "cache_hit_rate": 0.8703212190645251,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 4704372.036863967
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_opal-alpha",
+      "display_label": "Codex - GPT-5.6 Luna (none)",
+      "cache_hit_rate": 0.8759353440404793,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 3566156.750778817
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_nova-alpha",
+      "display_label": "Codex - GPT-5.6 Terra (low)",
+      "cache_hit_rate": 0.8767649828270165,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 1529812.9345794397
     },
     {
       "agent": "Claude Code",
@@ -74,18 +118,172 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 25883374.20249221
+      "total_tokens": 25883374.202492192
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_opal-alpha",
+      "display_label": "Codex - GPT-5.6 Luna (medium)",
+      "cache_hit_rate": 0.8790442337991295,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 4389586.230529595
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_kindle-alpha-api",
+      "display_label": "Codex - GPT-5.6 Sol (low)",
+      "cache_hit_rate": 0.8835569416228126,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 3165239.343198341
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_kindle-alpha-api",
+      "display_label": "Codex - GPT-5.6 Sol (none)",
+      "cache_hit_rate": 0.8899709439959861,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 3415816.0560747664
     },
     {
       "agent": "Cursor CLI",
       "model_slug": "openai_gpt-5-5-medium",
       "display_label": "Cursor CLI - GPT-5.5 (medium)",
-      "cache_hit_rate": 0.8903605029888495,
+      "cache_hit_rate": 0.8903605029888498,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3989303.3560401523
+      "total_tokens": 3989303.3560401546
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_nova-alpha",
+      "display_label": "Codex - GPT-5.6 Terra (medium)",
+      "cache_hit_rate": 0.8930790140990879,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 3130307.8078920064
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_kindle-alpha-api",
+      "display_label": "Codex - GPT-5.6 Sol (medium)",
+      "cache_hit_rate": 0.8947901092803895,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 5817518.5534787085
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_kindle-alpha-api",
+      "display_label": "Codex - GPT-5.6 Sol (max)",
+      "cache_hit_rate": 0.8985307396207002,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 13228192.3831776
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_opal-alpha",
+      "display_label": "Codex - GPT-5.6 Luna (high)",
+      "cache_hit_rate": 0.8987226368726228,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 9501375.002076855
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_kindle-alpha-api",
+      "display_label": "Codex - GPT-5.6 Sol (high)",
+      "cache_hit_rate": 0.9023493828042563,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 8084866.696780907
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_nova-alpha",
+      "display_label": "Codex - GPT-5.6 Terra (high)",
+      "cache_hit_rate": 0.9028648691136055,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 5540011.526998964
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_opal-alpha",
+      "display_label": "Codex - GPT-5.6 Luna (xhigh)",
+      "cache_hit_rate": 0.9038771090331947,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 12310694.31568016
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_kindle-alpha-api",
+      "display_label": "Codex - GPT-5.6 Sol (xhigh)",
+      "cache_hit_rate": 0.9062406728046596,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 9940685.693665624
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_nova-alpha",
+      "display_label": "Codex - GPT-5.6 Terra (xhigh)",
+      "cache_hit_rate": 0.9070086646564967,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 6460892.47975078
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_opal-alpha",
+      "display_label": "Codex - GPT-5.6 Luna (max)",
+      "cache_hit_rate": 0.9135183531640407,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 15463935.666666673
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_nova-alpha",
+      "display_label": "Codex - GPT-5.6 Terra (max)",
+      "cache_hit_rate": 0.9144888080773068,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 9465877.399792325
     },
     {
       "agent": "Cursor CLI",
@@ -96,51 +294,51 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 2929694.237980769
+      "total_tokens": 2929694.2379807704
     },
     {
       "agent": "Grok Build",
       "model_slug": "xai_grok-4-5",
       "display_label": "Grok Build - Grok 4.5 (high)",
-      "cache_hit_rate": 0.9253060997439475,
+      "cache_hit_rate": 0.9253060997439472,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3577705.5887850467
+      "total_tokens": 3577705.588785044
     },
     {
       "agent": "Codex",
       "model_slug": "openai_gpt-5-4",
       "display_label": "Codex - GPT-5.4 (medium)",
-      "cache_hit_rate": 0.9269254929099512,
+      "cache_hit_rate": 0.9269254929099515,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 5657469.724358974
+      "total_tokens": 5657469.72435897
     },
     {
       "agent": "Cursor CLI",
       "model_slug": "cursor_composer-2-5-fast",
       "display_label": "Cursor CLI - Composer 2.5 Fast",
-      "cache_hit_rate": 0.935813287808037,
+      "cache_hit_rate": 0.9358132878080373,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 4250147.182762201
+      "total_tokens": 4250147.182762204
     },
     {
       "agent": "Claude Code",
       "model_slug": "anthropic_claude-opus-4-6",
       "display_label": "Claude Code - Opus 4.6 (medium)",
-      "cache_hit_rate": 0.9358237624387977,
+      "cache_hit_rate": 0.9358237624387983,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 4467848.681089744
+      "total_tokens": 4467848.681089741
     },
     {
       "agent": "Cursor CLI",
@@ -151,7 +349,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3571819.6334371753
+      "total_tokens": 3571819.633437173
     },
     {
       "agent": "Codex",
@@ -162,7 +360,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 12260230.264797509
+      "total_tokens": 12260230.264797531
     },
     {
       "agent": "Codex",
@@ -173,7 +371,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 6962550.336448598
+      "total_tokens": 6962550.336448594
     },
     {
       "agent": "Claude Code",
@@ -195,18 +393,18 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 11398232.009345794
+      "total_tokens": 11398232.009345789
     },
     {
       "agent": "Claude Code",
       "model_slug": "anthropic_claude-opus-4-7",
       "display_label": "Claude Code - Opus 4.7 (medium)",
-      "cache_hit_rate": 0.9580937736660118,
+      "cache_hit_rate": 0.9580937736660121,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 4577652.946002077
+      "total_tokens": 4577652.9460020745
     },
     {
       "agent": "Cursor CLI",
@@ -217,7 +415,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 5656580.07165109
+      "total_tokens": 5656580.0716511
     },
     {
       "agent": "Opencode",
@@ -228,18 +426,18 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 7560257.953271028
+      "total_tokens": 7560257.953271044
     },
     {
       "agent": "Claude Code",
       "model_slug": "anthropic_claude-fable-5",
       "display_label": "Claude Code - Fable 5 (max) (with fallback)",
-      "cache_hit_rate": 0.9625974849537695,
+      "cache_hit_rate": 0.9625974849537694,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 14050234.504672898
+      "total_tokens": 14050234.5046729
     },
     {
       "agent": "Claude Code",
@@ -250,7 +448,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 7785450.940809967
+      "total_tokens": 7785450.940809974
     },
     {
       "agent": "Claude Code",
@@ -261,7 +459,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 17971409.142782968
+      "total_tokens": 17971409.14278298
     },
     {
       "agent": "Claude Code",
@@ -272,7 +470,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 15954806.399792315
+      "total_tokens": 15954806.399792332
     }
   ]
 }
