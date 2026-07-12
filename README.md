@@ -6,21 +6,21 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9254 | 212754.07 | 1.0000 | N |
-| 2 | GPT-5.6 Sol (xhigh) | 0.8720 | 144030.26 | 0.6770 | N |
-| 3 | GPT-5.6 Sol (high) | 0.8511 | 48750.22 | 0.2291 | N |
-| 4 | GPT-5.6 Sol (medium) | 0.8275 | 35020.14 | 0.1646 | N |
-| 5 | Grok 4.5 (high) | 0.8203 | 17338.10 | 0.0815 | N |
-| 6 | GLM-5.2 (max) | 0.7890 | 14772.21 | 0.0694 | N |
-| 7 | Muse Spark 1.1 (xhigh) | 0.7777 | 13256.08 | 0.0623 | N |
-| 8 | MiniMax-M3 | 0.7268 | 3923.90 | 0.0184 | N |
-| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6655 | 2647.63 | 0.0124 | N |
-| 10 | MiMo-V2.5 | 0.6302 | 869.08 | 0.0041 | N |
-| 11 | Gemma 4 12B (Reasoning) | 0.4457 | 852.83 | 0.0040 | N |
-| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4299 | 346.25 | 0.0016 | N |
-| 13 | Gemma 4 12B (Non-reasoning) | 0.3264 | 280.83 | 0.0013 | N |
-| 14 | Qwen3.5 4B (Non-reasoning) | 0.3136 | 109.26 | 0.0005 | N |
-| 15 | LFM2 24B A2B | 0.1635 | 100.02 | 0.0005 | N |
+| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9254 | 294312.42 | 1.0000 | N |
+| 2 | GPT-5.6 Sol (xhigh) | 0.8720 | 161070.83 | 0.5473 | N |
+| 3 | GPT-5.6 Sol (high) | 0.8511 | 51595.26 | 0.1753 | N |
+| 4 | GPT-5.6 Sol (medium) | 0.8275 | 37980.99 | 0.1290 | N |
+| 5 | Grok 4.5 (high) | 0.8203 | 18250.53 | 0.0620 | N |
+| 6 | GLM-5.2 (max) | 0.7890 | 14772.21 | 0.0502 | N |
+| 7 | Muse Spark 1.1 (xhigh) | 0.7777 | 13256.08 | 0.0450 | N |
+| 8 | MiniMax-M3 | 0.7268 | 3923.90 | 0.0133 | N |
+| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6655 | 2647.63 | 0.0090 | N |
+| 10 | MiMo-V2.5 | 0.6302 | 869.08 | 0.0030 | N |
+| 11 | Gemma 4 12B (Reasoning) | 0.4457 | 852.83 | 0.0029 | N |
+| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4299 | 345.71 | 0.0012 | N |
+| 13 | Gemma 4 12B (Non-reasoning) | 0.3264 | 281.65 | 0.0010 | N |
+| 14 | Qwen3.5 4B (Non-reasoning) | 0.3136 | 108.80 | 0.0004 | N |
+| 15 | LFM2 24B A2B | 0.1635 | 97.49 | 0.0003 | N |
 
 ### 评分方法
 
