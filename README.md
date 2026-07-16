@@ -6,21 +6,21 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9254 | 433562.56 | 1.0000 | N |
-| 2 | GPT-5.6 Sol (max) | 0.9045 | 292169.22 | 0.6739 | N |
-| 3 | GPT-5.6 Sol (xhigh) | 0.8720 | 96177.39 | 0.2218 | N |
-| 4 | GPT-5.6 Sol (high) | 0.8511 | 43001.09 | 0.0992 | N |
-| 5 | GPT-5.6 Sol (medium) | 0.8275 | 33455.59 | 0.0772 | N |
-| 6 | Grok 4.5 (high) | 0.8203 | 16055.05 | 0.0370 | N |
-| 7 | GLM-5.2 (max) | 0.7890 | 14772.21 | 0.0341 | N |
+| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9254 | 432498.71 | 1.0000 | N |
+| 2 | GPT-5.6 Sol (max) | 0.9045 | 261661.18 | 0.6050 | N |
+| 3 | GPT-5.6 Sol (xhigh) | 0.8720 | 79557.61 | 0.1839 | N |
+| 4 | GPT-5.6 Sol (high) | 0.8511 | 42201.28 | 0.0976 | N |
+| 5 | GPT-5.6 Sol (medium) | 0.8275 | 33235.86 | 0.0768 | N |
+| 6 | Grok 4.5 (high) | 0.8201 | 15902.06 | 0.0368 | N |
+| 7 | GLM-5.2 (max) | 0.7890 | 14772.21 | 0.0342 | N |
 | 8 | Muse Spark 1.1 (xhigh) | 0.7776 | 13256.08 | 0.0306 | N |
 | 9 | MiniMax-M3 | 0.7268 | 3923.90 | 0.0091 | N |
 | 10 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6655 | 2647.63 | 0.0061 | N |
 | 11 | MiMo-V2.5 | 0.6302 | 869.08 | 0.0020 | N |
 | 12 | Gemma 4 12B (Reasoning) | 0.4457 | 852.83 | 0.0020 | N |
-| 13 | DeepSeek V4 Flash (Non-reasoning) | 0.4299 | 345.43 | 0.0008 | N |
-| 14 | Gemma 4 12B (Non-reasoning) | 0.3264 | 339.76 | 0.0008 | N |
-| 15 | Qwen3.5 4B (Non-reasoning) | 0.3136 | 109.11 | 0.0003 | N |
+| 13 | DeepSeek V4 Flash (Non-reasoning) | 0.4299 | 342.51 | 0.0008 | N |
+| 14 | Gemma 4 12B (Non-reasoning) | 0.3264 | 339.74 | 0.0008 | N |
+| 15 | Qwen3.5 4B (Non-reasoning) | 0.3136 | 108.78 | 0.0003 | N |
 
 ### 评分方法
 
@@ -66,4 +66,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 262  
+**模型总数**: 263  
