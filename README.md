@@ -6,20 +6,21 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9251 | 389608.64 | 1.0000 | N |
-| 2 | GPT-5.6 Sol (max) | 0.9040 | 233546.15 | 0.5994 | N |
-| 3 | GPT-5.6 Sol (xhigh) | 0.8718 | 92655.59 | 0.2378 | N |
-| 4 | Kimi K3 | 0.8701 | 43244.30 | 0.1110 | N |
-| 5 | GPT-5.6 Sol (medium) | 0.8273 | 34479.80 | 0.0885 | N |
-| 6 | Grok 4.5 (high) | 0.8198 | 14388.46 | 0.0369 | N |
-| 7 | Muse Spark 1.1 (xhigh) | 0.7772 | 13243.05 | 0.0340 | N |
-| 8 | MiniMax-M3 | 0.7266 | 3920.17 | 0.0101 | N |
-| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6652 | 2642.52 | 0.0068 | N |
-| 10 | MiMo-V2.5 | 0.6300 | 867.45 | 0.0022 | N |
-| 11 | Gemma 4 12B (Reasoning) | 0.4454 | 851.64 | 0.0022 | N |
-| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4297 | 348.04 | 0.0009 | N |
-| 13 | Gemma 4 12B (Non-reasoning) | 0.3263 | 335.16 | 0.0009 | N |
-| 14 | Qwen3.5 4B (Non-reasoning) | 0.3135 | 107.71 | 0.0003 | N |
+| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9251 | 406685.78 | 1.0000 | N |
+| 2 | GPT-5.6 Sol (max) | 0.9040 | 278045.32 | 0.6837 | N |
+| 3 | GPT-5.6 Sol (xhigh) | 0.8718 | 115518.17 | 0.2840 | N |
+| 4 | GPT-5.6 Sol (high) | 0.8508 | 49085.82 | 0.1207 | N |
+| 5 | GPT-5.6 Sol (medium) | 0.8273 | 33486.13 | 0.0823 | N |
+| 6 | Grok 4.5 (high) | 0.8198 | 15333.45 | 0.0377 | N |
+| 7 | GLM-5.2 (max) | 0.7887 | 14758.71 | 0.0363 | N |
+| 8 | Muse Spark 1.1 (xhigh) | 0.7772 | 13243.05 | 0.0326 | N |
+| 9 | MiniMax-M3 | 0.7266 | 3920.17 | 0.0096 | N |
+| 10 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6652 | 2642.52 | 0.0065 | N |
+| 11 | MiMo-V2.5 | 0.6300 | 867.45 | 0.0021 | N |
+| 12 | Gemma 4 12B (Reasoning) | 0.4454 | 851.64 | 0.0021 | N |
+| 13 | DeepSeek V4 Flash (Non-reasoning) | 0.4296 | 348.99 | 0.0009 | N |
+| 14 | Gemma 4 12B (Non-reasoning) | 0.3262 | 333.67 | 0.0008 | N |
+| 15 | Qwen3.5 4B (Non-reasoning) | 0.3134 | 107.64 | 0.0003 | N |
 
 ### 评分方法
 
