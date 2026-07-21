@@ -6,21 +6,21 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9251 | 406685.78 | 1.0000 | N |
-| 2 | GPT-5.6 Sol (max) | 0.9040 | 278045.32 | 0.6837 | N |
-| 3 | GPT-5.6 Sol (xhigh) | 0.8718 | 115518.17 | 0.2840 | N |
-| 4 | GPT-5.6 Sol (high) | 0.8508 | 49085.82 | 0.1207 | N |
-| 5 | GPT-5.6 Sol (medium) | 0.8273 | 33486.13 | 0.0823 | N |
-| 6 | Grok 4.5 (high) | 0.8198 | 15333.45 | 0.0377 | N |
-| 7 | GLM-5.2 (max) | 0.7887 | 14758.71 | 0.0363 | N |
-| 8 | Muse Spark 1.1 (xhigh) | 0.7772 | 13243.05 | 0.0326 | N |
-| 9 | MiniMax-M3 | 0.7266 | 3920.17 | 0.0096 | N |
-| 10 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6652 | 2642.52 | 0.0065 | N |
-| 11 | MiMo-V2.5 | 0.6300 | 867.45 | 0.0021 | N |
-| 12 | Gemma 4 12B (Reasoning) | 0.4454 | 851.64 | 0.0021 | N |
-| 13 | DeepSeek V4 Flash (Non-reasoning) | 0.4296 | 348.99 | 0.0009 | N |
-| 14 | Gemma 4 12B (Non-reasoning) | 0.3262 | 333.67 | 0.0008 | N |
-| 15 | Qwen3.5 4B (Non-reasoning) | 0.3134 | 107.64 | 0.0003 | N |
+| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9251 | 426722.48 | 1.0000 | N |
+| 2 | GPT-5.6 Sol (max) | 0.9040 | 297286.43 | 0.6967 | N |
+| 3 | GPT-5.6 Sol (xhigh) | 0.8718 | 117349.23 | 0.2750 | N |
+| 4 | Kimi K3 | 0.8699 | 43240.00 | 0.1013 | N |
+| 5 | GPT-5.6 Sol (medium) | 0.8273 | 41069.27 | 0.0962 | N |
+| 6 | Grok 4.5 (high) | 0.8198 | 13691.84 | 0.0321 | N |
+| 7 | Muse Spark 1.1 (xhigh) | 0.7772 | 13241.30 | 0.0310 | N |
+| 8 | MiniMax-M3 | 0.7266 | 3919.67 | 0.0092 | N |
+| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6717 | 2641.83 | 0.0062 | N |
+| 10 | MiMo-V2.5 | 0.6300 | 867.23 | 0.0020 | N |
+| 11 | Gemma 4 12B (Reasoning) | 0.4454 | 851.48 | 0.0020 | N |
+| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4296 | 349.60 | 0.0008 | N |
+| 13 | Gemma 4 E4B (Reasoning) | 0.3317 | 270.30 | 0.0006 | N |
+| 14 | Qwen3.5 4B (Non-reasoning) | 0.3134 | 107.58 | 0.0003 | N |
+| 15 | Gemma 4 E4B (Non-reasoning) | 0.2540 | 80.75 | 0.0002 | N |
 
 ### 评分方法
 
@@ -42,7 +42,7 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 
 | 参数 | 来源 | 说明 |
 |------|------|------|
-| CacheHitRate | [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents) | 全部模型-Agent搭配的 `cacheHitRate` 求平均（44 个有效值，均值 = 0.8984），对所有模型统一使用 |
+| CacheHitRate | [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents) | 全部模型-Agent搭配的 `cacheHitRate` 求平均（44 个有效值，均值 = 0.8985），对所有模型统一使用 |
 | CacheHitPrice | AA `cacheHitPrice` | 缓存命中的输入价格 (USD / 1M tokens) |
 | CacheWritePrice | AA `cacheWritePrice` | 若缺失，回退到 `price1mInputTokens` (普通输入价格) |
 | InputTokens | `10000` | AA 默认的 10k input-token 工作负载（[方法论](https://artificialanalysis.ai/methodology/performance-benchmarking)） |
@@ -66,4 +66,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 264  
+**模型总数**: 245  
