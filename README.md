@@ -6,21 +6,21 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9251 | 426722.48 | 1.0000 | N |
-| 2 | GPT-5.6 Sol (max) | 0.9042 | 302737.12 | 0.7094 | N |
-| 3 | GPT-5.6 Sol (xhigh) | 0.8723 | 131248.98 | 0.3076 | N |
-| 4 | Kimi K3 | 0.8705 | 43240.00 | 0.1013 | N |
-| 5 | GPT-5.6 Sol (medium) | 0.8278 | 37099.97 | 0.0869 | N |
-| 6 | Grok 4.5 (high) | 0.8204 | 13645.56 | 0.0320 | N |
-| 7 | Muse Spark 1.1 (xhigh) | 0.7777 | 13241.30 | 0.0310 | N |
-| 8 | MiniMax-M3 | 0.7270 | 3919.67 | 0.0092 | N |
-| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6721 | 2641.83 | 0.0062 | N |
-| 10 | MiMo-V2.5 | 0.6303 | 867.23 | 0.0020 | N |
-| 11 | Gemma 4 12B (Reasoning) | 0.4454 | 851.48 | 0.0020 | N |
-| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4296 | 351.50 | 0.0008 | N |
-| 13 | Gemma 4 E4B (Reasoning) | 0.3317 | 270.30 | 0.0006 | N |
-| 14 | Qwen3.5 4B (Non-reasoning) | 0.3134 | 107.70 | 0.0003 | N |
-| 15 | Gemma 4 E4B (Non-reasoning) | 0.2540 | 80.76 | 0.0002 | N |
+| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9251 | 509404.34 | 1.0000 | N |
+| 2 | GPT-5.6 Sol (max) | 0.9042 | 302211.39 | 0.5933 | N |
+| 3 | GPT-5.6 Sol (xhigh) | 0.8723 | 136098.27 | 0.2672 | N |
+| 4 | Kimi K3 | 0.8705 | 43240.19 | 0.0849 | N |
+| 5 | GPT-5.6 Sol (medium) | 0.8278 | 37980.95 | 0.0746 | N |
+| 6 | Grok 4.5 (high) | 0.8204 | 14171.54 | 0.0278 | N |
+| 7 | Muse Spark 1.1 (xhigh) | 0.7777 | 13241.37 | 0.0260 | N |
+| 8 | MiniMax-M3 | 0.7270 | 3919.69 | 0.0077 | N |
+| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6721 | 2641.86 | 0.0052 | N |
+| 10 | MiMo-V2.5 | 0.6303 | 867.24 | 0.0017 | N |
+| 11 | Gemma 4 12B (Reasoning) | 0.4454 | 851.49 | 0.0017 | N |
+| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4296 | 346.69 | 0.0007 | N |
+| 13 | Gemma 4 12B (Non-reasoning) | 0.3262 | 322.51 | 0.0006 | N |
+| 14 | Qwen3.5 4B (Non-reasoning) | 0.3134 | 107.57 | 0.0002 | N |
+| 15 | Gemma 4 E4B (Non-reasoning) | 0.2540 | 80.63 | 0.0002 | N |
 
 ### 评分方法
 
