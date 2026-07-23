@@ -6,21 +6,20 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9251 | 509404.34 | 1.0000 | N |
-| 2 | GPT-5.6 Sol (max) | 0.9042 | 302211.39 | 0.5933 | N |
-| 3 | GPT-5.6 Sol (xhigh) | 0.8723 | 136098.27 | 0.2672 | N |
-| 4 | Kimi K3 | 0.8705 | 43240.19 | 0.0849 | N |
-| 5 | GPT-5.6 Sol (medium) | 0.8278 | 37980.95 | 0.0746 | N |
-| 6 | Grok 4.5 (high) | 0.8204 | 14171.54 | 0.0278 | N |
-| 7 | Muse Spark 1.1 (xhigh) | 0.7777 | 13241.37 | 0.0260 | N |
-| 8 | MiniMax-M3 | 0.7270 | 3919.69 | 0.0077 | N |
-| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6721 | 2641.86 | 0.0052 | N |
-| 10 | MiMo-V2.5 | 0.6303 | 867.24 | 0.0017 | N |
-| 11 | Gemma 4 12B (Reasoning) | 0.4454 | 851.49 | 0.0017 | N |
-| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4296 | 346.69 | 0.0007 | N |
-| 13 | Gemma 4 12B (Non-reasoning) | 0.3262 | 322.51 | 0.0006 | N |
-| 14 | Qwen3.5 4B (Non-reasoning) | 0.3134 | 107.57 | 0.0002 | N |
-| 15 | Gemma 4 E4B (Non-reasoning) | 0.2540 | 80.63 | 0.0002 | N |
+| 1 | Claude Fable 5 (Adaptive Reasoning, Max Effort, Opus 4.8 Fallback) | 0.9251 | 497927.11 | 1.0000 | N |
+| 2 | GPT-5.6 Sol (max) | 0.9043 | 356389.47 | 0.7157 | N |
+| 3 | GPT-5.6 Sol (xhigh) | 0.8718 | 138920.82 | 0.2790 | N |
+| 4 | Kimi K3 | 0.8706 | 43240.19 | 0.0868 | N |
+| 5 | GPT-5.6 Sol (medium) | 0.8275 | 37516.26 | 0.0753 | N |
+| 6 | Grok 4.5 (high) | 0.8201 | 13548.70 | 0.0272 | N |
+| 7 | Muse Spark 1.1 (xhigh) | 0.7778 | 13241.37 | 0.0266 | N |
+| 8 | MiniMax-M3 | 0.7269 | 3919.69 | 0.0079 | N |
+| 9 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6723 | 2641.86 | 0.0053 | N |
+| 10 | MiMo-V2.5 | 0.6304 | 867.24 | 0.0017 | N |
+| 11 | DeepSeek V4 Flash (Non-reasoning) | 0.4296 | 349.17 | 0.0007 | N |
+| 12 | Gemma 4 12B (Non-reasoning) | 0.3262 | 319.90 | 0.0006 | N |
+| 13 | Qwen3.5 4B (Non-reasoning) | 0.3134 | 108.25 | 0.0002 | N |
+| 14 | Gemma 4 E4B (Non-reasoning) | 0.2540 | 77.53 | 0.0002 | N |
 
 ### 评分方法
 
@@ -66,4 +65,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 247  
+**模型总数**: 248  
