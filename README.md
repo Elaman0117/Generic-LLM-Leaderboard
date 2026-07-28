@@ -6,19 +6,19 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9267 | 114795.28 | 1.0000 | N |
-| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9138 | 72346.00 | 0.6302 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8947 | 53461.38 | 0.4657 | N |
-| 4 | Kimi K3 | 0.8629 | 42942.96 | 0.3741 | N |
-| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8617 | 30463.40 | 0.2654 | N |
-| 6 | Grok 4.5 (high) | 0.8118 | 12261.94 | 0.1068 | N |
-| 7 | MiniMax-M3 | 0.7211 | 3885.01 | 0.0338 | N |
-| 8 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6669 | 2594.37 | 0.0226 | N |
-| 9 | MiMo-V2.5 | 0.6260 | 852.14 | 0.0074 | N |
-| 10 | DeepSeek V4 Flash (Non-reasoning) | 0.4289 | 330.39 | 0.0029 | N |
-| 11 | Gemma 4 12B (Non-reasoning) | 0.3254 | 314.77 | 0.0027 | N |
-| 12 | Qwen3.5 4B (Non-reasoning) | 0.3127 | 105.43 | 0.0009 | N |
-| 13 | Gemma 4 E4B (Non-reasoning) | 0.2533 | 75.29 | 0.0007 | N |
+| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9267 | 113299.42 | 1.0000 | N |
+| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9137 | 75482.69 | 0.6662 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8946 | 47395.80 | 0.4183 | N |
+| 4 | Kimi K3 | 0.8629 | 42942.96 | 0.3790 | N |
+| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8617 | 30316.95 | 0.2676 | N |
+| 6 | Grok 4.5 (high) | 0.8117 | 12378.25 | 0.1093 | N |
+| 7 | MiniMax-M3 | 0.7211 | 3885.01 | 0.0343 | N |
+| 8 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6669 | 2594.37 | 0.0229 | N |
+| 9 | MiMo-V2.5 | 0.6260 | 852.14 | 0.0075 | N |
+| 10 | DeepSeek V4 Flash (Non-reasoning) | 0.4289 | 332.62 | 0.0029 | N |
+| 11 | Gemma 4 12B (Non-reasoning) | 0.3254 | 316.11 | 0.0028 | N |
+| 12 | Qwen3.5 4B (Non-reasoning) | 0.3127 | 105.32 | 0.0009 | N |
+| 13 | Gemma 4 E4B (Non-reasoning) | 0.2533 | 75.12 | 0.0007 | N |
 
 ### 评分方法
 
