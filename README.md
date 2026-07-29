@@ -6,19 +6,18 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9267 | 113299.42 | 1.0000 | N |
-| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9137 | 75482.69 | 0.6662 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8946 | 47395.80 | 0.4183 | N |
-| 4 | Kimi K3 | 0.8629 | 42942.96 | 0.3790 | N |
-| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8617 | 30316.95 | 0.2676 | N |
-| 6 | Grok 4.5 (high) | 0.8117 | 12378.25 | 0.1093 | N |
-| 7 | MiniMax-M3 | 0.7211 | 3885.01 | 0.0343 | N |
-| 8 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6669 | 2594.37 | 0.0229 | N |
-| 9 | MiMo-V2.5 | 0.6260 | 852.14 | 0.0075 | N |
-| 10 | DeepSeek V4 Flash (Non-reasoning) | 0.4289 | 332.62 | 0.0029 | N |
-| 11 | Gemma 4 12B (Non-reasoning) | 0.3254 | 316.11 | 0.0028 | N |
-| 12 | Qwen3.5 4B (Non-reasoning) | 0.3127 | 105.32 | 0.0009 | N |
-| 13 | Gemma 4 E4B (Non-reasoning) | 0.2533 | 75.12 | 0.0007 | N |
+| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9267 | 90645.37 | 1.0000 | N |
+| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9138 | 72841.12 | 0.8036 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8946 | 39684.02 | 0.4378 | N |
+| 4 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8617 | 29541.72 | 0.3259 | N |
+| 5 | Grok 4.5 (high) | 0.8117 | 11888.15 | 0.1312 | N |
+| 6 | MiniMax-M3 | 0.7211 | 3885.01 | 0.0429 | N |
+| 7 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6669 | 2594.37 | 0.0286 | N |
+| 8 | MiMo-V2.5 | 0.6260 | 852.14 | 0.0094 | N |
+| 9 | DeepSeek V4 Flash (Non-reasoning) | 0.4289 | 329.65 | 0.0036 | N |
+| 10 | Gemma 4 12B (Non-reasoning) | 0.3254 | 266.54 | 0.0029 | N |
+| 11 | Qwen3.5 4B (Non-reasoning) | 0.3127 | 104.88 | 0.0012 | N |
+| 12 | Gemma 4 E4B (Non-reasoning) | 0.2533 | 75.06 | 0.0008 | N |
 
 ### 评分方法
 
@@ -64,4 +63,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 254  
+**模型总数**: 248  
