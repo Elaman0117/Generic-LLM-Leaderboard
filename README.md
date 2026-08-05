@@ -6,19 +6,20 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9267 | 127628.24 | 1.0000 | N |
-| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9138 | 67661.76 | 0.5301 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8948 | 48605.63 | 0.3808 | N |
-| 4 | Kimi K3 (max) | 0.8632 | 42942.96 | 0.3365 | N |
-| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8620 | 33006.98 | 0.2586 | N |
-| 6 | Grok 4.5 (high) | 0.8121 | 11257.85 | 0.0882 | N |
-| 7 | GPT-5.6 Luna (xhigh) | 0.7303 | 10549.94 | 0.0827 | N |
-| 8 | MiniMax-M3 | 0.7213 | 3885.01 | 0.0304 | N |
-| 9 | DeepSeek V4 Flash 0731 (Reasoning, Max Effort) | 0.7080 | 852.14 | 0.0067 | N |
-| 10 | DeepSeek V4 Flash (Non-reasoning) | 0.4292 | 331.92 | 0.0026 | N |
-| 11 | Gemma 4 12B (Non-reasoning) | 0.3257 | 317.44 | 0.0025 | N |
-| 12 | Qwen3.5 4B (Non-reasoning) | 0.3129 | 105.86 | 0.0008 | N |
-| 13 | Gemma 4 E4B (Non-reasoning) | 0.2537 | 74.61 | 0.0006 | N |
+| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9267 | 95013.78 | 1.0000 | N |
+| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9138 | 67723.97 | 0.7128 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8948 | 46739.54 | 0.4919 | N |
+| 4 | Kimi K3 (max) | 0.8632 | 42942.96 | 0.4520 | N |
+| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8620 | 31589.97 | 0.3325 | N |
+| 6 | Grok 4.5 (high) | 0.8121 | 11257.85 | 0.1185 | N |
+| 7 | GPT-5.6 Luna (xhigh) | 0.7303 | 10211.03 | 0.1075 | N |
+| 8 | MiniMax-M3 | 0.7213 | 3885.01 | 0.0409 | N |
+| 9 | DeepSeek V4 Flash 0731 (Reasoning, Max Effort) | 0.7080 | 852.14 | 0.0090 | N |
+| 10 | MiMo-V2.5 | 0.6265 | 852.14 | 0.0090 | N |
+| 11 | DeepSeek V4 Flash (Non-reasoning) | 0.4292 | 332.53 | 0.0035 | N |
+| 12 | Gemma 4 12B (Non-reasoning) | 0.3257 | 317.74 | 0.0033 | N |
+| 13 | Qwen3.5 4B (Non-reasoning) | 0.3129 | 105.20 | 0.0011 | N |
+| 14 | Gemma 4 E4B (Non-reasoning) | 0.2537 | 74.75 | 0.0008 | N |
 
 ### 评分方法
 
