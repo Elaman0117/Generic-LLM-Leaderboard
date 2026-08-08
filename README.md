@@ -6,21 +6,24 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9215 | 91750.88 | 1.0000 | N |
-| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9111 | 65706.35 | 0.7161 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8948 | 49430.50 | 0.5387 | N |
-| 4 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8615 | 31227.49 | 0.3404 | N |
-| 5 | Qwen3.8 Max | 0.8168 | 19083.14 | 0.2080 | N |
-| 6 | Grok 4.5 (high) | 0.8041 | 10123.50 | 0.1103 | N |
-| 7 | GPT-5.6 Luna (xhigh) | 0.7185 | 9922.00 | 0.1081 | N |
-| 8 | MiniMax-M3 | 0.7153 | 3884.97 | 0.0423 | N |
-| 9 | DeepSeek V4 Flash 0731 (Reasoning, Max Effort) | 0.7028 | 852.12 | 0.0093 | N |
-| 10 | MiMo-V2.5 | 0.6218 | 852.12 | 0.0093 | N |
-| 11 | Ling-3.0-flash | 0.5333 | 754.28 | 0.0082 | N |
-| 12 | DeepSeek V4 Flash (Non-reasoning) | 0.4269 | 325.33 | 0.0035 | N |
-| 13 | Gemma 4 12B (Non-reasoning) | 0.3206 | 271.93 | 0.0030 | N |
-| 14 | Qwen3.5 4B (Non-reasoning) | 0.3136 | 105.41 | 0.0011 | N |
-| 15 | Gemma 4 E4B (Non-reasoning) | 0.2542 | 74.64 | 0.0008 | N |
+| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9215 | 107719.47 | 1.0000 | N |
+| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9111 | 55364.85 | 0.5140 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8949 | 51608.81 | 0.4791 | N |
+| 4 | Kimi K3 (max) | 0.8694 | 42979.66 | 0.3990 | N |
+| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8617 | 30795.05 | 0.2859 | N |
+| 6 | Qwen3.8 Max | 0.8169 | 19107.19 | 0.1774 | N |
+| 7 | Grok 4.5 (high) | 0.8043 | 10308.57 | 0.0957 | N |
+| 8 | GPT-5.6 Luna (xhigh) | 0.7188 | 8770.42 | 0.0814 | N |
+| 9 | MiniMax-M3 | 0.7157 | 3889.29 | 0.0361 | N |
+| 10 | DeepSeek V4 Flash 0731 (Reasoning, Max Effort) | 0.7031 | 854.00 | 0.0079 | N |
+| 11 | MiMo-V2.5 | 0.6224 | 854.00 | 0.0079 | N |
+| 12 | Ling 3.0 Flash | 0.5340 | 755.10 | 0.0070 | N |
+| 13 | Qwen3.5 9B (Reasoning) | 0.4204 | 623.98 | 0.0058 | N |
+| 14 | Qwen3.5 4B (Reasoning) | 0.4020 | 402.55 | 0.0037 | N |
+| 15 | Qwen3.5 9B (Non-reasoning) | 0.3704 | 300.56 | 0.0028 | N |
+| 16 | Gemma 4 12B (Non-reasoning) | 0.3206 | 271.84 | 0.0025 | N |
+| 17 | Qwen3.5 4B (Non-reasoning) | 0.3136 | 106.13 | 0.0010 | N |
+| 18 | Gemma 4 E4B (Non-reasoning) | 0.2542 | 74.55 | 0.0007 | N |
 
 ### 评分方法
 
@@ -42,7 +45,7 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 
 | 参数 | 来源 | 说明 |
 |------|------|------|
-| CacheHitRate | [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents) | 全部模型-Agent搭配的 `cacheHitRate` 求平均（52 个有效值，均值 = 0.9095），对所有模型统一使用 |
+| CacheHitRate | [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents) | 全部模型-Agent搭配的 `cacheHitRate` 求平均（53 个有效值，均值 = 0.9082），对所有模型统一使用 |
 | CacheHitPrice | AA `cacheHitPrice` | 缓存命中的输入价格 (USD / 1M tokens) |
 | CacheWritePrice | AA `cacheWritePrice` | 若缺失，回退到 `price1mInputTokens` (普通输入价格) |
 | InputTokens | `10000` | AA 默认的 10k input-token 工作负载（[方法论](https://artificialanalysis.ai/methodology/performance-benchmarking)） |
@@ -66,4 +69,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 255  
+**模型总数**: 240  
