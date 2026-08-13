@@ -51,6 +51,11 @@ import matplotlib.font_manager as fm
 # Font setup
 # ══════════════════════════════════════════════════════════════════════
 _HEITI_FONTS = [
+    # Noto Sans CJK SC 路径
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/truetype/noto/NotoSansSC-Regular.ttf",
+    "/usr/share/fonts/truetype/noto/NotoSansSC-Bold.ttf",
     "/usr/share/fonts/truetype/chinese/SarasaMonoSC-Bold.ttf",
     "/usr/share/fonts/truetype/chinese/SarasaMonoSC-SemiBold.ttf",
     "/usr/share/fonts/truetype/chinese/SarasaMonoSC-Regular.ttf",
@@ -71,7 +76,8 @@ for fp in _LATIN:
             fm.fontManager.addfont(fp)
         except Exception:
             pass
-plt.rcParams["font.sans-serif"] = ["Sarasa Mono SC", "Noto Serif SC", "DejaVu Sans"]
+# 将 Noto Sans CJK SC 置于首选
+plt.rcParams["font.sans-serif"] = ["Noto Sans CJK SC", "Sarasa Mono SC", "Noto Serif SC", "DejaVu Sans"]
 plt.rcParams["axes.unicode_minus"] = False
 
 # ── Paths ──
