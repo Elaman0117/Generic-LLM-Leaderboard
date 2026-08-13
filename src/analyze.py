@@ -689,7 +689,7 @@ def plot_analysis(models, pareto):
             placed.append(box_at(i, *sel[:4]))
         chosen.append(sel)
 
-    # 按计算结果创建标签
+# 按计算结果创建标签
     for i, m in enumerate(pf):
         dx, dyo, ha, va, elbow = chosen[i]
         pt = 72.0 / dpi
@@ -697,7 +697,8 @@ def plot_analysis(models, pareto):
                   shrinkA=6, shrinkB=2)
         if elbow:
             ap["connectionstyle"] = f"angle,angleA={90 if dyo > 0 else -90},angleB=0"
-        ax.annotate(f"{i+1}. {m['model']}", xy=dots[i],
+        ax.annotate(f"{i+1}. {m['model']}",
+                    xy=(float(m["normalized_cost"]), float(m["composite_ability"])),  # 数据坐标
                     xytext=(dx * pt, dyo * pt), textcoords='offset points',
                     fontsize=9, ha=ha, va=va,
                     color="#FFFFFF", fontweight="bold", zorder=5,
