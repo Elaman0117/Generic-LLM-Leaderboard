@@ -521,20 +521,13 @@ def _dominates(a, b):
 
 def plot_analysis(models, pareto):
     """Generate the Pareto scatter plot."""
-    try:
-        from adjustText import adjust_text
-        has_adj = True
-    except ImportError:
-        has_adj = False
-
     plot_models = [m for m in models if m.get("per_request_cost") is not None]
     pareto_names = {m["model"] for m in pareto}
     others = [m for m in plot_models if m["model"] not in pareto_names]
 
-    # 核心修复 1: 固定画布大小 (1:1) 和坐标轴绝对位置，确保每次生成的白框位置和比例完全一致。
+    # ── 固定画布：12x12 (1:1)，坐标轴(白框)位置每次完全一致 ─────────────
     fig = plt.figure(figsize=(12, 12), facecolor="#000000")
-    # 使用 add_axes 代替 subplots，彻底解决比例漂移和留白问题
-    ax = fig.add_axes([0.12, 0.12, 0.76, 0.76], facecolor="#000000")
+    ax = fig.add_axes([0.09, 0.13, 0.71, 0.71], facecolor="#000000")
     ax.set_aspect('equal', adjustable='box')
 
     # Boundary lines
@@ -548,21 +541,19 @@ def plot_analysis(models, pareto):
         ax.plot([0, 1], [v, v], color='#333333', alpha=0.5, linewidth=0.4, zorder=0)
         ax.plot([v, v], [0, 1], color='#333333', alpha=0.5, linewidth=0.4, zorder=0)
 
-    # Scatter: other models (zorder=2)
+    # Scatter: other models (zorder=2, 可被帕累托点遮挡)
     ax.scatter(
         [float(m["normalized_cost"]) for m in others],
         [float(m["composite_ability"]) for m in others],
         c="#4A4A4A", s=20, alpha=0.45, zorder=2,
-        label=f"其他模型 ({len(others)})",
     )
 
-    # Scatter: Pareto frontier (zorder=4, 必定覆盖在 others 之上)
+    # Scatter: Pareto frontier (zorder=4, 点之间允许重叠)
     ax.scatter(
         [float(m["normalized_cost"]) for m in pareto],
         [float(m["composite_ability"]) for m in pareto],
         c="#00E5FF", s=100, alpha=0.95, zorder=4,
         edgecolors="#FFFFFF", linewidth=1.2,
-        label=f"Pareto前沿 ({len(pareto)})",
     )
 
     # Pareto frontier line
@@ -573,82 +564,149 @@ def plot_analysis(models, pareto):
         c="#00E5FF", linewidth=2.0, alpha=0.35, zorder=3, linestyle="--",
     )
 
-    # Pareto model labels
-    texts = []
-    for i, m in enumerate(pf):
-        label = f"{i+1}. {m['model']}"
-        # 核心修复 2: 使用 ax.annotate 并通过 xytext=(15, 0) 将文本严格向右水平偏移，避免遮挡小圆点。
-        t = ax.annotate(
-            label,
-            xy=(float(m["normalized_cost"]), float(m["composite_ability"])),
-            xytext=(15, 0), textcoords='offset points',
-            fontsize=9, ha="left", va="center",
-            color="#FFFFFF", fontweight="bold", zorder=5,
-            bbox=dict(boxstyle="round,pad=0.15",
-                      facecolor="#1A1A1A", alpha=0.9,
-                      edgecolor="#00E5FF", linewidth=0.5),
-            # shrinkA/shrinkB 确保箭头不刺穿文本框
-            arrowprops=dict(arrowstyle="-", color="#00E5FF", lw=0.5, alpha=0.6,
-                            shrinkA=3, shrinkB=3)
-        )
-        texts.append(t)
-
-    if has_adj:
-        # 核心修复 3: 限制 adjust_text 只能在 Y 轴方向移动 ('only_move': {'text': 'y'})。
-        # 这样不仅防止了文本互相重叠，还确保了文本框永远与数据点保持水平对齐（平行于 X 轴方向）。
-        adjust_text(texts,
-                    arrowprops=dict(arrowstyle="-", color="#00E5FF", lw=0.5, alpha=0.6,
-                                    shrinkA=3, shrinkB=3),
-                    expand_points=(1.2, 1.2),
-                    expand_text=(1.2, 1.2),
-                    force_text=(0.8, 1.5),
-                    force_points=(0.5, 0.5),
-                    lim=1000,
-                    only_move={'text': 'y'})
-
     ax.set_xlabel("归一化单请求成本 (0=免费, 1=最贵帕累托模型)",
                   fontsize=14, color="#FFFFFF", labelpad=12, fontweight="bold")
     ax.set_ylabel("综合能力 (0=最低, 1=最高)",
                   fontsize=14, color="#FFFFFF", labelpad=12, fontweight="bold")
     ax.set_title(
-        f"LLM 综合能力 vs 单请求成本 — Pareto前沿\n"
-        f"（成本 = 公式估算 | X轴线性归一化坐标）",
-        fontsize=16, color="#FFFFFF", fontweight="bold", pad=20,
+        "LLM 综合能力 vs 单请求成本 — Pareto前沿\n"
+        "（成本 = 公式估算 | X轴线性归一化坐标）",
+        fontsize=16, color="#FFFFFF", fontweight="bold", pad=18,
     )
-
     ax.set_xticks([0, 1])
     ax.set_yticks([0, 1])
     ax.set_xticklabels(["0", "1"], color="#FFFFFF", fontsize=12, fontweight="bold")
     ax.set_yticklabels(["0", "1"], color="#FFFFFF", fontsize=12, fontweight="bold")
-
     margin = 0.05
     ax.set_xlim(-margin, 1 + margin)
     ax.set_ylim(-margin, 1 + margin)
-
     for spine in ax.spines.values():
         spine.set_visible(False)
     ax.grid(False)
     ax.tick_params(axis='both', colors='#FFFFFF', length=5, width=1.2)
 
-    # 核心修复 4: 将图例移至右上角 (upper right)，彻底避免遮挡左上角帕累托前沿数据及白色边界。
-    legend = ax.legend(loc="upper right", fontsize=12,
-                       framealpha=0.9, edgecolor="#FFFFFF",
-                       facecolor="#1A1A1A", labelcolor="#FFFFFF",
-                       borderpad=1, labelspacing=1)
+    # ── 图例：放在绘图区外的右侧留白，绝不遮挡白框/数据/标签 ─────────────
+    from matplotlib.lines import Line2D
+    handles = [
+        Line2D([0], [0], marker='o', color='none', markerfacecolor='#4A4A4A',
+               markersize=7, alpha=0.6),
+        Line2D([0], [0], marker='o', color='none', markerfacecolor='#00E5FF',
+               markeredgecolor='#FFFFFF', markersize=9),
+    ]
+    fig.legend(handles, [f"其他模型 ({len(others)})", f"Pareto前沿 ({len(pareto)})"],
+               loc='center right', bbox_to_anchor=(0.995, 0.5),
+               fontsize=11, framealpha=0.9, edgecolor="#FFFFFF",
+               facecolor="#1A1A1A", labelcolor="#FFFFFF", borderpad=1)
 
+    # 底部说明文字（移到画布底部留白，不占定义域）
     method = (
-        f"X轴: 公式估算单请求成本(线性归一化) | Y轴: 综合能力(18指标均值)\n"
+        f"X轴: 公式估算单请求成本(线性归一化) | Y轴: 综合能力(18指标均值) | "
         f"★ 成本 = CacheHit·CacheHitPrice + (1-CacheHit)·CacheWritePrice + Speed·RealTime·OutputPrice | 共{len(plot_models)}模型"
     )
-    ax.text(0.98, 0.02, method, transform=ax.transAxes, fontsize=7,
-            va="bottom", ha="right", color="#AAAAAA", style="italic",
-            bbox=dict(boxstyle="round,pad=0.3", facecolor="#111111", alpha=0.9,
-                      edgecolor="#444444", linewidth=0.5))
+    fig.text(0.445, 0.02, method, ha="center", va="bottom", fontsize=6.5,
+             color="#AAAAAA", style="italic")
 
-    # 核心修复 5: 移除 plt.tight_layout() 和 bbox_inches="tight"。
-    # 因为 add_axes 已经锁定了白框位置，使用 bbox_inches="tight" 会破坏固定比例，并强行裁切画布。
+    # ── 标签确定性布局：只允许 正右/正左/正上/正下（水平或垂直偏移）─────────
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    dpi = fig.dpi
+    ax_box = ax.get_window_extent(renderer)
+    dots = [ax.transData.transform((float(m["normalized_cost"]),
+                                    float(m["composite_ability"]))) for m in pf]
+    R = 16.0      # 圆点半径(px)
+    GAP = 10.0    # 标签与圆点间隙(px)
+    M = 4.0       # 标签间安全边距(px)
+
+    # 先测量每个标签文本框尺寸
+    sizes = []
+    tmps = []
+    for i, m in enumerate(pf):
+        t = ax.annotate(f"{i+1}. {m['model']}", xy=dots[i],
+                        xytext=(0, 0), textcoords='offset points', fontsize=9,
+                        bbox=dict(boxstyle="round,pad=0.15", facecolor="#1A1A1A"))
+        tmps.append(t)
+    fig.canvas.draw()
+    for t in tmps:
+        e = t.get_bbox_patch().get_window_extent(renderer)
+        sizes.append((e.width, e.height))
+    for t in tmps:
+        t.remove()
+
+    def box_at(i, dx, dy, ha, va):
+        W, H = sizes[i]
+        x, y = dots[i][0] + dx, dots[i][1] + dy
+        x0 = x if ha == 'left' else (x - W if ha == 'right' else x - W / 2)
+        y0 = (y - H / 2) if va == 'center' else (y if va == 'bottom' else y - H)
+        return (x0, y0, x0 + W, y0 + H)
+
+    def hits(a, b, m=M):
+        return a[0] - m < b[2] and b[0] - m < a[2] and a[1] - m < b[3] and b[1] - m < a[3]
+
+    placed, chosen = [], []
+    for i in range(len(pf)):
+        W, H = sizes[i]
+        dx0, dy = dots[i][0], dots[i][1]
+        cands = [(R + GAP, 0, 'left', 'center', False)]          # 正右
+        xf = R + GAP                                              # 正右(更远,错开)
+        for b in placed:
+            if b[1] < dy + H / 2 and b[3] > dy - H / 2:
+                xf = max(xf, b[2] + GAP - (dx0))
+        cands.append((xf, 0, 'left', 'center', False))
+        cands += [(-(R + GAP), 0, 'right', 'center', False),      # 正左
+                  (0, R + GAP, 'center', 'bottom', False),        # 正上
+                  (0, -(R + GAP), 'center', 'top', False)]        # 正下
+        for k in range(1, 8):                                     # 正右+垂直错行(肘形连线)
+            cands.append((R + GAP, -k * (H + GAP), 'left', 'center', True))
+            cands.append((R + GAP, k * (H + GAP), 'left', 'center', True))
+
+        sel = None
+        for dx, dyo, ha, va, elbow in cands:
+            b = box_at(i, dx, dyo, ha, va)
+            if not (ax_box.x0 <= b[0] and b[2] <= ax_box.x1 and
+                    ax_box.y0 <= b[1] and b[3] <= ax_box.y1):
+                continue                                          # 出界
+            if any(hits(b, p) for p in placed):
+                continue                                          # 压到别的标签
+            if any(hits(b, (d[0]-R, d[1]-R, d[0]+R, d[1]+R), 2)
+                   for k, d in enumerate(dots) if k != i):
+                continue                                          # 压到帕累托圆点
+            if not elbow:                                         # 直连线不能穿过其它圆点
+                seg_ok = True
+                for k, d in enumerate(dots):
+                    if k == i:
+                        continue
+                    if abs(d[1] - dy) < R + 2 and min(dx0, dx0 + dx) < d[0] < max(dx0, dx0 + dx):
+                        seg_ok = False
+                    if abs(d[0] - dx0) < R + 2 and min(dy, dy + dyo) < d[1] < max(dy, dy + dyo):
+                        seg_ok = False
+                if not seg_ok:
+                    continue
+            sel = (dx, dyo, ha, va, elbow)
+            placed.append(b)
+            break
+        if sel is None:                                           # 兜底：正右
+            sel = (R + GAP, 0, 'left', 'center', False)
+            placed.append(box_at(i, *sel[:4]))
+        chosen.append(sel)
+
+    # 按计算结果创建标签
+    for i, m in enumerate(pf):
+        dx, dyo, ha, va, elbow = chosen[i]
+        pt = 72.0 / dpi
+        ap = dict(arrowstyle="-", color="#00E5FF", lw=0.6, alpha=0.55,
+                  shrinkA=6, shrinkB=2)
+        if elbow:
+            ap["connectionstyle"] = f"angle,angleA={90 if dyo > 0 else -90},angleB=0"
+        ax.annotate(f"{i+1}. {m['model']}", xy=dots[i],
+                    xytext=(dx * pt, dyo * pt), textcoords='offset points',
+                    fontsize=9, ha=ha, va=va,
+                    color="#FFFFFF", fontweight="bold", zorder=5,
+                    bbox=dict(boxstyle="round,pad=0.15", facecolor="#1A1A1A",
+                              alpha=0.9, edgecolor="#00E5FF", linewidth=0.5),
+                    arrowprops=ap)
+
     out = os.path.join(OUTPUT_DIR, "pareto_analysis.png")
-    plt.savefig(out, dpi=200, facecolor="#000000")
+    plt.savefig(out, dpi=200, facecolor="#000000")   # 不用 bbox_inches="tight"
     plt.close()
     print(f"Plot saved to {out}")
 
