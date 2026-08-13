@@ -720,7 +720,7 @@ def plot_analysis(models, pareto):
                 return k
         return -1
 
-    def fix_x(b, i, dx):
+    def fix_x(b, i, dx, placed_list):
         """水平平移：不压其他前沿点、不压已放标签、圆点保持在框正下/正上、不超定义域"""
         W = b[2]-b[0]
         cands = [b[0]]
@@ -731,11 +731,13 @@ def plot_analysis(models, pareto):
             if x0 < L or x0+W > Rt or not (x0 <= dx <= x0+W):
                 continue
             nb = (x0, b[1], x0+W, b[3])
-            if covers_dot(nb, i) < 0 and not any(_hit(nb, p) for p in placed):
+            if covers_dot(nb, i) < 0 and not any(_hit(nb, p) for p in placed_list):
                 return nb
         return None
 
-    placed, result = {}, {}
+    # 修复点：改为列表，避免遍历字典键导致的 TypeError
+    placed_boxes = []
+    result = {}
 
     # ── 垂直组：按能力 低→高 向上堆叠，全部置于圆点上方 → 高度排名=能力排名 ──
     vert_idx = sorted([i for i in range(n) if not horiz[i]], key=lambda i: pts[i][1])
@@ -750,11 +752,11 @@ def plot_analysis(models, pareto):
             y0 = T - H
         x1 = min(dx + W/2, Rt)                 # 靠右出界时左移
         x0 = max(x1 - W, L)
-        nb = fix_x((x0, y0, x0+W, y0+H), i, dx)
+        nb = fix_x((x0, y0, x0+W, y0+H), i, dx, placed_boxes)
         if nb is None:
             nb = (x0, y0, x0+W, y0+H)
         result[i] = ('v', nb)
-        placed[i] = nb
+        placed_boxes.append(nb)
         chain = nb[3] + M
 
     # ── 水平组：正右；冲突只向右错开，绝不向左出界 ──
@@ -768,7 +770,8 @@ def plot_analysis(models, pareto):
             if b[2] > Rt:
                 break
             push = None
-            for k, p in placed.items():
+            # 修复点：直接遍历列表中的元组
+            for p in placed_boxes:
                 if _hit(b, p):
                     push = max(push or 0, p[2]+GAP)
             k = covers_dot(b, i)
@@ -780,7 +783,7 @@ def plot_analysis(models, pareto):
         x0 = min(x0, Rt-W)
         b = (x0, dy-H/2, x0+W, dy+H/2)
         result[i] = ('h', b)
-        placed[i] = b
+        placed_boxes.append(b)
 
     # ── 绘制：标签 zorder=5；连线 zorder=6(更高，可压别人标签、便于辨认归属) ──
     for i, m in enumerate(pf):
