@@ -531,9 +531,10 @@ def plot_analysis(models, pareto):
     pareto_names = {m["model"] for m in pareto}
     others = [m for m in plot_models if m["model"] not in pareto_names]
 
-    fig, ax = plt.subplots(figsize=(14, 14))
-    fig.patch.set_facecolor("#000000")
-    ax.set_facecolor("#000000")
+    # 核心修复 1: 固定画布大小 (1:1) 和坐标轴绝对位置，确保每次生成的白框位置和比例完全一致。
+    fig = plt.figure(figsize=(12, 12), facecolor="#000000")
+    # 使用 add_axes 代替 subplots，彻底解决比例漂移和留白问题
+    ax = fig.add_axes([0.12, 0.12, 0.76, 0.76], facecolor="#000000")
     ax.set_aspect('equal', adjustable='box')
 
     # Boundary lines
@@ -547,7 +548,7 @@ def plot_analysis(models, pareto):
         ax.plot([0, 1], [v, v], color='#333333', alpha=0.5, linewidth=0.4, zorder=0)
         ax.plot([v, v], [0, 1], color='#333333', alpha=0.5, linewidth=0.4, zorder=0)
 
-    # Scatter: other models
+    # Scatter: other models (zorder=2)
     ax.scatter(
         [float(m["normalized_cost"]) for m in others],
         [float(m["composite_ability"]) for m in others],
@@ -555,7 +556,7 @@ def plot_analysis(models, pareto):
         label=f"其他模型 ({len(others)})",
     )
 
-    # Scatter: Pareto frontier
+    # Scatter: Pareto frontier (zorder=4, 必定覆盖在 others 之上)
     ax.scatter(
         [float(m["normalized_cost"]) for m in pareto],
         [float(m["composite_ability"]) for m in pareto],
@@ -576,34 +577,43 @@ def plot_analysis(models, pareto):
     texts = []
     for i, m in enumerate(pf):
         label = f"{i+1}. {m['model']}"
-        t = ax.text(
-            float(m["normalized_cost"]),
-            float(m["composite_ability"]),
+        # 核心修复 2: 使用 ax.annotate 并通过 xytext=(15, 0) 将文本严格向右水平偏移，避免遮挡小圆点。
+        t = ax.annotate(
             label,
-            fontsize=8, ha="left", va="bottom",
+            xy=(float(m["normalized_cost"]), float(m["composite_ability"])),
+            xytext=(15, 0), textcoords='offset points',
+            fontsize=9, ha="left", va="center",
             color="#FFFFFF", fontweight="bold", zorder=5,
-            bbox=dict(boxstyle="round,pad=0.12",
-                      facecolor="#1A1A1A", alpha=0.85,
+            bbox=dict(boxstyle="round,pad=0.15",
+                      facecolor="#1A1A1A", alpha=0.9,
                       edgecolor="#00E5FF", linewidth=0.5),
+            # shrinkA/shrinkB 确保箭头不刺穿文本框
+            arrowprops=dict(arrowstyle="-", color="#00E5FF", lw=0.5, alpha=0.6,
+                            shrinkA=3, shrinkB=3)
         )
         texts.append(t)
 
     if has_adj:
+        # 核心修复 3: 限制 adjust_text 只能在 Y 轴方向移动 ('only_move': {'text': 'y'})。
+        # 这样不仅防止了文本互相重叠，还确保了文本框永远与数据点保持水平对齐（平行于 X 轴方向）。
         adjust_text(texts,
-                    arrowprops=dict(arrowstyle="->", color="#888888", lw=0.5),
-                    expand_points=(1.8, 1.8),
-                    force_text=(0.3, 0.5),
-                    force_points=(0.1, 0.1),
-                    lim=200)
+                    arrowprops=dict(arrowstyle="-", color="#00E5FF", lw=0.5, alpha=0.6,
+                                    shrinkA=3, shrinkB=3),
+                    expand_points=(1.2, 1.2),
+                    expand_text=(1.2, 1.2),
+                    force_text=(0.8, 1.5),
+                    force_points=(0.5, 0.5),
+                    lim=1000,
+                    only_move={'text': 'y'})
 
     ax.set_xlabel("归一化单请求成本 (0=免费, 1=最贵帕累托模型)",
-                  fontsize=13, color="#FFFFFF", labelpad=10, fontweight="bold")
+                  fontsize=14, color="#FFFFFF", labelpad=12, fontweight="bold")
     ax.set_ylabel("综合能力 (0=最低, 1=最高)",
-                  fontsize=13, color="#FFFFFF", labelpad=10, fontweight="bold")
+                  fontsize=14, color="#FFFFFF", labelpad=12, fontweight="bold")
     ax.set_title(
         f"LLM 综合能力 vs 单请求成本 — Pareto前沿\n"
         f"（成本 = 公式估算 | X轴线性归一化坐标）",
-        fontsize=15, color="#FFFFFF", fontweight="bold", pad=16,
+        fontsize=16, color="#FFFFFF", fontweight="bold", pad=20,
     )
 
     ax.set_xticks([0, 1])
@@ -611,7 +621,7 @@ def plot_analysis(models, pareto):
     ax.set_xticklabels(["0", "1"], color="#FFFFFF", fontsize=12, fontweight="bold")
     ax.set_yticklabels(["0", "1"], color="#FFFFFF", fontsize=12, fontweight="bold")
 
-    margin = 0.07
+    margin = 0.05
     ax.set_xlim(-margin, 1 + margin)
     ax.set_ylim(-margin, 1 + margin)
 
@@ -620,22 +630,25 @@ def plot_analysis(models, pareto):
     ax.grid(False)
     ax.tick_params(axis='both', colors='#FFFFFF', length=5, width=1.2)
 
-    legend = ax.legend(loc="upper left", fontsize=10.5,
-                       framealpha=0.85, edgecolor="#FFFFFF",
-                       facecolor="#1A1A1A", labelcolor="#FFFFFF")
+    # 核心修复 4: 将图例移至右上角 (upper right)，彻底避免遮挡左上角帕累托前沿数据及白色边界。
+    legend = ax.legend(loc="upper right", fontsize=12,
+                       framealpha=0.9, edgecolor="#FFFFFF",
+                       facecolor="#1A1A1A", labelcolor="#FFFFFF",
+                       borderpad=1, labelspacing=1)
 
     method = (
         f"X轴: 公式估算单请求成本(线性归一化) | Y轴: 综合能力(18指标均值)\n"
         f"★ 成本 = CacheHit·CacheHitPrice + (1-CacheHit)·CacheWritePrice + Speed·RealTime·OutputPrice | 共{len(plot_models)}模型"
     )
-    ax.text(0.98, 0.02, method, transform=ax.transAxes, fontsize=6,
+    ax.text(0.98, 0.02, method, transform=ax.transAxes, fontsize=7,
             va="bottom", ha="right", color="#AAAAAA", style="italic",
-            bbox=dict(boxstyle="round,pad=0.3", facecolor="#111111", alpha=0.85,
+            bbox=dict(boxstyle="round,pad=0.3", facecolor="#111111", alpha=0.9,
                       edgecolor="#444444", linewidth=0.5))
 
-    plt.tight_layout()
+    # 核心修复 5: 移除 plt.tight_layout() 和 bbox_inches="tight"。
+    # 因为 add_axes 已经锁定了白框位置，使用 bbox_inches="tight" 会破坏固定比例，并强行裁切画布。
     out = os.path.join(OUTPUT_DIR, "pareto_analysis.png")
-    plt.savefig(out, dpi=200, bbox_inches="tight", facecolor="#000000")
+    plt.savefig(out, dpi=200, facecolor="#000000")
     plt.close()
     print(f"Plot saved to {out}")
 
