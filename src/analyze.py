@@ -677,40 +677,143 @@ def plot_analysis(models, pareto):
                         continue
                     if abs(d[1] - dy) < R + 2 and min(dx0, dx0 + dx) < d[0] < max(dx0, dx0 + dx):
                         seg_ok = False
-                    if abs(d[0] - dx0) < R + 2 and min(dy, dy + dyo) < d[1] < max(dy, dy + dyo):
-                        seg_ok = False
-                if not seg_ok:
-                    continue
-            sel = (dx, dyo, ha, va, elbow)
-            placed.append(b)
-            break
-        if sel is None:                                           # 兜底：正右
-            sel = (R + GAP, 0, 'left', 'center', False)
-            placed.append(box_at(i, *sel[:4]))
-        chosen.append(sel)
+# ── 标签布局：陡段水平向右 / 平段垂直；高度排名=能力排名 ─────────────
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    ax_box = ax.get_window_extent(renderer)
+    L, Rt, B, T = ax_box.x0, ax_box.x1, ax_box.y0, ax_box.y1
+    pts = [(float(m["normalized_cost"]), float(m["composite_ability"])) for m in pf]
+    dots = [ax.transData.transform(p) for p in pts]
+    inv = ax.transData.inverted()
+    R, GAP, M = 16.0, 10.0, 4.0
 
-# 按计算结果创建标签
+    # 测量标签框尺寸
+    tmps = [ax.annotate(f"{i+1}. {m['model']}", xy=pts[i], xytext=(0, 0),
+                        textcoords='offset points', fontsize=9,
+                        bbox=dict(boxstyle="round,pad=0.15", facecolor="#1A1A1A"))
+            for i, m in enumerate(pf)]
+    fig.canvas.draw()
+    sizes = []
+    for t in tmps:
+        e = t.get_bbox_patch().get_window_extent(renderer)
+        sizes.append((e.width, e.height))
+    for t in tmps:
+        t.remove()
+
+    # 斜率分类：与相邻前沿点连线的最大斜率 >1 → 水平；否则垂直
+    n = len(pf)
+    horiz = []
+    for i in range(n):
+        sp = (pts[i][1]-pts[i-1][1]) / max(pts[i][0]-pts[i-1][0], 1e-9) if i > 0 else 1e9
+        sn = (pts[i+1][1]-pts[i][1]) / max(pts[i+1][0]-pts[i][0], 1e-9) if i < n-1 else 1e9
+        horiz.append(max(sp, sn) > 1.0)
+
+    def _hit(a, b, m=M):
+        return a[0]-m < b[2] and b[0]-m < a[2] and a[1]-m < b[3] and b[1]-m < a[3]
+
+    def covers_dot(b, i):
+        for k, d in enumerate(dots):
+            if k != i and b[0]-2 < d[0] < b[2]+2 and b[1]-2 < d[1] < b[3]+2:
+                return k
+        return -1
+
+    def fix_x(b, i, dx):
+        """水平平移使框不压其他前沿点、不压已放标签，且圆点保持在框下方、框在定义域内"""
+        W = b[2]-b[0]
+        cands = [b[0]]
+        for k, d in enumerate(dots):
+            if k != i and b[1]-2 < d[1] < b[3]+2:
+                cands += [d[0]+R+GAP, d[0]-R-GAP-W]
+        for x0 in cands:
+            if x0 < L or x0+W > Rt or not (x0 <= dx <= x0+W):
+                continue
+            nb = (x0, b[1], x0+W, b[3])
+            if covers_dot(nb, i) < 0 and not any(_hit(nb, p) for p in placed):
+                return nb
+        return None
+
+    placed, result = [], {}
+    order = sorted(range(n), key=lambda i: -pts[i][1])   # 能力从高到低，保证高度排名
+    cap = T                                              # 垂直标签的高度上限(排名约束)
+
+    for i in order:
+        W, H = sizes[i]
+        dx, dy = dots[i]
+        if horiz[i]:
+            # 水平：正右；冲突时只向右错开(更远距离)，绝不向左出界
+            x0 = dx + R + GAP
+            for _ in range(25):
+                b = (x0, dy-H/2, x0+W, dy+H/2)
+                if b[2] > Rt:
+                    break
+                push = None
+                for p in placed:
+                    if _hit(b, p):
+                        push = max(push or 0, p[2]+GAP)
+                k = covers_dot(b, i)
+                if k >= 0:
+                    push = max(push or 0, dots[k][0]+R+GAP)
+                if push is None:
+                    break
+                x0 = push
+            x0 = min(x0, Rt-W)
+            b = (x0, dy-H/2, x0+W, dy+H/2)
+            result[i] = ('h', b)
+            placed.append(b)
+            cap = min(cap, b[1]-M)
+        else:
+            # 垂直：先尝试正上，失败则正下；高度受 cap 约束(保持排名)
+            done = None
+            y0 = dy + R + GAP
+            if y0 + H <= cap:
+                x1 = min(dx+W/2, Rt)
+                nb = fix_x((max(x1-W, L), y0, max(x1-W, L)+W, y0+H), i, dx)
+                if nb:
+                    done = ('va', nb)
+            if not done:
+                y1 = min(dy - R - GAP, cap)
+                y0 = y1 - H
+                if y0 > B:
+                    x1 = min(dx+W/2, Rt)
+                    nb = fix_x((max(x1-W, L), y0, max(x1-W, L)+W, y0+H), i, dx)
+                    if nb:
+                        done = ('vb', nb)
+            if not done:
+                y0 = min(dy+R+GAP, cap-H)
+                x1 = min(dx+W/2, Rt)
+                done = ('va', (max(x1-W, L), y0, max(x1-W, L)+W, y0+H))
+            side, b = done
+            result[i] = (side, b)
+            placed.append(b)
+            cap = min(cap, b[1]-M)
+
+    # 先画标签(zorder=5)，再画连线(zorder=6)：连线可压别人标签、不压自己标签，且更高层可辨认归属
     for i, m in enumerate(pf):
-        dx, dyo, ha, va, elbow = chosen[i]
-        pt = 72.0 / dpi
-        ap = dict(arrowstyle="-", color="#00E5FF", lw=0.6, alpha=0.55,
-                  shrinkA=6, shrinkB=2)
-        if elbow:
-            ap["connectionstyle"] = f"angle,angleA={90 if dyo > 0 else -90},angleB=0"
-        ax.annotate(f"{i+1}. {m['model']}",
-                    xy=(float(m["normalized_cost"]), float(m["composite_ability"])),  # 数据坐标
-                    xytext=(dx * pt, dyo * pt), textcoords='offset points',
-                    fontsize=9, ha=ha, va=va,
-                    color="#FFFFFF", fontweight="bold", zorder=5,
-                    bbox=dict(boxstyle="round,pad=0.15", facecolor="#1A1A1A",
-                              alpha=0.9, edgecolor="#00E5FF", linewidth=0.5),
-                    arrowprops=ap)
+        kind, b = result[i]
+        cx, cy = inv.transform(((b[0]+b[2])/2, (b[1]+b[3])/2))
+        ax.text(cx, cy, f"{i+1}. {m['model']}", ha="center", va="center",
+                fontsize=9, color="#FFFFFF", fontweight="bold", zorder=5,
+                bbox=dict(boxstyle="round,pad=0.15", facecolor="#1A1A1A",
+                          alpha=0.9, edgecolor="#00E5FF", linewidth=0.5))
+    for i, m in enumerate(pf):
+        kind, b = result[i]
+        dx, dy = dots[i]
+        if kind == 'h':
+            p0 = inv.transform((dx+R, dy))
+            p1 = inv.transform((b[0]-1, dy))
+        elif kind == 'va':
+            p0 = inv.transform((dx, dy+R))
+            p1 = inv.transform((dx, b[1]+1))
+        else:
+            p0 = inv.transform((dx, dy-R))
+            p1 = inv.transform((dx, b[3]-1))
+        ax.plot([p0[0], p1[0]], [p0[1], p1[1]], color="#00E5FF",
+                lw=0.7, alpha=0.7, zorder=6)
 
     out = os.path.join(OUTPUT_DIR, "pareto_analysis.png")
-    plt.savefig(out, dpi=200, facecolor="#000000")   # 不用 bbox_inches="tight"
+    plt.savefig(out, dpi=200, facecolor="#000000")
     plt.close()
     print(f"Plot saved to {out}")
-
 
 # ══════════════════════════════════════════════════════════════════════
 # Helper: Fraction → JSON
