@@ -6,24 +6,25 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9199 | 79644.81 | 1.0000 | N |
-| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9093 | 48427.03 | 0.6080 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8933 | 32342.76 | 0.4061 | N |
-| 4 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8598 | 28261.74 | 0.3548 | N |
-| 5 | Grok 4.6 (high) | 0.8545 | 20476.24 | 0.2571 | N |
-| 6 | Qwen3.8 Max | 0.8152 | 19100.71 | 0.2398 | N |
-| 7 | Grok 4.5 (high) | 0.8026 | 9900.58 | 0.1243 | N |
-| 8 | Gemini 3.7 Flash (low) | 0.7429 | 4082.09 | 0.0513 | N |
-| 9 | MiniMax-M3 | 0.7141 | 3888.13 | 0.0488 | N |
-| 10 | DeepSeek V4 Flash 0731 (Reasoning, Max Effort) | 0.7022 | 3829.66 | 0.0481 | N |
-| 11 | GPT-5.6 Luna (high) | 0.6843 | 2661.13 | 0.0334 | N |
-| 12 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6542 | 2598.64 | 0.0326 | N |
-| 13 | MiMo-V2.5 | 0.6207 | 853.50 | 0.0107 | N |
-| 14 | Qwen3.5 9B (Reasoning) | 0.4185 | 623.48 | 0.0078 | N |
-| 15 | Qwen3.5 4B (Reasoning) | 0.4009 | 402.44 | 0.0051 | N |
-| 16 | Qwen3.5 9B (Non-reasoning) | 0.3693 | 299.99 | 0.0038 | N |
-| 17 | Qwen3.5 4B (Non-reasoning) | 0.3126 | 107.94 | 0.0014 | N |
-| 18 | Gemma 4 E4B (Non-reasoning) | 0.2534 | 73.24 | 0.0009 | N |
+| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9199 | 87381.71 | 1.0000 | N |
+| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9093 | 52691.40 | 0.6030 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8933 | 39175.07 | 0.4483 | N |
+| 4 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8598 | 27643.52 | 0.3164 | N |
+| 5 | Grok 4.6 (high) | 0.8545 | 21502.27 | 0.2461 | N |
+| 6 | Qwen3.8 Max | 0.8152 | 19100.71 | 0.2186 | N |
+| 7 | Grok 4.5 (high) | 0.8026 | 10320.02 | 0.1181 | N |
+| 8 | Gemini 3.7 Flash (medium) | 0.7806 | 8145.14 | 0.0932 | N |
+| 9 | Gemini 3.7 Flash (low) | 0.7429 | 4054.84 | 0.0464 | N |
+| 10 | MiniMax-M3 | 0.7141 | 3888.13 | 0.0445 | N |
+| 11 | DeepSeek V4 Flash 0731 (Reasoning, Max Effort) | 0.7022 | 3829.66 | 0.0438 | N |
+| 12 | GPT-5.6 Luna (high) | 0.6843 | 2714.15 | 0.0311 | N |
+| 13 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6542 | 2598.64 | 0.0297 | N |
+| 14 | MiMo-V2.5 | 0.6207 | 853.50 | 0.0098 | N |
+| 15 | Qwen3.5 9B (Reasoning) | 0.4185 | 623.48 | 0.0071 | N |
+| 16 | Qwen3.5 4B (Reasoning) | 0.4009 | 402.44 | 0.0046 | N |
+| 17 | Qwen3.5 9B (Non-reasoning) | 0.3693 | 299.74 | 0.0034 | N |
+| 18 | Qwen3.5 4B (Non-reasoning) | 0.3126 | 106.75 | 0.0012 | N |
+| 19 | Gemma 4 E4B (Non-reasoning) | 0.2534 | 73.38 | 0.0008 | N |
 
 ### 评分方法
 
