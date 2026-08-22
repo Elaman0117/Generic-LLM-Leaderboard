@@ -30,24 +30,24 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 8784635.035787327
+      "total_tokens": 8784635.035787323
     },
     {
       "agent": "Opencode",
       "model_slug": "google_gemini-3-6-flash_ai-studio",
       "display_label": "Opencode - Gemini 3.6 Flash (high)",
-      "cache_hit_rate": 0.8377770485520734,
+      "cache_hit_rate": 0.837777048552074,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 13020159.542944785
+      "total_tokens": 13020159.542944789
     },
     {
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-luna",
       "display_label": "Codex - GPT-5.6 Luna (low)",
-      "cache_hit_rate": 0.8430087375482049,
+      "cache_hit_rate": 0.8430087375482054,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -69,18 +69,18 @@
       "agent": "Claude Code",
       "model_slug": "deepseek_deepseek-v4-pro-1m",
       "display_label": "Claude Code - DeepSeek V4 Pro (high)",
-      "cache_hit_rate": 0.854135754522167,
+      "cache_hit_rate": 0.8541357545221666,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 9942165.528629858
+      "total_tokens": 9942165.528629865
     },
     {
       "agent": "Opencode",
       "model_slug": "google_andwise_ai-studio",
       "display_label": "Opencode - Gemini 3.7 Flash (high)",
-      "cache_hit_rate": 0.8634331167917663,
+      "cache_hit_rate": 0.8634331167917659,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -113,7 +113,7 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-luna",
       "display_label": "Codex - GPT-5.6 Luna (none)",
-      "cache_hit_rate": 0.8748960056789888,
+      "cache_hit_rate": 0.8748960056789892,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -124,12 +124,12 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-terra",
       "display_label": "Codex - GPT-5.6 Terra (low)",
-      "cache_hit_rate": 0.8771903855272029,
+      "cache_hit_rate": 0.8771903855272027,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 1657646.8445807747
+      "total_tokens": 1657646.8445807784
     },
     {
       "agent": "Codex",
@@ -157,18 +157,18 @@
       "agent": "Claude Code",
       "model_slug": "friendliai_glm-5-1",
       "display_label": "Claude Code - GLM-5.1",
-      "cache_hit_rate": 0.8889225409991813,
+      "cache_hit_rate": 0.888922540999181,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 25761884.92944787
+      "total_tokens": 25761884.929447833
     },
     {
       "agent": "Cursor CLI",
       "model_slug": "openai_gpt-5-5-medium",
       "display_label": "Cursor CLI - GPT-5.5 (medium)",
-      "cache_hit_rate": 0.8915632417465629,
+      "cache_hit_rate": 0.8915632417465625,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -245,7 +245,7 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-terra",
       "display_label": "Codex - GPT-5.6 Terra (high)",
-      "cache_hit_rate": 0.9049339862289004,
+      "cache_hit_rate": 0.9049339862289001,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -256,18 +256,18 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-sol",
       "display_label": "Codex - GPT-5.6 Sol (high)",
-      "cache_hit_rate": 0.9060190184699437,
+      "cache_hit_rate": 0.906019018469944,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 8030278.504089993
+      "total_tokens": 8030278.504089991
     },
     {
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-sol",
       "display_label": "Codex - GPT-5.6 Sol (xhigh)",
-      "cache_hit_rate": 0.9080963249335339,
+      "cache_hit_rate": 0.9080963249335335,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -294,7 +294,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 6631652.20858896
+      "total_tokens": 6631652.208588957
     },
     {
       "agent": "Codex",
@@ -322,7 +322,7 @@
       "agent": "Grok Build",
       "model_slug": "xai_grok-4-5",
       "display_label": "Grok Build - Grok 4.5 (high)",
-      "cache_hit_rate": 0.9238990226060745,
+      "cache_hit_rate": 0.9238990226060748,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -333,18 +333,18 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-5",
       "display_label": "Codex - GPT-5.5 (xhigh)",
-      "cache_hit_rate": 0.9341674523911524,
+      "cache_hit_rate": 0.9341674523911518,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 12150851.179959117
+      "total_tokens": 12150851.179959083
     },
     {
       "agent": "Cursor CLI",
       "model_slug": "cursor_composer-2-5-fast",
       "display_label": "Cursor CLI - Composer 2.5 Fast",
-      "cache_hit_rate": 0.9355410155352529,
+      "cache_hit_rate": 0.9355410155352533,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -355,7 +355,7 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-5",
       "display_label": "Codex - GPT-5.5 (medium)",
-      "cache_hit_rate": 0.9409891933709401,
+      "cache_hit_rate": 0.9409891933709399,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -393,7 +393,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 16350688.074539876
+      "total_tokens": 16350688.074539877
     },
     {
       "agent": "Opencode",
@@ -421,12 +421,12 @@
       "agent": "Cursor CLI",
       "model_slug": "anthropic_claude-opus-4-7",
       "display_label": "Cursor CLI - Opus 4.7 (medium)",
-      "cache_hit_rate": 0.9538631453697449,
+      "cache_hit_rate": 0.9538631453697446,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 5728865.180470356
+      "total_tokens": 5728865.180470352
     },
     {
       "agent": "Claude Code",
@@ -454,7 +454,7 @@
       "agent": "Opencode",
       "model_slug": "anthropic_claude-opus-4-7",
       "display_label": "Opencode - Opus 4.7 (medium)",
-      "cache_hit_rate": 0.9584168731547833,
+      "cache_hit_rate": 0.9584168731547836,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -470,13 +470,13 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 13868659.998977493
+      "total_tokens": 13868659.998977497
     },
     {
       "agent": "Claude Code",
       "model_slug": "anthropic_claude-opus-5",
       "display_label": "Claude Code - Opus 5 (low)",
-      "cache_hit_rate": 0.9637890151908798,
+      "cache_hit_rate": 0.9637890151908801,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -498,7 +498,7 @@
       "agent": "Claude Code",
       "model_slug": "anthropic_claude-opus-4-8",
       "display_label": "Claude Code - Opus 4.8 (max)",
-      "cache_hit_rate": 0.9657541826994761,
+      "cache_hit_rate": 0.9657541826994763,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -520,12 +520,12 @@
       "agent": "Claude Code",
       "model_slug": "anthropic_claude-opus-4-7",
       "display_label": "Claude Code - Opus 4.7 (max)",
-      "cache_hit_rate": 0.9665216325317725,
+      "cache_hit_rate": 0.9665216325317721,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 16129723.114519436
+      "total_tokens": 16129723.114519438
     },
     {
       "agent": "Claude Code",
@@ -580,24 +580,24 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 21565879.138036843
+      "total_tokens": 21565879.138036806
     },
     {
       "agent": "Claude Code",
       "model_slug": "anthropic_claude-opus-5",
       "display_label": "Claude Code - Opus 5 (max)",
-      "cache_hit_rate": 0.9747033593278787,
+      "cache_hit_rate": 0.974703359327879,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 23699428.052147225
+      "total_tokens": 23699428.05214722
     },
     {
       "agent": "Codex",
       "model_slug": "deepseek_deepseek-v4-flash-0731",
-      "display_label": "Codex - DeepSeek V4 Flash (max)",
-      "cache_hit_rate": 0.9807621661364226,
+      "display_label": "Codex - DeepSeek V4 Flash 0731 (max)",
+      "cache_hit_rate": 0.980762166136423,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -608,7 +608,7 @@
       "agent": "Cursor CLI",
       "model_slug": "cursor_composer-2-5",
       "display_label": "Cursor CLI - Composer 2.5",
-      "cache_hit_rate": 1.0528330757504782,
+      "cache_hit_rate": 1.0528330757504785,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
