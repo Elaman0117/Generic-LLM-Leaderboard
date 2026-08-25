@@ -6,29 +6,30 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9199 | 85109.92 | 1.0000 | N |
-| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9093 | 69765.86 | 0.8197 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8933 | 47057.18 | 0.5529 | N |
-| 4 | Kimi K3 (max) | 0.8679 | 42884.25 | 0.5039 | N |
-| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8598 | 29602.07 | 0.3478 | N |
-| 6 | Grok 4.6 (xhigh) | 0.8567 | 26873.11 | 0.3157 | N |
-| 7 | Grok 4.6 (high) | 0.8545 | 26587.24 | 0.3124 | N |
-| 8 | Grok 4.6 (medium) | 0.8428 | 19471.68 | 0.2288 | N |
-| 9 | Qwen3.8 Max | 0.8152 | 19045.34 | 0.2238 | N |
-| 10 | Grok 4.5 (high) | 0.8026 | 10496.82 | 0.1233 | N |
-| 11 | Gemini 3.7 Flash (medium) | 0.7806 | 10403.43 | 0.1222 | N |
-| 12 | Gemini 3.7 Flash (low) | 0.7429 | 4399.38 | 0.0517 | N |
-| 13 | MiniMax-M3 | 0.7141 | 3878.16 | 0.0456 | N |
-| 14 | DeepSeek V4 Flash 0731 (Reasoning, Max Effort) | 0.7022 | 3816.18 | 0.0448 | N |
-| 15 | GPT-5.6 Luna (high) | 0.6843 | 2917.34 | 0.0343 | N |
-| 16 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6542 | 2584.99 | 0.0304 | N |
-| 17 | MiMo-V2.5 | 0.6207 | 849.15 | 0.0100 | N |
-| 18 | Ling 3.0 Flash | 0.5326 | 752.98 | 0.0088 | N |
-| 19 | Qwen3.5 9B (Reasoning) | 0.4185 | 619.21 | 0.0073 | N |
-| 20 | Qwen3.5 4B (Reasoning) | 0.4009 | 401.49 | 0.0047 | N |
-| 21 | Qwen3.5 9B (Non-reasoning) | 0.3693 | 291.80 | 0.0034 | N |
-| 22 | Qwen3.5 4B (Non-reasoning) | 0.3126 | 103.76 | 0.0012 | N |
-| 23 | Gemma 4 E4B (Non-reasoning) | 0.2534 | 71.11 | 0.0008 | N |
+| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9199 | 102451.19 | 1.0000 | N |
+| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9097 | 76347.10 | 0.7452 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8934 | 52917.35 | 0.5165 | N |
+| 4 | Kimi K3 (max) | 0.8682 | 42884.25 | 0.4186 | N |
+| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8600 | 31308.26 | 0.3056 | N |
+| 6 | Grok 4.6 (xhigh) | 0.8570 | 27131.10 | 0.2648 | N |
+| 7 | Grok 4.6 (high) | 0.8547 | 25543.62 | 0.2493 | N |
+| 8 | Grok 4.6 (medium) | 0.8432 | 21513.42 | 0.2100 | N |
+| 9 | GLM-5.3 (max) | 0.8345 | 14606.68 | 0.1426 | N |
+| 10 | Grok 4.5 (high) | 0.8027 | 11163.31 | 0.1090 | N |
+| 11 | Gemini 3.7 Flash (medium) | 0.7809 | 9516.57 | 0.0929 | N |
+| 12 | Gemini 3.7 Flash (low) | 0.7434 | 4633.52 | 0.0452 | N |
+| 13 | MiniMax-M3 | 0.7142 | 3878.16 | 0.0379 | N |
+| 14 | DeepSeek V4 Flash 0731 (Reasoning, Max Effort) | 0.7027 | 3816.18 | 0.0372 | N |
+| 15 | DeepSeek V4 Flash Vision (Reasoning, Max Effort) | 0.6986 | 3816.18 | 0.0372 | N |
+| 16 | GPT-5.6 Luna (high) | 0.6846 | 3083.46 | 0.0301 | N |
+| 17 | DeepSeek V4 Pro (Reasoning, High Effort) | 0.6545 | 2584.99 | 0.0252 | N |
+| 18 | MiMo-V2.5 | 0.6209 | 849.15 | 0.0083 | N |
+| 19 | Ling 3.0 Flash | 0.5328 | 752.98 | 0.0073 | N |
+| 20 | Qwen3.5 9B (Reasoning) | 0.4186 | 619.21 | 0.0060 | N |
+| 21 | Qwen3.5 4B (Reasoning) | 0.4009 | 401.49 | 0.0039 | N |
+| 22 | Qwen3.5 9B (Non-reasoning) | 0.3693 | 292.39 | 0.0029 | N |
+| 23 | Qwen3.5 4B (Non-reasoning) | 0.3126 | 103.54 | 0.0010 | N |
+| 24 | Gemma 4 E4B (Non-reasoning) | 0.2534 | 71.19 | 0.0007 | N |
 
 ### 评分方法
 
@@ -74,4 +75,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 261  
+**模型总数**: 263  
