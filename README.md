@@ -6,25 +6,25 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9199 | 81862.06 | 1.0000 | N |
-| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9096 | 49301.35 | 0.6022 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8937 | 47581.35 | 0.5812 | N |
-| 4 | Kimi K3 (max) | 0.8685 | 42823.02 | 0.5231 | N |
-| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8605 | 29338.75 | 0.3584 | N |
-| 6 | Grok 4.6 (xhigh) | 0.8574 | 23560.23 | 0.2878 | N |
-| 7 | Grok 4.6 (medium) | 0.8437 | 21178.09 | 0.2587 | N |
-| 8 | GLM-5.3 (max) | 0.8351 | 14580.83 | 0.1781 | N |
-| 9 | Grok 4.5 (high) | 0.8032 | 11661.65 | 0.1425 | N |
-| 10 | GLM-5.3-Flash | 0.7903 | 1616.69 | 0.0197 | N |
-| 11 | Qwen3.8-Flash-Next | 0.7568 | 1450.29 | 0.0177 | N |
-| 12 | Agnes 2.5 Pro Beta | 0.7105 | 927.43 | 0.0113 | N |
-| 13 | MiMo-V2.5 | 0.6211 | 846.04 | 0.0103 | N |
-| 14 | Ling 3.0 Flash | 0.5332 | 751.62 | 0.0092 | N |
-| 15 | Qwen3.5 9B (Reasoning) | 0.4187 | 616.15 | 0.0075 | N |
-| 16 | Qwen3.5 4B (Reasoning) | 0.4009 | 400.81 | 0.0049 | N |
-| 17 | Qwen3.5 9B (Non-reasoning) | 0.3693 | 290.62 | 0.0036 | N |
-| 18 | Qwen3.5 4B (Non-reasoning) | 0.3126 | 104.84 | 0.0013 | N |
-| 19 | Gemma 4 E4B (Non-reasoning) | 0.2534 | 71.32 | 0.0009 | N |
+| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9199 | 94997.87 | 1.0000 | N |
+| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9095 | 56278.49 | 0.5924 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8936 | 50319.43 | 0.5297 | N |
+| 4 | Kimi K3 (max) | 0.8683 | 42823.02 | 0.4508 | N |
+| 5 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8604 | 29338.75 | 0.3088 | N |
+| 6 | Grok 4.6 (xhigh) | 0.8573 | 24154.90 | 0.2543 | N |
+| 7 | Grok 4.6 (medium) | 0.8436 | 21178.09 | 0.2229 | N |
+| 8 | GLM-5.3 (max) | 0.8347 | 14580.83 | 0.1535 | N |
+| 9 | Grok 4.5 (high) | 0.8031 | 12255.24 | 0.1290 | N |
+| 10 | GLM-5.3-Flash | 0.7902 | 1616.69 | 0.0170 | N |
+| 11 | Qwen3.8-Flash-Next | 0.7567 | 1450.29 | 0.0153 | N |
+| 12 | Agnes 2.5 Pro Beta | 0.7104 | 927.43 | 0.0098 | N |
+| 13 | MiMo-V2.5 | 0.6211 | 846.04 | 0.0089 | N |
+| 14 | Ling 3.0 Flash | 0.5331 | 751.62 | 0.0079 | N |
+| 15 | Qwen3.5 9B (Reasoning) | 0.4186 | 616.15 | 0.0065 | N |
+| 16 | Qwen3.5 4B (Reasoning) | 0.4009 | 400.81 | 0.0042 | N |
+| 17 | Qwen3.5 9B (Non-reasoning) | 0.3693 | 290.53 | 0.0031 | N |
+| 18 | Qwen3.5 4B (Non-reasoning) | 0.3126 | 104.57 | 0.0011 | N |
+| 19 | Gemma 4 E4B (Non-reasoning) | 0.2534 | 71.37 | 0.0008 | N |
 
 ### 评分方法
 
