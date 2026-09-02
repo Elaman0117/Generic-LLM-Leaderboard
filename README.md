@@ -6,25 +6,27 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9199 | 84092.67 | 1.0000 | N |
-| 2 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.9095 | 58514.44 | 0.6958 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8936 | 35131.69 | 0.4178 | N |
-| 4 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8604 | 26951.37 | 0.3205 | N |
-| 5 | Grok 4.6 (xhigh) | 0.8572 | 24185.86 | 0.2876 | N |
-| 6 | Grok 4.6 (medium) | 0.8433 | 19838.81 | 0.2359 | N |
-| 7 | GLM-5.3 (max) | 0.8347 | 14534.10 | 0.1728 | N |
-| 8 | Gemini 3.7 Flash (high) | 0.8195 | 13509.39 | 0.1606 | N |
-| 9 | Grok 4.5 (high) | 0.8031 | 10332.78 | 0.1229 | N |
-| 10 | GLM-5.3-Flash | 0.7902 | 1611.60 | 0.0192 | N |
-| 11 | Qwen3.8-Flash-Next | 0.7569 | 1444.80 | 0.0172 | N |
-| 12 | Agnes 2.5 Pro Beta | 0.7104 | 923.74 | 0.0110 | N |
-| 13 | MiMo-V2.5 | 0.6210 | 840.42 | 0.0100 | N |
-| 14 | Ling 3.0 Flash | 0.5331 | 749.16 | 0.0089 | N |
-| 15 | Qwen3.5 9B (Reasoning) | 0.4187 | 610.62 | 0.0073 | N |
-| 16 | Qwen3.5 4B (Reasoning) | 0.4009 | 399.58 | 0.0048 | N |
-| 17 | Qwen3.5 9B (Non-reasoning) | 0.3693 | 282.64 | 0.0034 | N |
-| 18 | Qwen3.5 4B (Non-reasoning) | 0.3126 | 102.32 | 0.0012 | N |
-| 19 | Gemma 4 E4B (Non-reasoning) | 0.2534 | 69.74 | 0.0008 | N |
+| 1 | Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback) | 0.9276 | 1023638.82 | 1.0000 | N |
+| 2 | Claude Fable 5.1 (Adaptive Reasoning, Xhigh Effort, Default Fallback) | 0.9202 | 431125.27 | 0.4212 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.9003 | 100872.10 | 0.0985 | N |
+| 4 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.8902 | 64374.08 | 0.0629 | N |
+| 5 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8747 | 36164.21 | 0.0353 | N |
+| 6 | Claude Opus 5 (Adaptive Reasoning, Medium Effort) | 0.8425 | 26791.59 | 0.0262 | N |
+| 7 | Grok 4.6 (xhigh) | 0.8384 | 19050.22 | 0.0186 | N |
+| 8 | Grok 4.6 (medium) | 0.8247 | 15054.82 | 0.0147 | N |
+| 9 | GLM-5.3 (max) | 0.8161 | 14534.10 | 0.0142 | N |
+| 10 | Muse Spark 1.2 (xhigh) | 0.8133 | 13026.33 | 0.0127 | N |
+| 11 | Grok 4.5 (high) | 0.7865 | 10590.80 | 0.0103 | N |
+| 12 | GLM-5.3-Flash | 0.7728 | 1611.60 | 0.0016 | N |
+| 13 | Qwen3.8-Flash-Next | 0.7412 | 1444.80 | 0.0014 | N |
+| 14 | Agnes 2.5 Pro Beta | 0.6967 | 923.74 | 0.0009 | N |
+| 15 | MiMo-V2.5 | 0.6124 | 840.42 | 0.0008 | N |
+| 16 | Ling 3.0 Flash | 0.5221 | 749.16 | 0.0007 | N |
+| 17 | Qwen3.5 9B (Reasoning) | 0.4142 | 610.62 | 0.0006 | N |
+| 18 | Qwen3.5 4B (Reasoning) | 0.3974 | 399.58 | 0.0004 | N |
+| 19 | Qwen3.5 9B (Non-reasoning) | 0.3655 | 284.27 | 0.0003 | N |
+| 20 | Qwen3.5 4B (Non-reasoning) | 0.3096 | 102.99 | 0.0001 | N |
+| 21 | Gemma 4 E4B (Non-reasoning) | 0.2522 | 69.58 | 0.0001 | N |
 
 ### 评分方法
 
@@ -70,4 +72,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 271  
+**模型总数**: 276  
