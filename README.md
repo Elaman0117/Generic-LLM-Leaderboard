@@ -7,24 +7,22 @@
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
 | 1 | Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback) | 0.9262 | 956506.62 | 1.0000 | N |
-| 2 | Claude Fable 5.1 (Adaptive Reasoning, Xhigh Effort, Default Fallback) | 0.9188 | 405638.02 | 0.4241 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.8976 | 132516.88 | 0.1385 | N |
-| 4 | Claude Fable 5.1 (Adaptive Reasoning, High Effort, Default Fallback) | 0.8887 | 124067.32 | 0.1297 | N |
+| 2 | Claude Fable 5.1 (Adaptive Reasoning, Xhigh Effort, Default Fallback) | 0.9188 | 434190.35 | 0.4539 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.8976 | 131969.30 | 0.1380 | N |
+| 4 | Claude Fable 5.1 (Adaptive Reasoning, High Effort, Default Fallback) | 0.8887 | 124017.73 | 0.1297 | N |
 | 5 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.8874 | 67299.53 | 0.0704 | N |
 | 6 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8720 | 47729.64 | 0.0499 | N |
 | 7 | Muse Spark 1.3 (xhigh) | 0.8634 | 13034.71 | 0.0136 | N |
 | 8 | Gemini 3.8 Flash (medium) | 0.7940 | 10730.40 | 0.0112 | N |
-| 9 | Grok 4.5 (high) | 0.7838 | 10692.46 | 0.0112 | N |
-| 10 | GLM-5.3-Flash | 0.7714 | 1612.55 | 0.0017 | N |
-| 11 | Qwen3.8-Flash-Next | 0.7386 | 1445.82 | 0.0015 | N |
-| 12 | Agnes 2.5 Pro Beta | 0.6942 | 924.43 | 0.0010 | N |
-| 13 | MiMo-V2.5 | 0.6104 | 841.47 | 0.0009 | N |
-| 14 | Ling 3.0 Flash | 0.5209 | 749.62 | 0.0008 | N |
-| 15 | Qwen3.5 9B (Reasoning) | 0.4125 | 611.65 | 0.0006 | N |
-| 16 | Qwen3.5 4B (Reasoning) | 0.3955 | 399.81 | 0.0004 | N |
-| 17 | Qwen3.5 9B (Non-reasoning) | 0.3635 | 283.70 | 0.0003 | N |
-| 18 | Qwen3.5 4B (Non-reasoning) | 0.3078 | 102.46 | 0.0001 | N |
-| 19 | Gemma 4 E4B (Non-reasoning) | 0.2508 | 69.96 | 0.0001 | N |
+| 9 | GLM-5.3-Flash | 0.7714 | 1612.55 | 0.0017 | N |
+| 10 | Qwen3.8-Flash-Next | 0.7386 | 1445.82 | 0.0015 | N |
+| 11 | MiMo-V2.5 | 0.6104 | 841.47 | 0.0009 | N |
+| 12 | Ling 3.0 Flash | 0.5209 | 749.62 | 0.0008 | N |
+| 13 | Qwen3.5 9B (Reasoning) | 0.4125 | 611.65 | 0.0006 | N |
+| 14 | Qwen3.5 4B (Reasoning) | 0.3955 | 399.81 | 0.0004 | N |
+| 15 | Qwen3.5 9B (Non-reasoning) | 0.3635 | 283.52 | 0.0003 | N |
+| 16 | Qwen3.5 4B (Non-reasoning) | 0.3078 | 102.44 | 0.0001 | N |
+| 17 | Gemma 4 E4B (Non-reasoning) | 0.2508 | 69.69 | 0.0001 | N |
 
 ### 评分方法
 
