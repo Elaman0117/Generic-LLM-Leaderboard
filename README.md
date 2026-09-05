@@ -6,23 +6,25 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback) | 0.9262 | 956506.62 | 1.0000 | N |
-| 2 | Claude Fable 5.1 (Adaptive Reasoning, Xhigh Effort, Default Fallback) | 0.9188 | 434190.35 | 0.4539 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.8976 | 131969.30 | 0.1380 | N |
-| 4 | Claude Fable 5.1 (Adaptive Reasoning, High Effort, Default Fallback) | 0.8887 | 124017.73 | 0.1297 | N |
-| 5 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.8874 | 67299.53 | 0.0704 | N |
-| 6 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8720 | 47729.64 | 0.0499 | N |
-| 7 | Muse Spark 1.3 (xhigh) | 0.8634 | 13034.71 | 0.0136 | N |
-| 8 | Gemini 3.8 Flash (medium) | 0.7940 | 10730.40 | 0.0112 | N |
-| 9 | GLM-5.3-Flash | 0.7714 | 1612.55 | 0.0017 | N |
-| 10 | Qwen3.8-Flash-Next | 0.7386 | 1445.82 | 0.0015 | N |
-| 11 | MiMo-V2.5 | 0.6104 | 841.47 | 0.0009 | N |
-| 12 | Ling 3.0 Flash | 0.5209 | 749.62 | 0.0008 | N |
-| 13 | Qwen3.5 9B (Reasoning) | 0.4125 | 611.65 | 0.0006 | N |
-| 14 | Qwen3.5 4B (Reasoning) | 0.3955 | 399.81 | 0.0004 | N |
-| 15 | Qwen3.5 9B (Non-reasoning) | 0.3635 | 283.52 | 0.0003 | N |
-| 16 | Qwen3.5 4B (Non-reasoning) | 0.3078 | 102.44 | 0.0001 | N |
-| 17 | Gemma 4 E4B (Non-reasoning) | 0.2508 | 69.69 | 0.0001 | N |
+| 1 | Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback) | 0.9264 | 952166.50 | 1.0000 | N |
+| 2 | Claude Fable 5.1 (Adaptive Reasoning, Xhigh Effort, Default Fallback) | 0.9153 | 532817.54 | 0.5596 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.8935 | 156444.96 | 0.1643 | N |
+| 4 | Claude Fable 5.1 (Adaptive Reasoning, High Effort, Default Fallback) | 0.8855 | 124594.18 | 0.1309 | N |
+| 5 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.8829 | 69647.69 | 0.0731 | N |
+| 6 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8652 | 54070.35 | 0.0568 | N |
+| 7 | Muse Spark 1.3 (max) | 0.8649 | 12935.13 | 0.0136 | N |
+| 8 | Muse Spark 1.3 (xhigh) | 0.8604 | 12935.13 | 0.0136 | N |
+| 9 | Muse Spark 1.2 (xhigh) | 0.7926 | 12935.13 | 0.0136 | N |
+| 10 | Grok 4.5 (high) | 0.7712 | 11214.93 | 0.0118 | N |
+| 11 | GLM-5.3-Flash | 0.7592 | 1601.32 | 0.0017 | N |
+| 12 | Qwen3.8-Flash-Next | 0.7156 | 1433.69 | 0.0015 | N |
+| 13 | MiMo-V2.5 | 0.6150 | 829.05 | 0.0009 | N |
+| 14 | Ling 3.0 Flash | 0.4953 | 744.19 | 0.0008 | N |
+| 15 | Qwen3.5 9B (Reasoning) | 0.4251 | 599.43 | 0.0006 | N |
+| 16 | Qwen3.5 4B (Reasoning) | 0.3991 | 397.09 | 0.0004 | N |
+| 17 | Qwen3.5 9B (Non-reasoning) | 0.3503 | 268.20 | 0.0003 | N |
+| 18 | Qwen3.5 4B (Non-reasoning) | 0.3020 | 99.25 | 0.0001 | N |
+| 19 | Gemma 4 E4B (Non-reasoning) | 0.2603 | 67.99 | 0.0001 | N |
 
 ### 评分方法
 
@@ -44,7 +46,7 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 
 | 参数 | 来源 | 说明 |
 |------|------|------|
-| CacheHitRate | [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents) | 全部模型-Agent搭配的 `cacheHitRate` 求平均（68 个有效值，均值 = 0.9173），对所有模型统一使用 |
+| CacheHitRate | [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents) | 全部模型-Agent搭配的 `cacheHitRate` 求平均（68 个有效值，均值 = 0.9264），对所有模型统一使用 |
 | CacheHitPrice | AA `cacheHitPrice` | 缓存命中的输入价格 (USD / 1M tokens) |
 | CacheWritePrice | AA `cacheWritePrice` | 若缺失，回退到 `price1mInputTokens` (普通输入价格) |
 | InputTokens | `10000` | AA 默认的 10k input-token 工作负载（[方法论](https://artificialanalysis.ai/methodology/performance-benchmarking)） |
@@ -68,4 +70,4 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 **主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)  
 **Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  
 **性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  
-**模型总数**: 288  
+**模型总数**: 286  
