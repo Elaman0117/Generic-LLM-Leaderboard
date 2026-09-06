@@ -6,25 +6,24 @@
 
 | # | 模型 | 综合能力 | 单请求成本 | 归一化成本 | 推理 |
 |---|------|---------|-----------|-----------|------|
-| 1 | Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback) | 0.9264 | 952166.50 | 1.0000 | N |
-| 2 | Claude Fable 5.1 (Adaptive Reasoning, Xhigh Effort, Default Fallback) | 0.9153 | 532817.54 | 0.5596 | N |
-| 3 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.8935 | 156444.96 | 0.1643 | N |
-| 4 | Claude Fable 5.1 (Adaptive Reasoning, High Effort, Default Fallback) | 0.8855 | 124594.18 | 0.1309 | N |
-| 5 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.8829 | 69647.69 | 0.0731 | N |
-| 6 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8652 | 54070.35 | 0.0568 | N |
-| 7 | Muse Spark 1.3 (max) | 0.8649 | 12935.13 | 0.0136 | N |
-| 8 | Muse Spark 1.3 (xhigh) | 0.8604 | 12935.13 | 0.0136 | N |
-| 9 | Muse Spark 1.2 (xhigh) | 0.7926 | 12935.13 | 0.0136 | N |
-| 10 | Grok 4.5 (high) | 0.7712 | 11214.93 | 0.0118 | N |
-| 11 | GLM-5.3-Flash | 0.7592 | 1601.32 | 0.0017 | N |
-| 12 | Qwen3.8-Flash-Next | 0.7156 | 1433.69 | 0.0015 | N |
-| 13 | MiMo-V2.5 | 0.6150 | 829.05 | 0.0009 | N |
-| 14 | Ling 3.0 Flash | 0.4953 | 744.19 | 0.0008 | N |
-| 15 | Qwen3.5 9B (Reasoning) | 0.4251 | 599.43 | 0.0006 | N |
-| 16 | Qwen3.5 4B (Reasoning) | 0.3991 | 397.09 | 0.0004 | N |
-| 17 | Qwen3.5 9B (Non-reasoning) | 0.3503 | 268.20 | 0.0003 | N |
-| 18 | Qwen3.5 4B (Non-reasoning) | 0.3020 | 99.25 | 0.0001 | N |
-| 19 | Gemma 4 E4B (Non-reasoning) | 0.2603 | 67.99 | 0.0001 | N |
+| 1 | Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback) | 0.9264 | 970146.35 | 1.0000 | N |
+| 2 | Claude Fable 5.1 (Adaptive Reasoning, Xhigh Effort, Default Fallback) | 0.9153 | 401673.40 | 0.4140 | N |
+| 3 | Claude Opus 5 (Adaptive Reasoning, Max Effort) | 0.8935 | 114912.47 | 0.1184 | N |
+| 4 | Claude Fable 5.1 (Adaptive Reasoning, High Effort, Default Fallback) | 0.8855 | 103844.14 | 0.1070 | N |
+| 5 | Claude Opus 5 (Adaptive Reasoning, Xhigh Effort) | 0.8828 | 68627.16 | 0.0707 | N |
+| 6 | Claude Opus 5 (Adaptive Reasoning, High Effort) | 0.8652 | 48173.71 | 0.0497 | N |
+| 7 | Muse Spark 1.3 (max) | 0.8650 | 12935.13 | 0.0133 | N |
+| 8 | Muse Spark 1.2 (xhigh) | 0.7926 | 12935.13 | 0.0133 | N |
+| 9 | Gemini 3.8 Flash (medium) | 0.7864 | 10783.37 | 0.0111 | N |
+| 10 | GLM-5.3-Flash | 0.7592 | 1601.32 | 0.0017 | N |
+| 11 | Qwen3.8-Flash-Next | 0.7155 | 1433.69 | 0.0015 | N |
+| 12 | MiMo-V2.5 | 0.5942 | 829.05 | 0.0009 | N |
+| 13 | Ling 3.0 Flash | 0.4952 | 744.19 | 0.0008 | N |
+| 14 | Qwen3.5 9B (Reasoning) | 0.4250 | 599.43 | 0.0006 | N |
+| 15 | Qwen3.5 4B (Reasoning) | 0.3991 | 397.09 | 0.0004 | N |
+| 16 | Qwen3.5 9B (Non-reasoning) | 0.3503 | 266.89 | 0.0003 | N |
+| 17 | Qwen3.5 4B (Non-reasoning) | 0.3020 | 99.05 | 0.0001 | N |
+| 18 | Gemma 4 E4B (Non-reasoning) | 0.2603 | 68.25 | 0.0001 | N |
 
 ### 评分方法
 
