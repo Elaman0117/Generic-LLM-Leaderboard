@@ -3,12 +3,16 @@
 Scraper for Artificial Analysis LLM Leaderboard.
 
 Extracts the full model dataset from the Next.js RSC payload embedded in the page.
-This gives us ~500 models with 88 fields including:
+This gives us ~640 models with 88 fields including:
   - intelligenceIndexCostTotal: AA's actual measured cost to run the Intelligence Index
   - All pricing (input, output, cache_hit, cache_write, blended at various ratios)
   - All intelligence evaluation scores (gpqa, hle, scicode, etc.)
   - Speed, latency, and timing data
   - Token counts for the Intelligence Index evaluations
+
+The RSC payload contains EVERY model regardless of the page's Status filter
+(Current / All) — including deprecated ones (`deprecated: true`), which
+analyze.py keeps (Status: All) as of Version 10.
 
 No need to manually calculate per-request cost — AA provides
 intelligenceIndexCostTotal which is the real measured cost.
