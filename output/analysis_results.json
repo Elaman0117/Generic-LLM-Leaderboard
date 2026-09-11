@@ -4767,11 +4767,11 @@
       "creator_color": "#1521a9",
       "creator_logo_url": "https://artificialanalysis.ai/img/logos/mbzuai_small.svg",
       "is_deprecated": false,
-      "composite_ability": 0.6554868746687574,
+      "composite_ability": 0.6549787394810618,
       "per_request_cost": null,
       "x_axis_position": null,
       "in_chart": false,
-      "chart_y": 0.08970787840785871,
+      "chart_y": 0.08836525479194171,
       "is_pareto": false,
       "brand_frontier_of": null
     },
