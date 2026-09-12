@@ -3,12 +3,12 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 13,
-    "valid_count": 13
+    "total_combinations": 15,
+    "valid_count": 15
   },
-  "cache_hit_rate": 0.9485085651530814,
-  "valid_count": 13,
-  "total_count": 13,
+  "cache_hit_rate": 0.947279030781377,
+  "valid_count": 15,
+  "total_count": 15,
   "combinations": [
     {
       "agent": "Antigravity SDK v0.1.12",
@@ -42,6 +42,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 5715253.85918592
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": "Devin Fusion CLI - GPT-6 Astra XHigh + SWE-2 Medium",
+      "cache_hit_rate": 0.920061132172241,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 6074134.4950494915
     },
     {
       "agent": null,
@@ -86,6 +97,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 8723306.44030633
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": "Devin Fusion CLI - Claude Fable 5.1 XHigh + SWE-2 Medium",
+      "cache_hit_rate": 0.9585129825583554,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 9691739.689768959
     },
     {
       "agent": "Muse Code 1.0.2 RC",
