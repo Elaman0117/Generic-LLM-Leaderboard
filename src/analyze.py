@@ -3,6 +3,29 @@
 """
 Scoring system and Pareto analysis for Artificial Analysis LLM Leaderboard.
 
+**Version 18** — benchmark columns updated to AA's new payload (20 metrics)
+
+AA redesigned the models-leaderboard RSC payload: the old 96-field array
+is gone (its `agenticIndex` / `codingIndex` — the AA Agentic and Coding
+Indexes — no longer ship at all), and four newer benchmark columns are
+now carried.  METRIC_FIELDS therefore moves 18 → 20:
+
+  removed:  agenticIndex (AA Agentic Index),
+            codingIndex  (AA Coding Index)
+  added:    analystAgent    — AA Analyst Agent
+            tauBanking      — τ³-Bench Banking ("Intelligence Index v4.3 …
+                              𝜏³-Banking is removed …" per AA's own note;
+                              historical scores remain in the payload)
+            terminalbenchV21 — Terminal-Bench 2.1
+            terminalbenchV40 — Terminal-Bench 4.0 ("Terminal-Bench moves
+                              to v4.0")
+
+The cost pipeline is untouched — it computes from prices/speed/latency,
+not from the (now missing) intelligenceIndexCostTotal.  scrape.py (V18)
+merges the page's display-metadata `models` array into the main one by
+slug, restoring `name` / `releaseDate`; creator slugs are derived from
+the creator name where AA no longer provides them.
+
 **Version 17** — chart scope, axis mapping and font determinism
 (user feedback, four items):
 
@@ -28,8 +51,10 @@ C.  **Chart Y baseline.**  y = 0 sits at the FIRST (lowest) level of
     applied BEFORE the X mapping is built.
 
 D.  **X mapping = exact empirical-quantile (rank) mapping** over the
-    chart-visible models: piecewise-linear in log10(c) (equal-cost ties
-    averaged), pinned to pass (0,0) and (1,1) exactly, and — being
+    chart-visible models: piecewise-linear in log10(c) (same-z tie
+    groups averaged — V18: ties detected on equal log10(c), which also
+    absorbs float costs differing by ~1e-12 that log10 collapses to the
+    same z), pinned to pass (0,0) and (1,1) exactly, and — being
     linear in model rank — uniform in density: ANY equal-width segment
     holds the same number of models (the user's top priority).  The V12
     logistic could not do this on the filtered distribution (its decile
@@ -198,10 +223,12 @@ LW_OVERALL = 2.2                 # 总体帕累托线宽
 LW_BRAND = 1.1                   # 品牌线宽（较窄，避免遮挡）
 
 # ── Metrics (from AA's evaluation data) ──
+# V18: agenticIndex / codingIndex (AA Agentic / Coding Index) were removed
+# from AA's models payload; the four new benchmark columns are added —
+# analystAgent, tauBanking (τ³-Bench Banking), terminalbenchV21 (2.1) and
+# terminalbenchV40 (4.0).  20 metrics total.
 METRIC_FIELDS = {
     "intelligenceIndex": "intelligenceIndex",
-    "agenticIndex": "agenticIndex",
-    "codingIndex": "codingIndex",
     "gpqa": "gpqa",
     "hle": "hle",
     "mmmuPro": "mmmuPro",
@@ -209,20 +236,22 @@ METRIC_FIELDS = {
     "scicode": "scicode",
     "critpt": "critpt",
     "lcr": "lcr",
-    "tau2": "tau2",
-    "terminalbenchHard": "terminalbenchHard",
     "omniscience": "omniscience",
     "omniscienceAccuracy": "omniscienceAccuracy",
     "omniscienceNonHallucination": "omniscienceNonHallucination",
+    "gdpvalNormalized": "gdpvalNormalized",
+    "analystAgent": "analystAgent",
     "apexAgents": "apexAgents",
     "itbenchSre": "itbenchSre",
-    "gdpvalNormalized": "gdpvalNormalized",
+    "tau2": "tau2",
+    "tauBanking": "tauBanking",
+    "terminalbenchHard": "terminalbenchHard",
+    "terminalbenchV21": "terminalbenchV21",
+    "terminalbenchV40": "terminalbenchV40",
 }
 
 METRIC_LABELS = {
     "intelligenceIndex": "AA Intelligence Index",
-    "agenticIndex": "AA Agentic Index",
-    "codingIndex": "AA Coding Index",
     "gpqa": "GPQA Diamond",
     "hle": "Humanity's Last Exam",
     "mmmuPro": "MMMU Pro",
@@ -230,14 +259,18 @@ METRIC_LABELS = {
     "scicode": "SciCode Coding",
     "critpt": "CritPt Physics",
     "lcr": "AA-LCR Long Context",
-    "tau2": "τ²-Bench Telecom",
-    "terminalbenchHard": "Terminal-Bench Hard",
     "omniscience": "AA Omniscience Index",
     "omniscienceAccuracy": "AA-Omniscience Accuracy",
     "omniscienceNonHallucination": "AA-Omniscience Non-Hallucination",
+    "gdpvalNormalized": "GDPval-AA Normalized",
+    "analystAgent": "AA Analyst Agent",
     "apexAgents": "APEX-Agents-AA",
     "itbenchSre": "ITBench-SRE",
-    "gdpvalNormalized": "GDPval-AA Normalized",
+    "tau2": "τ²-Bench Telecom",
+    "tauBanking": "τ³-Bench Banking",
+    "terminalbenchHard": "Terminal-Bench Hard",
+    "terminalbenchV21": "Terminal-Bench 2.1",
+    "terminalbenchV40": "Terminal-Bench 4.0",
 }
 
 MIN_VALID_METRICS = 5
@@ -270,11 +303,13 @@ def compute_scores(data):
             "model": d.get("shortName") or d.get("name", "Unknown"),
             "full_name": d.get("name", "Unknown"),
             "slug": d.get("slug", ""),
-            "is_reasoning": bool(d.get("reasoningModel", False)),
+            # V18: payload uses `isReasoning` (old field name kept as fallback)
+            "is_reasoning": bool(d.get("reasoningModel", d.get("isReasoning", False))),
             "is_deprecated": bool(d.get("deprecated", False)),
             # Requirement 6/7: brand column & brand theme colors
             "creator": d.get("modelCreatorName", ""),
-            "creator_slug": d.get("modelCreatorSlug", ""),
+            "creator_slug": (d.get("modelCreatorSlug")
+                             or _derive_creator_slug(d.get("modelCreatorName"))),
             "creator_color": d.get("modelCreatorColor") or "#888888",
             "creator_logo": d.get("modelCreatorLogo") or "",
             "context_window": d.get("contextWindowTokens"),
@@ -400,6 +435,16 @@ def _to_frac(val):
         return Fraction(val).limit_denominator(10**12)
     except (ValueError, TypeError, ZeroDivisionError):
         return None
+
+
+def _derive_creator_slug(name):
+    """V18: AA's payload no longer carries modelCreatorSlug — derive a
+    stable slug from the creator name (metadata only, JSON output field)."""
+    if not name:
+        return ""
+    import re as _re
+    slug = _re.sub(r"[^a-z0-9]+", "-", str(name).strip().lower()).strip("-")
+    return slug
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -824,7 +869,7 @@ def build_axis_mapping(models, brand_frontiers):
         x = interp(z; knots)       当 c > 0，其中 z = log10(c)
 
     knots = (z_i, 名次_i/(n-1))：**入图**（chart_y 非空，V17-C 过滤之后）
-    正成本模型按 log10(c) 排序的 n 个锚点，等成本并列取平均名次（保证
+    正成本模型按 log10(c) 排序的 n 个锚点，相同 log10(c) 的并列组取平均名次（保证
     x 是 z 的单值函数）。端点严格钉死：c = 0 → x = 0；最大成本 → x = 1
     （若最贵成本并列导致 x_max < 1，则整体按比例归一，右端点仍严格为 1）。
 
@@ -843,14 +888,21 @@ def build_axis_mapping(models, brand_frontiers):
                  if float(m["per_request_cost"]) > 0)
     n = len(pos)
 
-    # 锚点：等成本并列取平均名次
+    # 锚点：相同 log10(c) 的并列组取平均名次
+    # V18 修正：并列判定改用**相等的 z = log10(c)**——两个相差 ~1e-12 的不同
+    # float 成本经 log10 会弽合到完全相同的 z（实测：12935.130860966676 与
+    # …678），若按原始成本分组会产生两个同 z 不同 x 的锚点，既违反“x 是 z
+    # 的单值函数”，又让 bisect_right 把所有同 z 成本都落到最后一个锚点上
+    # （个别模型 x 偏离名次 1.5/102，十分位计数 9↔11 摆动）。改按 z 分组后
+    # x 对每个入图模型严格等于（组内平均名次）/(n-1)，与文献描述一致。
     knots = []
     i = 0
     while i < n:
+        z = math.log10(pos[i])
         j = i
-        while j + 1 < n and pos[j + 1] == pos[i]:
+        while j + 1 < n and math.log10(pos[j + 1]) == z:
             j += 1
-        knots.append((math.log10(pos[i]), (i + j) / 2.0 / max(n - 1, 1)))
+        knots.append((z, (i + j) / 2.0 / max(n - 1, 1)))
         i = j + 1
     # 端点钉死 (1,1)：若最贵成本并列使 x_max < 1，按比例归一
     if knots and 0.0 < knots[-1][1] < 1.0:
@@ -897,7 +949,9 @@ def build_axis_mapping(models, brand_frontiers):
         "function": ("x = 0 for c <= 0; x = interp(log10(c) over knots "
                      "(z_i, rank_i/(n-1))) for c > 0 — knots are the sorted "
                      "log-costs of the n chart-visible positive-cost models "
-                     "(equal-cost ties averaged); endpoints pinned (0,0)/(1,1)"),
+                     "(same-z tie groups averaged; V18: ties detected on equal "
+                     "log10(c) — x is exactly linear in rank for every visible "
+                     "model); endpoints pinned (0,0)/(1,1)"),
         "knots": len(knots),
         "fit": {
             "fitted_models": n,
@@ -1152,7 +1206,7 @@ def plot_analysis(models, pareto, brand_frontiers, x_dist, mapping_meta):
         f"X轴: 分位数映射 x = Q(log10 c) — {n_knots} 个入图正成本模型的经验分布线性插值; "
         f"等密度(每 0.1 宽 ≈ {n_vis / 10:.0f} 个模型), 端点钉死 (0,0)/(1,1); "
         f"10^x 指示位于 x(10^x); 同倍率区间宽度 ∝ 该区间模型数 | "
-        f"Y轴: 综合能力(18指标均值; 0 = 总体前沿第一级 y0={y0:.3f}, 1 = 最优; "
+        f"Y轴: 综合能力({len(METRIC_FIELDS)}指标均值; 0 = 总体前沿第一级 y0={y0:.3f}, 1 = 最优; "
         f"低于第一级的模型不入图) | "
         f"成本 = CacheHit·CacheHitPrice + (1-CacheHit)·CacheWritePrice + Speed·RealTime·OutputPrice | "
         f"入图 {len(plot_models)}/{n_total} 模型(含{n_free}个免费)"
@@ -2274,7 +2328,7 @@ def save_results(models, pareto, brand_frontiers, metric_ranges, x_dist, mapping
             "source": "https://artificialanalysis.ai/leaderboards/models",
             "model_status": "All (including deprecated models)",
             "methodology": (
-                "18 evaluation metrics normalized [0,1], averaged → composite ability, "
+                f"{len(METRIC_FIELDS)} evaluation metrics normalized [0,1], averaged → composite ability, "
                 "then re-normalized linearly so best model = 1 and worst = 0; "
                 "Pareto = non-dominated by per-request cost (cost 0/free models "
                 "participate); "
@@ -2463,7 +2517,12 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta):
 
     # ── 评分方法 ─────────────────────────────────────────────────────────
     lines.append("\n## 评分方法\n")
-    lines.append("1. **18项评估指标**各自线性归一化到 [0,1]")
+    lines.append(f"1. **{len(METRIC_FIELDS)}项评估指标**各自线性归一化到 [0,1]")
+    metric_list = "、".join(METRIC_LABELS[k] for k in METRIC_FIELDS)
+    lines.append(f"   （{metric_list}）")
+    lines.append("   > V18（2026-09-12）：AA 更新了基准列——新增 AA Analyst Agent、τ³-Bench Banking、"
+                 "Terminal-Bench 2.1 / 4.0 四项；AA Agentic Index 与 AA Coding Index 已从 AA 的数据源中移除，"
+                 "相应剔除。指标数由 18 → 20。")
     lines.append("2. **综合能力值** = 所有有效归一化分数的算术平均")
     lines.append("3. **综合能力再归一化**：线性映射到 [0,1]，性能最好的模型 = 1，最差的模型 = 0")
     lines.append("4. **Pareto前沿** = 不被任何其他模型支配的模型（综合能力 ≥ 且成本 ≤，且至少一项严格更优；"
@@ -2488,13 +2547,17 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta):
         lines.append("x = interp(log10(c); knots)      当 c > 0")
         lines.append("```\n")
         lines.append(f"其中 knots = (log10(c_i), 名次_i/(n-1)) 为入图正成本模型按成本排序后的 {n_knots} 个"
-                     "锚点（等成本并列取平均名次，保证 x 是成本的单值函数；n-1 归一化使最大成本恰为 x = 1）。"
+                     "锚点（相同 log10(c) 的并列组取平均名次，保证 x 是 z = log10(c) 的单值函数；"
+                     "n-1 归一化使最大成本恰为 x = 1）。"
                      "该映射在 **y 基线过滤之后**构建（V17：先以帕累托前沿第一级为 y = 0、剔除低性能模型，"
-                     "再对入图模型建映射）。\n")
+                     "再对入图模型建映射）。（V18 修正：并列判定改用相同的 log10(c)，"
+                     "消除浮点上相差 ~1e-12 的成本经 log10 后折合到同一 z 造成的同 z 双锚点、"
+                     "个别模型 x 偏离名次的问题；修正后 x 对每个入图模型严格线性于名次。）\n")
         lines.append("**该映射保证：**\n")
         lines.append("- **函数端点严格钉死**：c = 0 → x = 0；最大成本 → x = 1——函数经过 (0,0) 与 (1,1)；")
-        lines.append(f"- **严格均匀密度**：x 是模型名次的线性函数，因此**任意等宽区段的模型数恒定**"
-                     f"（每 0.1 宽度恰为 {fit.get('fitted_models', 0) / 10:.0f} 个模型）——无论截取哪一段，"
+        lines.append(f"- **严格均匀密度**：x 是模型名次的线性函数（相同 log10(c) 并列组取平均名次），"
+                     f"因此**任意等宽区段的模型数恒定**（每 0.1 宽度约 {fit.get('fitted_models', 0) / 10:.0f} 个模型）"
+                     "——无论截取哪一段，"
                      "模型数 ÷ 宽度都等于全图的模型总数 ÷ 总宽度。V12 的单一 logistic 函数在过滤后的分布上"
                      "做不到（十分位在 8~24 间摆动），故替换为精确分位数映射；")
         vis_costs = [float(m["per_request_cost"]) for m in models
@@ -2525,7 +2588,8 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta):
         dec = x_dist.get("decile_counts", [])
         if dec:
             lines.append("- 横轴十分位模型数：" + "，".join(str(c) for c in dec)
-                         + "（严格均匀：x 为名次的线性函数，仅等成本并列的边界归属可致 ±1）")
+                         + "（x 为名次的线性函数；n/10 非整数时各十分位在 ±1 内取整，"
+                         "相同 log10(c) 并列组共享同一 x、落在边界的哪一侧可再移动 ±1）")
         if dec_ticks:
             lines.append("- **10^x 数量级指示**（位置 = x(10^x)）："
                          + "，".join(f"10^{int(round(math.log10(d['price'])))} → {d['x']:.3f}"
@@ -2637,6 +2701,13 @@ def main():
     if not os.path.exists(RAW_DATA_FILE):
         print(f"ERROR: {RAW_DATA_FILE} not found. Run scrape.py first.")
         sys.exit(1)
+
+    print("=" * 60)
+    print("Generic LLM Leaderboard Pareto Analysis — Version 18")
+    print(f"  {len(METRIC_FIELDS)} benchmark metrics "
+          f"(V18: +analystAgent +tauBanking +terminalbenchV21/V40, "
+          f"-agenticIndex -codingIndex)")
+    print("=" * 60)
 
     print("Loading data...")
     data = load_data()
