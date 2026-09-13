@@ -696,10 +696,13 @@ def _short_level(level):
         return "non"
     if low.startswith("non-reasoning,"):
         return "non" + lv[len("non-reasoning"):]
-    if low == "with fallback":
-        return None
-    if low.endswith(" with fallback"):
-        short = lv[: -len(" with fallback")].strip()
+    if "fallback" in low:
+        for tok in ("xhigh", "minimal", "medium", "low", "high", "max"):
+            if tok in low:
+                return tok
+        parts = [p.strip() for p in lv.split(",")]
+        parts = [p for p in parts if "fallback" not in p.lower()]
+        short = ", ".join(parts).strip(" -_")
         return short or None
     return lv
 
