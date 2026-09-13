@@ -682,7 +682,12 @@ def split_name_level(short_name):
 
 
 def _short_level(level):
-    """V12: '(non-reasoning)' → '(non)'（含组合式 'Non-reasoning, high' → 'non, high'）。"""
+    """V12: '(non-reasoning)' → '(non)'（含组合式 'Non-reasoning, high' → 'non, high'）。
+
+    后续：档位里的 'with fallback' 后缀去掉，只留思考档位——
+    'max with fallback' → 'max'；裸 '(with fallback)' 去掉后无档位，
+    返回 None 即标签只显示 base 名。
+    """
     if level is None:
         return None
     lv = level.strip()
@@ -691,6 +696,11 @@ def _short_level(level):
         return "non"
     if low.startswith("non-reasoning,"):
         return "non" + lv[len("non-reasoning"):]
+    if low == "with fallback":
+        return None
+    if low.endswith(" with fallback"):
+        short = lv[: -len(" with fallback")].strip()
+        return short or None
     return lv
 
 
