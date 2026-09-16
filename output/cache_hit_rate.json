@@ -6,7 +6,7 @@
     "total_combinations": 15,
     "valid_count": 15
   },
-  "cache_hit_rate": 0.947279030781377,
+  "cache_hit_rate": 0.9472522742148793,
   "valid_count": 15,
   "total_count": 15,
   "combinations": [
@@ -58,12 +58,12 @@
       "agent": null,
       "model_slug": null,
       "display_label": "Codex - GPT-6 Astra (max) ({'reasoning_effort': 'max'})",
-      "cache_hit_rate": 0.9339048285192524,
+      "cache_hit_rate": 0.9335591564904552,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3349533.5766379917
+      "total_tokens": 3346611.012209417
     },
     {
       "agent": null,
@@ -91,23 +91,23 @@
       "agent": null,
       "model_slug": "alibaba_cloud_qwen3-8-max-public",
       "display_label": "Claude Code - Qwen3.8 Max",
-      "cache_hit_rate": 0.9507585357339288,
+      "cache_hit_rate": 0.9507113544554301,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 8723306.44030633
+      "total_tokens": 8706893.798112892
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": "Devin Fusion CLI - Claude Fable 5.1 XHigh + SWE-2 Medium",
-      "cache_hit_rate": 0.9585129825583554,
+      "cache_hit_rate": 0.9584900963367992,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 9691739.689768959
+      "total_tokens": 9691548.173817372
     },
     {
       "agent": "Muse Code 1.0.2 RC",
@@ -124,12 +124,12 @@
       "agent": null,
       "model_slug": null,
       "display_label": "Claude Code - Opus 5 (max)",
-      "cache_hit_rate": 0.9698121456131864,
+      "cache_hit_rate": 0.9698258997320075,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 11352813.168866897
+      "total_tokens": 11374850.488998907
     },
     {
       "agent": "Muse Code",
@@ -168,12 +168,12 @@
       "agent": "Codex",
       "model_slug": "deepseek_deepseek-v4-pro-0813",
       "display_label": "Codex - DeepSeek V4 Pro 0813 (max)",
-      "cache_hit_rate": 0.9898479195143476,
+      "cache_hit_rate": 0.9898485564269163,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 24183653.940044012
+      "total_tokens": 24180108.028052814
     }
   ]
 }
