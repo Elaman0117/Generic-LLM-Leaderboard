@@ -6,7 +6,7 @@
     "total_combinations": 15,
     "valid_count": 15
   },
-  "cache_hit_rate": 0.9472522742148793,
+  "cache_hit_rate": 0.947254221173822,
   "valid_count": 15,
   "total_count": 15,
   "combinations": [
@@ -113,12 +113,12 @@
       "agent": "Muse Code 1.0.2 RC",
       "model_slug": "meta_joyful-jello138",
       "display_label": "Muse Code - Muse Spark 1.3 (xhigh)",
-      "cache_hit_rate": 0.9661540316569817,
+      "cache_hit_rate": 0.9661832360411203,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 16229406.256875683
+      "total_tokens": 16237094.352035202
     },
     {
       "agent": null,
