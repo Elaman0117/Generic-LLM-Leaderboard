@@ -3,6 +3,24 @@
 """
 Scoring system and Pareto analysis for Artificial Analysis LLM Leaderboard.
 
+**Version 21** — X mapping uses TRUE-scale log prices (user feedback:
+dot X positions and the Pareto computation must both come from
+pre-normalization prices — pinning the cheapest model at x = 0 puts a
+nonzero real price at zero).  (V19/V20, also new and unreleased, are
+label-placement iterations: V19 look-ahead penalty for riding toward
+not-yet-placed neighbors; V20 user-prescribed per-label placement —
+see _gen_candidates/_place_labels comments.)
+The official mapping is now Y = A*ln(B*c+C)+D (B = 1) fitted on the
+11 brand-frontier chart-visible models, pinned at RAW (0,0)/(cmax,1):
+x = 0 means exactly $0 (free models only); the cheapest priced model
+sits at its true log position f(cmin) > 0.  C = 1/r > 0 structurally
+(r = B/C fitted over a log grid; A, D solved from the pins), so the
+singularity always sits left of raw zero and the curve provably stays
+inside the [0,1] square in both directions (dense forward + closed-form
+inverse checks in build_axis_mapping).  This supersedes the V17-D
+quantile mapping (density uniformity is no longer the objective; the
+X axis runs on real price magnitudes; models priced above the brand-frontier maximum are excluded from the chart but kept in the table).
+
 **Version 18** — benchmark columns updated to AA's new payload (20 metrics)
 
 AA redesigned the models-leaderboard RSC payload: the old 96-field array
@@ -141,6 +159,7 @@ exact-Fraction arithmetic are unchanged from Version 11.
 import bisect
 import json
 import math
+import numpy as np
 import os
 import sys
 from fractions import Fraction
@@ -197,11 +216,26 @@ BRAND_LINE_CREATORS = [
 BRAND_DISPLAY_NAMES = {  # chart legend / README display names
     "Xiaomi": "Xiaomi · MiMo",
 }
+
+# V20 用户处方 (user-prescribed placement)：(chart_label, creator) -> want。
+# online-first = 优先放置（仍做完整碰撞检查）；no-online = 永不骑线（贴点放）。
+# 无匹配条目静默跳过并在日志报警，复刻/改名后 stale 条目不会炸图。
+LABEL_OVERRIDES = {
+    ("(medium)", "Anthropic"): "online-first",      # Opus 5 Medium
+    ("4.1 Flash (max)", "DeepSeek"): "online-first",
+    ("3.8 2.4T A95B", "Alibaba"): "online-first",
+    ("3.8 Max", "Alibaba"): "online-first",
+    ("4.20 0309 v2", "SpaceXAI"): "online-first",
+    ("(medium)", "SpaceXAI"): "online-first",       # Grok 4.3 Medium
+    ("(medium)", "Google"): "online-first",         # Gemini 3.7 Flash Medium
+    ("4.6 (medium)", "SpaceXAI"): "no-online",      # Grok 4.6 Medium：贴点，给 High 让线
+    ("(high)", "SpaceXAI"): "online-first",         # Grok 4.6 High
+}
 # Base URL of the creator logos as served by the AA page (src="/img/logos/...")
 LOGO_BASE_URL = "https://artificialanalysis.ai/img/logos/"
 
 # ── Chart style (V11: black background) ──
-BG_COLOR = "#0A0A0D"            # 黑底
+BG_COLOR = "#000000"            # 黑底
 OVERALL_LINE_COLOR = "#A8A8B2"  # 总体帕累托连线：直线灰色（黑底上可读）
 CLOUD_COLOR = "#5A5A66"          # 非前沿模型散点
 FRAME_COLOR = "#3C3C46"
@@ -852,6 +886,19 @@ def build_label_specs(models, pareto, brand_frontiers):
     for brand, fr in brand_frontiers.items():
         for m in fr:
             m["brand_frontier_of"] = brand
+    # crowded-dot short labels：Muse Spark 只留 1.3 及之后，MiniMax 只留版本号 3 之后
+    for _m in models:
+        _lab = _m.get("chart_label")
+        if not _lab:
+            continue
+        if _lab.startswith("Muse Spark "):
+            print("  relabel: %r -> %r" % (_lab, _lab[len("Muse Spark "):]))
+            _m["chart_label"] = _lab[len("Muse Spark "):]
+        elif "MiniMax" in _lab:
+            _i = _lab.find("3")
+            if _i > 0:
+                print("  relabel: %r -> %r" % (_lab, _lab[_i:]))
+                _m["chart_label"] = _lab[_i:]
     return labeled
 
 
@@ -876,132 +923,172 @@ def _is_dark_color(color):
 
 
 def build_axis_mapping(models, brand_frontiers):
-    """V17-D 精确分位数（rank）横轴映射 —— 等密度。
+    """V21 对数映射（真零点）——横轴按原始价格取对数映射，不再做分位数归一化。
 
-        x = 0                      当 c <= 0（免费模型钉在最左缘）
-        x = interp(z; knots)       当 c > 0，其中 z = log10(c)
+        x = A·ln(B·c+C) + D      全部 c ≥ 0（B = 1；A、D 由端点解出；C = 1/r）
 
-    knots = (z_i, 名次_i/(n-1))：**入图**（chart_y 非空，V17-C 过滤之后）
-    正成本模型按 log10(c) 排序的 n 个锚点，相同 log10(c) 的并列组取平均名次（保证
-    x 是 z 的单值函数）。端点严格钉死：c = 0 → x = 0；最大成本 → x = 1
-    （若最贵成本并列导致 x_max < 1，则整体按比例归一，右端点仍严格为 1）。
+    拟合集 = 11 品牌前沿的入图正成本模型（Y 基线过滤之后）：r = B/C 在
+    log 网格上做最小二乘（目标 = 组内名次分位数），A、D 由钉子
+    f(0) = 0、f(cmax) = 1 解出。C > 0 恒成立（r 网格全为正），故奇异点
+    恒在原始零点左侧，正方形内双向有界（稠密正向 + 闭式反函数验证，
+    见构建日志）。
 
-    x 是名次的线性函数 ⇒ **任意等宽区段的模型数恒定**（用户最高优先级：
-    无论截取哪一段，模型数/宽度 = 全图模型数/总宽度）。V12 的单一
-    logistic 在过滤后的分布上做不到（十分位在 8~24 间摆动），故弃用。
-    10^x 数量级指示位于 x(10^x)；同倍率区间的宽度 ∝ 该区间的模型数。
+    x = 0 当且仅当 c = 0（仅免费模型）。最低正成本映射到 f(cmin) > 0 的
+    真实对数位置，不再被钉到 0；高于前沿最大成本者不入图（表格保留，axis_x 仍记 1.0）。
 
-    同时把 m["axis_x"] 写入全部可计价模型（表格仍给每行横轴位置；
-    低于入图最低成本者截断到 0）。
+    同时把 m["axis_x"] 写入全部可计价模型（表格仍给每行横轴位置）。
     """
-    priced = [m for m in models
-              if m.get("per_request_cost") is not None and m["per_request_cost"] >= 0]
-    vis = [m for m in priced if m.get("chart_y") is not None]
-    pos = sorted(float(m["per_request_cost"]) for m in vis
+    # ---- custom log mapping, pins RAW (0,0)/(cmax,1), fitted on 11 brand frontiers ----
+    print("Fitting log mapping Y=A*ln(B*c+C)+D, pins (0,0)/(cmax,1), on 11 brand frontiers...")
+    fmodels = [m for fr in brand_frontiers.values() for m in fr
+               if m.get("per_request_cost") is not None and float(m["per_request_cost"]) >= 0
+               and m.get("chart_y") is not None]
+    pos = sorted(float(m["per_request_cost"]) for m in fmodels
                  if float(m["per_request_cost"]) > 0)
     n = len(pos)
-
-    # 锚点：相同 log10(c) 的并列组取平均名次
-    # V18 修正：并列判定改用**相等的 z = log10(c)**——两个相差 ~1e-12 的不同
-    # float 成本经 log10 会弽合到完全相同的 z（实测：12935.130860966676 与
-    # …678），若按原始成本分组会产生两个同 z 不同 x 的锚点，既违反“x 是 z
-    # 的单值函数”，又让 bisect_right 把所有同 z 成本都落到最后一个锚点上
-    # （个别模型 x 偏离名次 1.5/102，十分位计数 9↔11 摆动）。改按 z 分组后
-    # x 对每个入图模型严格等于（组内平均名次）/(n-1)，与文献描述一致。
-    knots = []
+    cmax = pos[-1]
+    cmin = pos[0]
+    print("  frontier fit set: %d models, cost range %.2f - %.2f" % (len(fmodels), cmin, cmax))
+    priced = [m for m in models
+              if m.get("per_request_cost") is not None and m["per_request_cost"] >= 0]
+    if not pos:
+        print("  WARNING: no chart-visible positive-cost frontier models; X degenerates to 0")
+        for m in priced:
+            m["axis_x"] = 0.0
+        return {
+            "mapping": "degenerate (no positive-cost frontier models visible)",
+            "function": "x = 0",
+            "knots": 0,
+            "fit": {"fitted_models": 0, "method": "none (no data)", "r": None, "A": None,
+                    "B": 1.0, "C": None, "D": None, "log_base": "natural log",
+                    "mse_vs_quantile": None, "max_abs_deviation_vs_quantile": None,
+                    "uniform_density": False},
+            "left_edge_cost": 0.0,
+            "free_models": 0,
+            "plotted_models": 0,
+            "total_models": len(models),
+            "min_positive_cost": None,
+            "x_at_min_positive_cost": None,
+            "max_cost": None,
+            "x_at_max_cost": None,
+            "decade_ticks": [],
+            "left_half_models": 0,
+            "right_half_models": 0,
+            "map_fn": (lambda c: 0.0),
+        }
+    targets = {}
     i = 0
     while i < n:
         z = math.log10(pos[i])
         j = i
         while j + 1 < n and math.log10(pos[j + 1]) == z:
             j += 1
-        knots.append((z, (i + j) / 2.0 / max(n - 1, 1)))
+        t = (i + j) / 2.0 / max(n - 1, 1)
+        for k in range(i, j + 1):
+            targets[pos[k]] = t
         i = j + 1
-    # 端点钉死 (1,1)：若最贵成本并列使 x_max < 1，按比例归一
-    if knots and 0.0 < knots[-1][1] < 1.0:
-        top = knots[-1][1]
-        knots = [(z, x / top) for z, x in knots]
-    zs = [k[0] for k in knots]
-
-    def f(cost):
+    ct = np.array(pos)
+    tt = np.array([targets[c] for c in pos])
+    # canonical form: B=1, C=1/r (r>0); A,D solved from pins f(0)=0,f(cmax)=1
+    def f_of_r(cc, r):
+        return np.log(1.0 + r * cc) / np.log(1.0 + r * cmax)
+    best = None
+    rs = np.logspace(-7, -1, 600)
+    for r in rs:
+        f = f_of_r(ct, r)
+        if not (np.all(np.isfinite(f)) and f.min() >= 0.0 and f.max() <= 1.0):
+            continue  # CONSTRAINT: curve stays within [0,1]
+        mse = float(np.mean((f - tt) ** 2))
+        if best is None or mse < best[0]:
+            best = (mse, r)
+    for _ in range(3):
+        lo, hi = math.log10(best[1] / 5), math.log10(best[1] * 5)
+        for r in np.logspace(lo, hi, 600):
+            f = f_of_r(ct, r)
+            if not (np.all(np.isfinite(f)) and f.min() >= 0.0 and f.max() <= 1.0):
+                continue  # CONSTRAINT: curve stays within [0,1]
+            mse = float(np.mean((f - tt) ** 2))
+            if mse < best[0]:
+                best = (mse, r)
+    mse0, r_best = best
+    C_par = 1.0 / r_best
+    B_par = 1.0
+    A_par = 1.0 / math.log(1.0 + r_best * cmax)
+    D_par = -A_par * math.log(C_par)
+    f = f_of_r(ct, r_best)
+    maxdev = float(np.max(np.abs(f - tt)))
+    print("  best r=%.6g (A=%.6f B=1 C=%.4f D=%.6f, ln) mse=%.6f maxdev=%.4f"
+          % (r_best, A_par, C_par, D_par, mse0, maxdev))
+    grid = np.linspace(0.0, cmax, 20001)
+    g = f_of_r(grid, r_best)
+    print("  positivity proof: min f on [0,cmax] = %.12f (must be >= 0)" % float(g.min()))
+    assert bool(np.all(np.isfinite(g))) and float(g.min()) >= 0.0 and float(g.max()) <= 1.0, "positivity violated"
+    yg = np.linspace(0.0, 1.0, 20001)
+    xg = (np.exp((yg - D_par) / A_par) - C_par) / B_par
+    print("  inverse proof: x range on y in [0,1] = [%.2f, %.2f] (must stay within [0,cmax])" % (float(xg.min()), float(xg.max())))
+    assert bool(np.all(np.isfinite(xg))) and float(xg.min()) >= 0.0 - 1e-6 and float(xg.max()) <= cmax + 1e-6, "inverse out of square"
+    sing_n = (-C_par / B_par) / cmax
+    print("  singularity at normalized x = %.6f (must be < 0, left of raw 0)" % sing_n)
+    def fmap(cost):
         c = float(cost)
-        if c <= 0.0 or not knots:
+        if c <= 0.0:
             return 0.0
-        z = math.log10(c)
-        if z <= zs[0]:
-            return knots[0][1]
-        if z >= zs[-1]:
-            return knots[-1][1]
-        k = bisect.bisect_right(zs, z) - 1
-        z0, x0 = knots[k]
-        z1, x1 = knots[k + 1]
-        return x0 + (x1 - x0) * (z - z0) / (z1 - z0)
-
+        if c >= cmax:
+            return 1.0
+        return float(math.log(1.0 + r_best * c) / math.log(1.0 + r_best * cmax))
     for m in priced:
-        m["axis_x"] = f(m["per_request_cost"])
-
-    # 均匀密度质量：x 线性于名次，十分位严格均匀（并列平均仅影响边界）
-    xs = sorted(f(c) for c in pos)
-    devs = [abs(x - (r + 0.5) / n) for r, x in enumerate(xs)] if xs else [0.0]
-    max_dev = max(devs)
-    mean_dev = sum(devs) / max(n, 1)
-
-    # 10^x 数量级指示（位置 = x(10^x)）
+        m["axis_x"] = fmap(m["per_request_cost"])
+        m["over_max"] = float(m["per_request_cost"]) > cmax  # 高于前沿最大成本者不入图（表格保留）
+    xs_all = [float(m["axis_x"]) for m in priced]
+    print("  plotted-x range: [%.6f, %.6f] (must stay within [0,1])" % (min(xs_all), max(xs_all)))
+    assert min(xs_all) >= 0.0 and max(xs_all) <= 1.0, "plotted x out of [0,1]"
     decades = []
-    if pos:
-        zmax = math.log10(pos[-1])
-        for e10 in range(0, int(math.floor(zmax)) + 1):
-            d = 10.0 ** e10
-            if d <= pos[-1]:
-                decades.append({"price": d, "x": f(d)})
-
+    zmax = math.log10(cmax)
+    for e10 in range(0, int(math.floor(zmax)) + 1):
+        dd = 10.0 ** e10
+        if dd <= cmax:
+            decades.append({"price": dd, "x": fmap(dd)})
+    decades.append({"price": round(cmax / 1000) * 1000, "x": 1.0})  # RHS edge tick: rounded integer-k of frontier max
+    over_max = [m for m in priced if m.get("chart_y") is not None and m.get("over_max")]
+    if over_max:
+        print("  over-max chart-excluded (table-kept): %d model(s)" % len(over_max))
+        for _m in sorted(over_max, key=lambda t: -float(t["per_request_cost"])):
+            print("    cost=%.0f model=%s" % (float(_m["per_request_cost"]), _m.get("model")))
+    vis = [m for m in priced if m.get("chart_y") is not None and not m.get("over_max")]
     left = sum(1 for m in vis if float(m["axis_x"]) < 0.5)
-    meta = {
-        "mapping": ("exact empirical-quantile (rank) mapping over the "
-                    "chart-visible models, piecewise-linear in log10(c)"),
-        "function": ("x = 0 for c <= 0; x = interp(log10(c) over knots "
-                     "(z_i, rank_i/(n-1))) for c > 0 — knots are the sorted "
-                     "log-costs of the n chart-visible positive-cost models "
-                     "(same-z tie groups averaged; V18: ties detected on equal "
-                     "log10(c) — x is exactly linear in rank for every visible "
-                     "model); endpoints pinned (0,0)/(1,1)"),
-        "knots": len(knots),
+    mapping_meta = {
+        "mapping": ("EXPERIMENTAL log mapping Y=A*ln(B*c+C)+D fitted on the "
+                    "11 brand-frontier models, pins RAW (0,0)/(cmax,1), B=1, C=1/r"),
+        "function": ("x = A*ln(c+C)+D with C=%.4f (A=%.6f B=1 D=%.6f, ln); "
+                     "f(0)=0, f(cmax)=1 exactly; cost>cmax chart-excluded (table x=1.0)"
+                     % (C_par, A_par, D_par)),
+        "knots": 2,
         "fit": {
             "fitted_models": n,
-            "method": "empirical quantile mapping (x linear in model rank)",
-            "max_abs_ecdf_deviation": max_dev,
-            "mean_abs_ecdf_deviation": mean_dev,
-            "uniform_density": True,
-            "note": ("x is linear in rank: any equal-width segment holds the "
-                     "same number of models by construction"),
+            "fit_set": "11 brand-frontier models (chart-visible, priced, positive cost)",
+            "method": "least-squares fit of r=B/C over log grid (pins solve A,D)",
+            "r": r_best, "A": A_par, "B": 1.0, "C": C_par, "D": D_par,
+            "log_base": "natural log",
+            "mse_vs_quantile": mse0,
+            "max_abs_deviation_vs_quantile": maxdev,
+            "uniform_density": False,
         },
         "left_edge_cost": 0.0,
         "free_models": sum(1 for m in vis if float(m["per_request_cost"]) == 0),
+        "over_max_models": len(over_max),
         "plotted_models": len(vis),
         "total_models": len(models),
-        "min_positive_cost": pos[0] if pos else None,
-        "x_at_min_positive_cost": knots[0][1] if knots else None,
-        "max_cost": pos[-1] if pos else None,
-        "x_at_max_cost": knots[-1][1] if knots else None,
+        "min_positive_cost": cmin,
+        "x_at_min_positive_cost": float(math.log(1.0 + r_best * cmin) / math.log(1.0 + r_best * cmax)),
+        "max_cost": cmax,
+        "x_at_max_cost": 1.0,
         "decade_ticks": decades,
         "left_half_models": left,
         "right_half_models": len(vis) - left,
-        "map_fn": f,
+        "map_fn": fmap,
     }
-    print(f"\n  X mapping (V17 quantile): {len(knots)} knots over {n} "
-          f"chart-visible positive-cost models")
-    if knots:
-        print(f"  Endpoint pins: c=0 -> x=0; max c={pos[-1]:,.0f} -> "
-              f"x={knots[-1][1]:.6f} (must be exactly 1)")
-    print(f"  Uniform density: x linear in rank — each 0.1-wide decile "
-          f"holds ~{n / 10:.1f} models; |x-ECDF| max={max_dev:.4f}")
-    print(f"  Free models pinned at x=0: {meta['free_models']}; "
-          f"left/right half = {left}/{len(vis) - left}")
-    if decades:
-        pos_s = ", ".join(f"10^{int(round(math.log10(d['price'])))}->{d['x']:.4f}"
-                          for d in decades)
-        print(f"  Decade indicators: {pos_s}")
-    return meta
+    print("  plotted=%d (frontier fit n=%d) free=%d left/right=%d/%d" % (len(vis), n, mapping_meta["free_models"], left, len(vis) - left))
+    return mapping_meta
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -1009,15 +1096,13 @@ def build_axis_mapping(models, brand_frontiers):
 # ══════════════════════════════════════════════════════════════════════
 
 def analyze_x_distribution(models, mapping_meta):
-    """Verify the adaptive mapping spreads models across the whole X axis.
+    """Verify the X mapping spreads models across the whole X axis.
 
-    V17: the mapping is the exact empirical-quantile (rank) mapping over
-    the CHART-VISIBLE models, so the decile occupancy is uniform by
-    construction (x is linear in rank); only equal-cost tie averaging at
-    decile boundaries can shift a model by one bin.
+    V21: log mapping (raw-pinned) — decile occupancy is reported as-is,
+    no uniformity guarantee (density follows the real cost distribution).
     """
     xs = [float(m["axis_x"]) for m in models
-          if m.get("axis_x") is not None and m.get("chart_y") is not None]
+          if m.get("axis_x") is not None and m.get("chart_y") is not None and not m.get("over_max")]
     if not xs:
         return {"plotted_models": 0}
     xs.sort()
@@ -1036,9 +1121,8 @@ def analyze_x_distribution(models, mapping_meta):
         "right_half_models": n - left,
         "decile_counts": deciles,
         "note": (
-            "quantile mapping (V17): x = interp(log10(c) over the rank knots of "
-            "the chart-visible models); uniform density by construction; "
-            "endpoints pinned (0,0)/(1,1); left edge c = 0; 10^x indicators "
+            "log mapping (V21): x = A*ln(B*c+C)+D fitted on brand-frontier models; "
+            "endpoints pinned raw (0,0)/(1,1); left edge c = 0; 10^x indicators "
             "sit at x(10^x)"
         ),
     }
@@ -1104,14 +1188,15 @@ def plot_analysis(models, pareto, brand_frontiers, x_dist, mapping_meta):
     """Generate the Pareto scatter plot (V17 layout).
 
     - Black background; dark brand elements get a narrow white outline.
-    - X axis: exact empirical-quantile (rank) mapping over the
-      chart-visible models (V17-D) — piecewise-linear in log10(c),
-      endpoints pinned at (0,0)/(1,1), uniform model density; 10^x
-      magnitude indicators sit at x(10^x).
+    - X axis: log mapping Y = A·ln(B*c+C)+D (B = 1) fitted on the
+      11 brand-frontier chart-visible models (V21), pinned at raw
+      (0,0)/(cmax,1); x = 0 means exactly $0; 10^x magnitude
+      indicators sit at x(10^x).
     - Y axis: 0 = first (lowest) level of the overall Pareto frontier
       (V17-C); models below that level are not drawn at all — the
       frontier's first point sits exactly on (0,0), the best model on
-      y = 1.
+      y = 1.  Models priced above the brand-frontier maximum (cmax) are
+      likewise chart-excluded (table-kept); x = 1 is the frontier maximum.
     - Overall Pareto frontier: solid gray line.  Eleven brand frontiers:
       thin brand-colored lines drawn ABOVE it; vertices ordered by
       (axis_x, ability) so equal-cost points connect bottom-up.
@@ -1122,13 +1207,14 @@ def plot_analysis(models, pareto, brand_frontiers, x_dist, mapping_meta):
       collision-free spot.
     """
     plot_models = [m for m in models
-                   if m.get("axis_x") is not None and m.get("chart_y") is not None]
+                   if m.get("axis_x") is not None and m.get("chart_y") is not None and not m.get("over_max")]
     pareto_names = {id(m) for m in pareto}
     brand_line_models = {id(m) for fr in brand_frontiers.values() for m in fr}
 
     # ── 画布 14.5x14：绘图区更大（标签骑线后页边距需求减小，角部更宽松）──
+    FB_MIN = 0.07         # 数据框下缘最小值（xlabel 动态 labelpad＋脚注，兜底）
     fig = plt.figure(figsize=(14.5, 14), facecolor=BG_COLOR)
-    ax = fig.add_axes([0.055, 0.13, 0.71, 0.76], facecolor=BG_COLOR)
+    ax = fig.add_axes([0.14, 0.13, 0.6, 0.6], facecolor=BG_COLOR)
     ax.set_aspect('equal', adjustable='box')
     ax.set_xlim(-0.03, 1.06)
     ax.set_ylim(-0.04, 1.055)
@@ -1148,7 +1234,8 @@ def plot_analysis(models, pareto, brand_frontiers, x_dist, mapping_meta):
         ax.plot([xv, xv], [0, 1], color=DECADE_GRID_COLOR, linewidth=0.8, zorder=0)
 
     # X ticks: 0 (left edge, c=0) + 10^x indicators at x(10^x)
-    tick_pos, tick_lab = [0.0], ["0"]
+    _zero_lab = "0/1k" if (mapping_meta.get("map_fn") is not None and mapping_meta["map_fn"](1000.0) < 0.009) else "0"
+    tick_pos, tick_lab = [0.0], [_zero_lab]
     last = 0.0
     for d in mapping_meta.get("decade_ticks", []):
         xv = d["x"]
@@ -1159,41 +1246,30 @@ def plot_analysis(models, pareto, brand_frontiers, x_dist, mapping_meta):
         last = xv
     ax.set_xticks(tick_pos)
     ax.set_xticklabels(tick_lab, color=TEXT_COLOR, fontsize=8)
-    ax.set_yticks([0, 0.25, 0.5, 0.75, 1])
-    ax.set_yticklabels(["0", "0.25", "0.50", "0.75", "1"], color=TEXT_COLOR, fontsize=8)
-    ax.tick_params(axis='both', colors=MUTED_TEXT_COLOR, length=4, width=0.8)
+    ax.set_yticks([])  # 左侧小横杠删掉（Y 轴无刻度无数字）
+    ax.tick_params(axis='x', colors=MUTED_TEXT_COLOR, length=4, width=0.8)
 
     # ── Axis labels / suptitle / footnote（先创建，供标签避让测量）────────
-    y0 = mapping_meta.get("y_axis", {}).get("baseline", 0.0)
-    n_vis = mapping_meta.get("plotted_models", 0)
-    n_knots = mapping_meta.get("knots", 0)
     ax.set_xlabel(
-        "单请求成本 c — 分位数映射（等密度：任意等宽区段模型数恒定，"
-        f"每 0.1 宽约 {n_vis / 10:.0f} 个；函数端点 (0,0) 与 (1,1)；"
-        f"{n_knots} 个入图正成本模型经验分布线性插值；左端 c = 0 免费模型）",
-        fontsize=12, color=TEXT_COLOR, labelpad=8, fontweight="bold")
-    ax.set_ylabel(f"综合能力（0 = 总体帕累托前沿第一级 y0={y0:.3f}，1 = 最优）",
-                  fontsize=12, color=TEXT_COLOR, labelpad=10, fontweight="bold")
+        "对数映射后单位成本",
+        fontsize=12, color=TEXT_COLOR, labelpad=82, fontweight="bold")
+    ax.set_ylabel("综合性能（0=帕累托前沿首级）",
+                  fontsize=12, color=TEXT_COLOR, labelpad=79, fontweight="bold")
     st = fig.suptitle(
-        "LLM 综合能力 vs 单请求成本 — Pareto 前沿\n"
-        "灰线 = 总体前沿 | 彩色细线 = 11 品牌前沿 | 横轴 = 分位数映射（等密度，端点 (0,0)/(1,1)）",
-        fontsize=14, color=TEXT_COLOR, fontweight="bold", x=0.36, y=0.988,
-        ha="center", va="top",
+        "LLM通用能力和价格",
+        fontsize=14, color=TEXT_COLOR, fontweight="bold", x=0.5, y=0.9,
+        ha="center", va="center",
     )
     for spine in ax.spines.values():
         spine.set_visible(False)
     ax.grid(False)
 
-    # ── Legend: 右侧留白区（黑底样式）──────────────────────────────────
+    # ── Legend: 右侧动态紧包（无底框、四周等边距）──────────────────────────────────
     from matplotlib.lines import Line2D
-    n_others = sum(1 for m in plot_models
-                   if id(m) not in pareto_names and id(m) not in brand_line_models)
     handles = [
-        Line2D([0], [0], marker='o', color='none', markerfacecolor=CLOUD_COLOR,
-               markersize=4.5, alpha=0.6, label=f"其他模型 ({n_others})"),
         Line2D([0], [0], color=OVERALL_LINE_COLOR, linewidth=LW_OVERALL,
                marker='o', markerfacecolor=OVERALL_LINE_COLOR, markersize=5.5,
-               label=f"总体帕累托前沿 ({len(pareto)})"),
+               label=f"帕累托前沿 ({len(pareto)})"),
     ]
     for brand in BRAND_LINE_CREATORS:
         fr = brand_frontiers.get(brand)
@@ -1208,23 +1284,20 @@ def plot_analysis(models, pareto, brand_frontiers, x_dist, mapping_meta):
         if _is_dark_color(color):
             h.set_path_effects([pe.withStroke(linewidth=2.4, foreground="white")])
         handles.append(h)
-    legend = fig.legend(handles=handles, loc='center right', bbox_to_anchor=(0.995, 0.5),
-                        fontsize=9.5, framealpha=0.92, edgecolor=FRAME_COLOR,
-                        facecolor="#111116", labelcolor=TEXT_COLOR, borderpad=0.9)
+    LEG_FS = 9.5       # 右图例字号（保持不变）
+    LEG_PAD = 0.9      # 右图例四周等边距（fontsize 倍数；块宽随最宽品牌名动态变动）
+    legend = fig.legend(handles=handles, loc="center", bbox_to_anchor=(0.9, 0.5),
+                        fontsize=LEG_FS, frameon=False,
+                        labelcolor=TEXT_COLOR, borderpad=LEG_PAD)
 
-    # 底部说明文字
-    n_free = mapping_meta.get("free_models", 0)
-    n_total = mapping_meta.get("total_models", len(models))
+    # 底部说明文字（单行精简版）
+    C_par = mapping_meta.get("fit", {}).get("C", 0) or 0
     method = (
-        f"X轴: 分位数映射 x = Q(log10 c) — {n_knots} 个入图正成本模型的经验分布线性插值; "
-        f"等密度(每 0.1 宽 ≈ {n_vis / 10:.0f} 个模型), 端点钉死 (0,0)/(1,1); "
-        f"10^x 指示位于 x(10^x); 同倍率区间宽度 ∝ 该区间模型数 | "
-        f"Y轴: 综合能力({len(METRIC_FIELDS)}指标均值; 0 = 总体前沿第一级 y0={y0:.3f}, 1 = 最优; "
-        f"低于第一级的模型不入图) | "
-        f"成本 = CacheHit·CacheHitPrice + (1-CacheHit)·CacheWritePrice + Speed·RealTime·OutputPrice | "
-        f"入图 {len(plot_models)}/{n_total} 模型(含{n_free}个免费)"
+        f"X轴: x = A*ln(B*c+C)+D（B=1，C={C_par:.1f}；过(0,0)、(cmax,1)；11品牌前沿成本）; "
+        f"10^x 指示位于 x(10^x) | "
+        f"成本 = CacheHit·CacheHitPrice + (1-CacheHit)·CacheWritePrice + Speed·RealTime·OutputPrice"
     )
-    footnote = fig.text(0.36, 0.016, method, ha="center", va="bottom", fontsize=6.5,
+    footnote = fig.text(0.5, 0.016, method, ha="center", va="bottom", fontsize=6.5,
                         color=MUTED_TEXT_COLOR, style="italic")
 
     # V17-B: 内嵌字体字符覆盖检查（缺字会回退/变方块，日志中显式警告）
@@ -1236,6 +1309,59 @@ def plot_analysis(models, pareto, brand_frontiers, x_dist, mapping_meta):
 
     # ── V12 标签流程：先放置（供连线断开计算），再画断线、圆点、文字 ────
     fig.canvas.draw()   # renderer ready, exclusions measurable
+    # ── V24 框基准对称居中几何：右图例动态定宽 ──
+    # 图例无底框、四周等边距（LEG_PAD×字号）；量测渲染宽度后，把“图例块＋两侧等宽
+    # 间隙”精确铺满“坐标轴右缘→图片右缘”（间隙取图例内边距的物理宽度）；标题/脚注
+    # x 移到坐标轴中心，图例居右区正中，脚注仍贴底；本体边界按 ax.patch 计（不含刻度留白）。字号字形一律不动。
+    _ren = fig.canvas.get_renderer()
+    _fw_in, _fh_in = fig.get_size_inches()
+    _x0, _x1 = ax.get_xlim()
+    _y0, _y1 = ax.get_ylim()
+    _xrange, _yrange = _x1 - _x0, _y1 - _y0
+    _leg_bb = legend.get_window_extent(_ren)
+    _leg_w = _leg_bb.width / fig.bbox.width
+    _gap = LEG_PAD * LEG_FS / 72.0 / _fw_in
+    _zone = _leg_w + 2.0 * _gap
+    _FW = 1.0 - 2.0 * _zone
+    _FH = _FW * (_fw_in / _fh_in)
+    _fb = max((1.0 - _FH) / 2.0, FB_MIN)
+    _W = _FW * _xrange
+    _L = _zone - (0.0 - _x0) / _xrange * _W
+    _H = _FH * _yrange
+    _B = _fb - (0.0 - _y0) / _yrange * _H
+    ax.set_position([_L, _B, _W, _H])
+    fig.canvas.draw()
+    _we = ax.patch.get_window_extent(_ren)  # 本体边界（不含刻度/标签留白）
+    _fW, _fH = fig.bbox.width, fig.bbox.height
+    _L0, _W0 = _we.x0 / _fW, _we.width / _fW
+    _B0, _H0 = _we.y0 / _fH, _we.height / _fH
+    _fx0 = _L0 + (0.0 - _x0) / _xrange * _W0
+    _fx1 = _L0 + (1.0 - _x0) / _xrange * _W0
+    _fy0 = _B0 + (0.0 - _y0) / _yrange * _H0
+    _fy1 = _B0 + (1.0 - _y0) / _yrange * _H0
+    _cx = (_fx0 + _fx1) / 2.0
+    _cy = (_fy0 + _fy1) / 2.0
+    st.set_position((_cx, (_fy1 + 1.0) / 2.0))
+    footnote.set_position((_cx, 0.016))
+    legend.set_bbox_to_anchor(((_fx1 + 1.0) / 2.0, _cy))  # 图例盒居右区正中（回退：按盒定锚）
+    for _ in range(2):
+        fig.canvas.draw()
+        _yl = ax.yaxis.label.get_window_extent(_ren)
+        _xl = ax.xaxis.label.get_window_extent(_ren)
+        _yl_cx = (_yl.x0 + _yl.x1) / 2.0 / _fW
+        _xl_cy = (_xl.y0 + _xl.y1) / 2.0 / _fH
+        ax.yaxis.labelpad += (_yl_cx - _fx0 / 2.0) * _fw_in * 72.0
+        ax.xaxis.labelpad += (_xl_cy - _fy0 / 2.0) * _fh_in * 72.0
+    fig.canvas.draw()
+    _vyl = ax.yaxis.label.get_window_extent(_ren)
+    _vxl = ax.xaxis.label.get_window_extent(_ren)
+    print("  frame geometry: zone=%.4f fx=[%.4f,%.4f] fy=[%.4f,%.4f] fcx=%.4f fcy=%.4f" % (_zone, _fx0, _fx1, _fy0, _fy1, _cx, _cy))
+    _ag = fig.canvas.get_renderer()
+    _lb = legend.get_window_extent(_ag)
+    _tx = [t.get_window_extent(_ag) for t in legend.get_texts()]
+    _hd = [h.get_window_extent(_ag) for h in legend.legend_handles]
+    print("  legend audit: box=[%.4f,%.4f] text=[%.4f,%.4f] handles=[%.4f,%.4f] fx1=%.4f" % (_lb.x0/_fW, _lb.x1/_fW, min(t.x0 for t in _tx)/_fW, max(t.x1 for t in _tx)/_fW, min(h.x0 for h in _hd)/_fW, max(h.x1 for h in _hd)/_fW, _fx1))
+    print("  center check: ylabel %.4f vs %.4f | xlabel %.4f vs %.4f | suptitle %.4f vs %.4f | legend %.4f vs %.4f" % ((_vyl.x0 + _vyl.x1) / 2.0 / _fW, _fx0 / 2.0, (_vxl.y0 + _vxl.y1) / 2.0 / _fH, _fy0 / 2.0, st.get_position()[1], (_fy1 + 1.0) / 2.0, (_lb.x0 + _lb.x1) / 2.0 / _fW, (_fx1 + 1.0) / 2.0))
     exclusions = [legend, st, ax.xaxis.label, ax.yaxis.label, footnote]
     exclusions += list(ax.get_xticklabels()) + list(ax.get_yticklabels())
     placements = _place_labels(ax, fig, plot_models, pareto, brand_frontiers, exclusions)
@@ -1349,7 +1475,7 @@ def _label_color(m):
         return "#B0B0B8"
 
 
-def _gen_candidates(m, P, R, w, h, pi_j, polylines, rad):
+def _gen_candidates(m, P, R, w, h, pi_j, polylines, rad, future=None):
     """V16 标签候选阶梯 —— 按用户指定的四级优先流程产出 (cx, cy, ang, kind)：
 
     1. online  骑在点旁的两条连线段上：右（去路 P→Q）与左（来路 A→P）
@@ -1371,11 +1497,14 @@ def _gen_candidates(m, P, R, w, h, pi_j, polylines, rad):
     ONL_CAP = 80.0    # 骑线扫描离点距离上限（「在点的旁边」限制）
     EXT_CAP = 110.0   # 延长线扫描距离
     SEC_RMAX = 135.0  # 扇区扫描最大半径
+    FUTURE_PEN = 60.0  # px penalty for riding toward an as-yet-unplaced labeled neighbor (V19)
+    _veto_online = LABEL_OVERRIDES.get((m.get("chart_label"), m.get("creator"))) == "no-online"
 
     def _ang(read):
         return _norm_angle(math.degrees(math.atan2(read[1], read[0])))
 
     segs = []          # (side, read, L, Rfar)：side ∈ {"out","in"}
+    far = {}              # side -> far-end dot id (V19 look-ahead)
     if pi_j is not None:
         pi, j = pi_j
         pl = polylines[pi]
@@ -1385,11 +1514,13 @@ def _gen_candidates(m, P, R, w, h, pi_j, polylines, rad):
             segs.append(("out", _unit(q[0] - P[0], q[1] - P[1]),
                          math.hypot(q[0] - P[0], q[1] - P[1]),
                          rad[ids[j + 1]] + 2.0))
+            far["out"] = ids[j + 1]
         if j >= 1:     # 左侧：A → P（文字沿 A→P 阅读方向）
             a = pts[j - 1]
             segs.append(("in", _unit(P[0] - a[0], P[1] - a[1]),
                          math.hypot(P[0] - a[0], P[1] - a[1]),
                          rad[ids[j - 1]] + 2.0))
+            far["in"] = ids[j - 1]
 
     if not segs:
         # 无折线（罕见）：对角方向兜底（延伸 + 偏移 + 上半扇区）
@@ -1415,8 +1546,13 @@ def _gen_candidates(m, P, R, w, h, pi_j, polylines, rad):
     # ── 1) 骑线：右/左两侧沿线就近扫描；两侧按【离点距离】归并
     #    （同距先右侧）—— 出侧近处被占时，入侧的近位优先于出侧的
     #    远位（V16-C：此前先扫完整条出侧才试入侧，标签被推得很远）。
+    #    V19 让位预判：远端仍是未放置待标点的一侧，候选统一加 FUTURE_PEN
+    #    距离罚分 —— 自下而上放置时，上方邻居稍后还需要同一段线的空间；
+    #    60px 内优先取已落定的来路一侧，避免低位标签把高位邻居挤出线
+    #    （Opus 5 Medium/High 挤掉 XHigh 一类情形）。
     onl = []
     for s_rank, (side, read, L, Rfar) in enumerate(segs):
+        pen = FUTURE_PEN if (side == "out" and future is not None and far.get(side) in future) else 0.0
         sgn = 1.0 if side == "out" else -1.0
         ang = _ang(read)
         t_lo = R + 1.0
@@ -1433,10 +1569,12 @@ def _gen_candidates(m, P, R, w, h, pi_j, polylines, rad):
             t += 5.0
         ts.append(t_cap)
         for t in ts:
-            onl.append((t, s_rank,
+            onl.append((t + pen, s_rank,
                         P[0] + sgn * read[0] * (t + w / 2),
                         P[1] + sgn * read[1] * (t + w / 2), ang))
     for (_t, _sr, cx, cy, ang) in sorted(onl, key=lambda c: (c[0], c[1])):
+        if _veto_online:
+            break  # V20：处方 no-online 的标签不产出骑线候选
         yield (cx, cy, ang, "online")
 
     # ── 2) 平行偏移：离点最近位置的上方/下方（四组合，间距就近）──
@@ -1633,7 +1771,9 @@ def _place_labels(ax, fig, plot_models, pareto, brand_frontiers, exclusions):
     # 标签先抢占下方共享线段，逐级把更低标签挤出侧。升序让每个标签
     # 自然取得自己的出侧（右/上方向），每段线段容纳其【低端】模型的
     # 标签 —— 正是用户要求的图式。
-    order = sorted(items, key=lambda m: float(m["composite_ability"]))
+    def _want(m):
+        return LABEL_OVERRIDES.get((m.get("chart_label"), m.get("creator")))
+    order = sorted(items, key=lambda m: (0 if _want(m) == "online-first" else 1, float(m["composite_ability"])))
     n_fallback = 0
     n_yield = 0
     dists = []
@@ -1685,6 +1825,7 @@ def _place_labels(ax, fig, plot_models, pareto, brand_frontiers, exclusions):
     # ④ 仍放不下：两条连线夹角扇区（前上方空白区）内就近。
     # 兜底：全候选最小碰撞者（与 V12 起一致，零碰撞不可得时才启用）。
     recs = {}
+    future = set(id(m) for m in items)  # V19：尚未放置的待标点
     for m in order:
         w, h, fs, _lvl = meas[id(m)]
         color = _label_color(m)
@@ -1695,7 +1836,7 @@ def _place_labels(ax, fig, plot_models, pareto, brand_frontiers, exclusions):
                "obb": None, "kind": None}
         got = None
         gen = list(_gen_candidates(m, dot[id(m)], rad[id(m)] + 1.0, w, h,
-                                   loc.get(id(m)), polylines, rad))
+                                   loc.get(id(m)), polylines, rad, future))
         failed_sets = set()
         for (cx, cy, ang, kind) in gen:
             if kind != "online":
@@ -1767,11 +1908,25 @@ def _place_labels(ax, fig, plot_models, pareto, brand_frontiers, exclusions):
             obb["owner"] = rec
             placed_obb.append(obb)
             recs[id(m)] = rec
+            future.discard(id(m))
     placements = [recs[id(m)] for m in order if id(m) in recs]
+    if LABEL_OVERRIDES:
+        _seen = {}
+        for _m in items:
+            _w = _want(_m)
+            if _w is not None:
+                _seen.setdefault(((_m.get("chart_label"), _m.get("creator")), _w), []).append(id(_m))
+        for (_key, _w), _ids in _seen.items():
+            _kinds = sorted({recs[_i]["kind"] for _i in _ids if _i in recs})
+            print("  override " + repr(_key[0]) + " [" + _key[1] + "] want=" + _w + " -> kinds=" + str(_kinds))
+        _matched = {_k for (_k, _w) in _seen}
+        for _k, _w in LABEL_OVERRIDES.items():
+            if _k not in _matched:
+                print("  override " + repr(_k[0]) + " [" + _k[1] + "] want=" + _w + " -> NO MATCH (stale)")
 
     # V16 诊断：导出主放置流程刚结束（未做单调性修复）的初始布局
     try:
-        with open(os.path.join(OUTPUT_DIR, "label_placements_initial.json"), "w", encoding="utf-8") as fh:
+        with open(os.path.join(OUTPUT_DIR, "label_placements_initial.json"), "w", encoding="utf-8", newline="\n") as fh:
             json.dump([{k: p[k] for k in ("text", "fs", "brand", "full_name",
                             "cx", "cy", "w", "h", "angle", "kind")}
                        for p in placements], fh, ensure_ascii=False, indent=1)
@@ -1819,6 +1974,8 @@ def _place_labels(ax, fig, plot_models, pareto, brand_frontiers, exclusions):
                      m, P0, R0, w0, h0, loc.get(id(m)), polylines, rad)]
         got = None
         for _tier, _d, cx, cy, ang, kind in cands:
+            if kind != "online" and _want(m) == "online-first":
+                continue  # V20：处方 online-first 的标签在修复中只考虑骑线
             ok = True
             for (rx, ry, sx, sy) in cons:
                 if sx != 0 and (cx - rx) * sx < -TOL_MONO:
@@ -1952,6 +2109,8 @@ def _place_labels(ax, fig, plot_models, pareto, brand_frontiers, exclusions):
         pool.sort(key=lambda c: c[0])
         cands.extend((1,) + c for c in pool)
         for _tier, _d, cx, cy, ang, kind in cands:
+            if kind != "online" and _want(m) == "online-first":
+                continue  # V20：处方 online-first 的标签在修复中只考虑骑线
             if not _okc(cx, cy):
                 continue
             chk = _cand_ok(cx, cy, w0, h0, ang, kind)
@@ -2132,7 +2291,7 @@ def _place_labels(ax, fig, plot_models, pareto, brand_frontiers, exclusions):
 
     # 诊断导出：真实放置结果（供 scripts/diag_v12_overlap.py 离线核查）
     try:
-        with open(os.path.join(OUTPUT_DIR, "label_placements.json"), "w", encoding="utf-8") as fh:
+        with open(os.path.join(OUTPUT_DIR, "label_placements.json"), "w", encoding="utf-8", newline="\n") as fh:
             json.dump([{**{k: p[k] for k in ("text", "fs", "brand", "full_name",
                             "cx", "cy", "w", "h", "angle", "kind")},
                         "dot": [round(dot[id(p["model"])][0], 1),
@@ -2419,7 +2578,7 @@ def save_results(models, pareto, brand_frontiers, metric_ranges, x_dist, mapping
                 "composite_ability": float(m["composite_ability"]),
                 "per_request_cost": _frac_to_json(m.get("per_request_cost")),
                 "x_axis_position": _frac_to_json(m.get("axis_x")),
-                "in_chart": m.get("chart_y") is not None and m.get("axis_x") is not None,
+                "in_chart": m.get("chart_y") is not None and m.get("axis_x") is not None and not m.get("over_max"),
                 "chart_y": (float(m["chart_y"]) if m.get("chart_y") is not None else None),
                 "is_pareto": id(m) in {id(p) for p in pareto},
                 "brand_frontier_of": m.get("brand_frontier_of"),
@@ -2429,7 +2588,7 @@ def save_results(models, pareto, brand_frontiers, metric_ranges, x_dist, mapping
     }
 
     json_path = os.path.join(OUTPUT_DIR, "analysis_results.json")
-    with open(json_path, "w", encoding="utf-8") as f:
+    with open(json_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
     print(f"JSON saved to {json_path}")
 
@@ -2450,7 +2609,7 @@ def _export_model(m, rank):
         "composite_ability": float(m["composite_ability"]),
         "per_request_cost": _frac_to_json(m.get("per_request_cost")),
         "x_axis_position": _frac_to_json(m.get("axis_x")),
-        "in_chart": m.get("chart_y") is not None and m.get("axis_x") is not None,
+        "in_chart": m.get("chart_y") is not None and m.get("axis_x") is not None and not m.get("over_max"),
         "chart_y": (float(m["chart_y"]) if m.get("chart_y") is not None else None),
         "input_price": _frac_to_json(m.get("input_price")),
         "output_price": _frac_to_json(m.get("output_price")),
@@ -2491,7 +2650,7 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta):
                  "「帕累托」列：✅ = 总体帕累托前沿模型，❌ = 被支配，— = 无成本数据无法判定。"
                  f"图表纵轴以总体帕累托前沿第一级（y0 = {y0s}，即前沿左端点 {y0m}）为 0："
                  f"综合能力 ≥ 该级且有成本数据的 {n_vis} 个模型入图，{ya.get('below_baseline', 0)} 个"
-                 f"能力低于第一级、{ya.get('no_cost_visible', 0)} 个缺少成本数据的模型不出现在图中"
+                 f"能力低于第一级、{ya.get('no_cost_visible', 0)} 个缺少成本数据的模型不出现在图中，成本高于品牌前沿最大值的模型同样不入图"
                  "（本表不受影响，仍完整列出全部模型）。\n")
     lines.append("| # | 品牌 | 模型 | 综合能力 | 单请求成本 | 横轴位置 | 帕累托 |")
     lines.append("|---|------|------|---------|-----------|-----------|------|")
@@ -2548,35 +2707,31 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta):
     lines.append("")
 
     # ── 横轴映射与分布分析 ────────────────────────────────────────────────
-    lines.append("\n## 横轴映射（分位数等密度映射，V17）与分布分析\n")
+    lines.append("\n## 横轴映射（对数映射，真零点，V21）与分布分析\n")
     if x_dist.get("plotted_models"):
         n_knots = mapping_meta.get("knots", 0)
         fit = mapping_meta.get("fit", {})
         dec_ticks = mapping_meta.get("decade_ticks", [])
-        lines.append(f"横轴（单请求成本）按**经验分位数（rank）映射**——以 {fit.get('fitted_models', 0)} 个"
-                     "入图正成本模型（综合能力 ≥ 前沿第一级）的成本分布为基准：\n")
+        lines.append(f"横轴（单请求成本）为 **Y = A·ln(B·c+C)+D 对数映射**（B = 1；A、D 由端点解出；"
+                     f"C = {fit.get('C', 0):.2f}，r = B/C = {fit.get('r', 0):.6g} 经网格搜索确定）：\n")
         lines.append("```")
-        lines.append("x = 0                            当 c ≤ 0（免费模型，钉在最左缘）")
-        lines.append("x = interp(log10(c); knots)      当 c > 0")
+        lines.append("x = 0                            当 c = 0（免费模型，真零点）")
+        lines.append("x = A·ln(c+C)+D                  当 c > 0（B = 1 并入；A、D 由端点解出）")
         lines.append("```\n")
-        lines.append(f"其中 knots = (log10(c_i), 名次_i/(n-1)) 为入图正成本模型按成本排序后的 {n_knots} 个"
-                     "锚点（相同 log10(c) 的并列组取平均名次，保证 x 是 z = log10(c) 的单值函数；"
-                     "n-1 归一化使最大成本恰为 x = 1）。"
+        lines.append(f"其中 C = {fit.get('C', 0):.2f}（r = B/C = {fit.get('r', 0):.6g}），"
+                     "拟合集为 11 品牌前沿入图正成本模型（综合能力 ≥ 前沿第一级）的成本分布，"
+                     "目标为组内名次分位数（最小二乘误差 "
+                     f"mse = {fit.get('mse_vs_quantile', 0):.6f}，最大偏离 "
+                     f"{fit.get('max_abs_deviation_vs_quantile', 0):.4f}）。"
                      "该映射在 **y 基线过滤之后**构建（V17：先以帕累托前沿第一级为 y = 0、剔除低性能模型，"
-                     "再对入图模型建映射）。（V18 修正：并列判定改用相同的 log10(c)，"
-                     "消除浮点上相差 ~1e-12 的成本经 log10 后折合到同一 z 造成的同 z 双锚点、"
-                     "个别模型 x 偏离名次的问题；修正后 x 对每个入图模型严格线性于名次。）\n")
+                     "再对入图模型建映射）。\n")
         lines.append("**该映射保证：**\n")
         lines.append("- **函数端点严格钉死**：c = 0 → x = 0；最大成本 → x = 1——函数经过 (0,0) 与 (1,1)；")
-        lines.append(f"- **严格均匀密度**：x 是模型名次的线性函数（相同 log10(c) 并列组取平均名次），"
-                     f"因此**任意等宽区段的模型数恒定**（每 0.1 宽度约 {fit.get('fitted_models', 0) / 10:.0f} 个模型）"
-                     "——无论截取哪一段，"
-                     "模型数 ÷ 宽度都等于全图的模型总数 ÷ 总宽度。V12 的单一 logistic 函数在过滤后的分布上"
-                     "做不到（十分位在 8~24 间摆动），故替换为精确分位数映射；")
         vis_costs = [float(m["per_request_cost"]) for m in models
                      if m.get("chart_y") is not None
                      and m.get("per_request_cost") is not None
-                     and float(m["per_request_cost"]) > 0]
+                     and float(m["per_request_cost"]) > 0
+                     and not m.get("over_max")]
         pairs = [(a["price"], b["price"]) for a, b in zip(dec_ticks, dec_ticks[1:])]
         if pairs:
             seg = "，".join(f"{_fmt_cost_tick(lo)}–{_fmt_cost_tick(hi)}: "
@@ -2586,27 +2741,24 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta):
         n_1 = sum(1 for c in vis_costs if 1e3 < c <= 1e4)
         n_2 = sum(1 for c in vis_costs if 1e5 < c <= 1e6)
         if n_1 and n_2:
-            lines.append(f"- **同一倍率区间的宽度 ∝ 该区间模型数**——均匀密度的必然结果：1k→10k 与 "
-                         f"100k→1M 同为 10 倍率，但前者 {n_1} 个模型、后者 {n_2} 个，前者宽度约为后者的 "
-                         f"{n_1 / n_2:.1f} 倍。若改用「等倍率等距」（纯对数轴），两段的模型密度将相差 "
-                         f"{n_1 / n_2:.1f} 倍，与均匀密度目标冲突——两者数学上不可兼得，本图以均匀密度"
-                         "（最高优先级）为准；")
+            lines.append(f"- **同倍率区间宽度相近**（对数轴性质）：1k→10k 与 "
+                         f"100k→1M 同为 10 倍率，宽度相近（前者 {n_1} 个模型、后者 {n_2} 个）；"
+                         f"与 V17 分位数映射不同，本图不追求均匀密度——密度不等如实显示；")
         lines.append(f"- **左端恒为 0**（c = 0；{mapping_meta.get('free_models', 0)} 个免费模型位于最左缘）")
-        lines.append(f"- 最低正成本 {mapping_meta.get('min_positive_cost', 0):,.2f} → x = "
-                     f"{mapping_meta.get('x_at_min_positive_cost', 0):.4f}；"
-                     f"最高成本 {mapping_meta.get('max_cost', 0):,.0f} → x = "
-                     f"{mapping_meta.get('x_at_max_cost', 0):.4f}（严格 = 1）")
+        lines.append(f"- 前沿最低正成本 {mapping_meta.get('min_positive_cost', 0):,.2f} → x = "
+                     f"{mapping_meta.get('x_at_min_positive_cost', 0):.4f}（真实对数位置，不再钉 0；"
+                     f"x = 0 恒为 c = 0 免费模型）；前沿最大成本 {mapping_meta.get('max_cost', 0):,.0f} → x = "
+                     f"{mapping_meta.get('x_at_max_cost', 0):.4f}（= 1；高于前沿最大成本的模型不入图，仅表格保留）")
         lines.append(f"- 中位数位置 {x_dist.get('median', 0):.3f}（≈ 0.5 居中）；左右两半模型数："
                      f"左 {x_dist.get('left_half_models', 0)} / 右 {x_dist.get('right_half_models', 0)}")
         dec = x_dist.get("decile_counts", [])
         if dec:
             lines.append("- 横轴十分位模型数：" + "，".join(str(c) for c in dec)
-                         + "（x 为名次的线性函数；n/10 非整数时各十分位在 ±1 内取整，"
-                         "相同 log10(c) 并列组共享同一 x、落在边界的哪一侧可再移动 ±1）")
+                         + "（对数映射下各十分位模型数自然不等）")
         if dec_ticks:
             lines.append("- **10^x 数量级指示**（位置 = x(10^x)）："
                          + "，".join(f"10^{int(round(math.log10(d['price'])))} → {d['x']:.3f}"
-                                     for d in dec_ticks))
+                                     for d in dec_ticks if abs(math.log10(d["price"]) - round(math.log10(d["price"]))) < 1e-9))
         lines.append("")
 
     # ── 标注规则 ─────────────────────────────────────────────────────────
@@ -2693,13 +2845,13 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta):
                  "(non-reasoning) 简写为 (non)；同一模型在品牌连线上相邻出现 2 次以上时仅性能最低者保留全名、"
                  "相邻较高者只标思考程度，不相邻的重复出现保留全名（每次重新计算）；标签位置与序列同向（V15）——品牌前沿上越靠右上的模型，其标签重心必须同时更靠右且更靠上（两分量都 >= 0，至少是 (0,0)，仅其一非负不算合格；初始放置违反时自动就近重摆，单标签无解（被前后邻居夹死）时按窗口级联重排整体挪动，均不产生新的重叠）。"
                  f"纵轴 y = 0 = 总体帕累托前沿第一级（y0 = {y0s}，前沿左端点 {y0m} 恰为 (0,0)），"
-                 f"能力低于该级的 {ya.get('below_baseline', 0)} 个模型与缺少成本数据的 "
-                 f"{ya.get('no_cost_visible', 0)} 个模型不出现在图中；"
-                 "横轴为分位数等密度映射（见上文「横轴映射」节），10^x 数量级指示位于 x(10^x)，"
-                 "同一倍率区间的宽度与该区间内模型数成正比。\n")
+                 f"能力低于该级的 {ya.get('below_baseline', 0)} 个模型、缺少成本数据的 "
+                 f"{ya.get('no_cost_visible', 0)} 个模型与成本高于品牌前沿最大值的模型不出现在图中；"
+                 "横轴为对数映射（见上文「横轴映射」节），10^x 数量级指示位于 x(10^x)，"
+                 "同一倍率区间的宽度相近（对数轴性质；本图不追求均匀密度）。\n")
 
     readme_path = os.path.join(BASE_DIR, "README.md")
-    with open(readme_path, "w", encoding="utf-8") as f:
+    with open(readme_path, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(lines))
     print(f"README saved to {readme_path}")
 
@@ -2750,7 +2902,7 @@ def main():
                        for b, fr in brand_frontiers.items()}
     brand_frontiers = {b: fr for b, fr in brand_frontiers.items() if fr}
 
-    print("\nBuilding X-axis mapping (V17: quantile mapping fitted AFTER the filter)...")
+    print("\nBuilding X-axis mapping (V21: raw-pinned log fitted on brand frontiers AFTER the filter)...")
     mapping_meta = build_axis_mapping(models, brand_frontiers)
     mapping_meta["y_axis"] = yb
 
