@@ -3,12 +3,12 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 15,
-    "valid_count": 15
+    "total_combinations": 16,
+    "valid_count": 16
   },
-  "cache_hit_rate": 0.947254221173822,
-  "valid_count": 15,
-  "total_count": 15,
+  "cache_hit_rate": 0.9467310183623456,
+  "valid_count": 16,
+  "total_count": 16,
   "combinations": [
     {
       "agent": "Antigravity SDK v0.1.12",
@@ -64,6 +64,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 3346611.012209417
+    },
+    {
+      "agent": "Grok Build",
+      "model_slug": "xai_grok-bop-o86-xhigh",
+      "display_label": "Grok Build - Grok 4.7 (xhigh)",
+      "cache_hit_rate": 0.938882976190201,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 14324724.283828393
     },
     {
       "agent": null,
