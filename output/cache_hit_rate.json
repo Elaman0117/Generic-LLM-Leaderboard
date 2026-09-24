@@ -3,12 +3,12 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 19,
-    "valid_count": 19
+    "total_combinations": 20,
+    "valid_count": 20
   },
-  "cache_hit_rate": 0.9496964436350128,
-  "valid_count": 19,
-  "total_count": 19,
+  "cache_hit_rate": 0.9497121544505565,
+  "valid_count": 20,
+  "total_count": 20,
   "combinations": [
     {
       "agent": "Antigravity SDK v0.1.12",
@@ -97,6 +97,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 8481121.533553353
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": "Claude Code - Opus 5.5 (max)",
+      "cache_hit_rate": 0.9500106599458848,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 15551383.220022004
     },
     {
       "agent": null,
