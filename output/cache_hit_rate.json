@@ -190,7 +190,7 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-luna",
       "display_label": "Codex - GPT-5.6 Luna (max)",
-      "cache_hit_rate": 0.971880328680834,
+      "cache_hit_rate": 0.9718803286808345,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
