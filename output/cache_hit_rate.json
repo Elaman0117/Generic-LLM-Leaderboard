@@ -22,7 +22,7 @@
       "total_tokens": 13511073.155115515
     },
     {
-      "agent": null,
+      "agent": "Grok Build",
       "model_slug": "xai_grok-4-6-xhigh",
       "display_label": "Grok Build - Grok 4.6 (xhigh)",
       "cache_hit_rate": 0.9057792630165156,
@@ -33,8 +33,8 @@
       "total_tokens": 5543624.597359739
     },
     {
-      "agent": null,
-      "model_slug": null,
+      "agent": "Claude Code",
+      "model_slug": "anthropic_claude-fable-5-1",
       "display_label": "Claude Code - Fable 5.1 (max) (with fallback)",
       "cache_hit_rate": 0.9159555838702423,
       "input_tokens": null,
@@ -45,7 +45,7 @@
     },
     {
       "agent": null,
-      "model_slug": null,
+      "model_slug": "cognition_fusion-gpt-6-astra-xhigh-sidekick-penguin-medium",
       "display_label": "Devin Fusion CLI - GPT-6 Astra XHigh + SWE-2 Medium",
       "cache_hit_rate": 0.920061132172241,
       "input_tokens": null,
@@ -55,8 +55,8 @@
       "total_tokens": 6074134.4950494915
     },
     {
-      "agent": null,
-      "model_slug": null,
+      "agent": "Codex",
+      "model_slug": "openai_vega-alpha",
       "display_label": "Codex - GPT-6 Astra (max)",
       "cache_hit_rate": 0.9335591564904552,
       "input_tokens": null,
@@ -77,8 +77,8 @@
       "total_tokens": 14324724.283828393
     },
     {
-      "agent": null,
-      "model_slug": null,
+      "agent": "Codex",
+      "model_slug": "openai_gpt-5-6-sol",
       "display_label": "Codex - GPT-5.6 Sol (max) ({'reasoning_effort': 'max'})",
       "cache_hit_rate": 0.9458037017976718,
       "input_tokens": null,
@@ -100,7 +100,7 @@
     },
     {
       "agent": null,
-      "model_slug": null,
+      "model_slug": "anthropic_claude-opus-5-5",
       "display_label": "Claude Code - Opus 5.5 (max)",
       "cache_hit_rate": 0.9500106599458848,
       "input_tokens": null,
@@ -110,7 +110,7 @@
       "total_tokens": 15551383.220022004
     },
     {
-      "agent": null,
+      "agent": "Claude Code",
       "model_slug": "alibaba_cloud_qwen3-8-max-public",
       "display_label": "Claude Code - Qwen3.8 Max",
       "cache_hit_rate": 0.9507113544554301,
@@ -122,7 +122,7 @@
     },
     {
       "agent": null,
-      "model_slug": null,
+      "model_slug": "cognition_fusion-claude-fable-5-1-xhigh-sidekick-penguin-medium",
       "display_label": "Devin Fusion CLI - Claude Fable 5.1 XHigh + SWE-2 Medium",
       "cache_hit_rate": 0.9584900963367992,
       "input_tokens": null,
@@ -165,8 +165,8 @@
       "total_tokens": 16237094.352035202
     },
     {
-      "agent": null,
-      "model_slug": null,
+      "agent": "Claude Code",
+      "model_slug": "anthropic_claude-opus-5",
       "display_label": "Claude Code - Opus 5 (max)",
       "cache_hit_rate": 0.9698258997320075,
       "input_tokens": null,
@@ -190,7 +190,7 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-luna",
       "display_label": "Codex - GPT-5.6 Luna (max)",
-      "cache_hit_rate": 0.9718803286808345,
+      "cache_hit_rate": 0.971880328680834,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
