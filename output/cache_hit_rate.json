@@ -177,7 +177,7 @@
     },
     {
       "agent": null,
-      "model_slug": null,
+      "model_slug": "cognition_fusion-claude-fable-5-1-xhigh-sidekick-penguin-medium",
       "display_label": "Devin Fusion CLI - Claude Fable 5.1 XHigh + SWE-2 Medium",
       "cache_hit_rate": 0.9584900963367992,
       "input_tokens": null,
