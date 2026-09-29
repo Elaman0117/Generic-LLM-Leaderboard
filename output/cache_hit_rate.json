@@ -3,12 +3,12 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 20,
-    "valid_count": 20
+    "total_combinations": 25,
+    "valid_count": 25
   },
-  "cache_hit_rate": 0.9497121544505565,
-  "valid_count": 20,
-  "total_count": 20,
+  "cache_hit_rate": 0.9486004779501355,
+  "valid_count": 25,
+  "total_count": 25,
   "combinations": [
     {
       "agent": "Antigravity SDK v0.1.12",
@@ -55,6 +55,17 @@
       "total_tokens": 6074134.4950494915
     },
     {
+      "agent": "Claude Code",
+      "model_slug": "private-anthropic_claude-beignet-eap-low",
+      "display_label": "Claude Code - Sonnet 5.5 (low)",
+      "cache_hit_rate": 0.9307814644010347,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 977284.7700770069
+    },
+    {
       "agent": "Codex",
       "model_slug": "openai_vega-alpha",
       "display_label": "Codex - GPT-6 Astra (max)",
@@ -64,6 +75,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 3346611.012209417
+    },
+    {
+      "agent": "Claude Code",
+      "model_slug": "private-anthropic_claude-beignet-eap-medium",
+      "display_label": "Claude Code - Sonnet 5.5 (medium)",
+      "cache_hit_rate": 0.9341009883549257,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 1253351.4928492843
     },
     {
       "agent": "Grok Build",
@@ -88,6 +110,17 @@
       "total_tokens": 10170136.632563243
     },
     {
+      "agent": "Claude Code",
+      "model_slug": "private-anthropic_claude-beignet-eap-high",
+      "display_label": "Claude Code - Sonnet 5.5 (high)",
+      "cache_hit_rate": 0.9477934370079523,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 2652380.565456549
+    },
+    {
       "agent": "Kimi Code CLI",
       "model_slug": "moonshot_kimi-k3",
       "display_label": "Kimi Code CLI - Kimi K3",
@@ -110,6 +143,17 @@
       "total_tokens": 15551383.220022004
     },
     {
+      "agent": null,
+      "model_slug": "private-anthropic_claude-beignet-eap-max",
+      "display_label": "Claude Code - Sonnet 5.5 (max)",
+      "cache_hit_rate": 0.9506214943317096,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 27742337.233773403
+    },
+    {
       "agent": "Claude Code",
       "model_slug": "alibaba_cloud_qwen3-8-max-public",
       "display_label": "Claude Code - Qwen3.8 Max",
@@ -121,8 +165,19 @@
       "total_tokens": 8706893.798112892
     },
     {
+      "agent": "Claude Code",
+      "model_slug": "private-anthropic_claude-beignet-eap-xhigh",
+      "display_label": "Claude Code - Sonnet 5.5 (xhigh)",
+      "cache_hit_rate": 0.9574714756466342,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 7087678.3960396005
+    },
+    {
       "agent": null,
-      "model_slug": "cognition_fusion-claude-fable-5-1-xhigh-sidekick-penguin-medium",
+      "model_slug": null,
       "display_label": "Devin Fusion CLI - Claude Fable 5.1 XHigh + SWE-2 Medium",
       "cache_hit_rate": 0.9584900963367992,
       "input_tokens": null,
@@ -190,7 +245,7 @@
       "agent": "Codex",
       "model_slug": "openai_gpt-5-6-luna",
       "display_label": "Codex - GPT-5.6 Luna (max)",
-      "cache_hit_rate": 0.971880328680834,
+      "cache_hit_rate": 0.9718803286808345,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
