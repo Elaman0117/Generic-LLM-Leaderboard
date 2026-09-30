@@ -3,12 +3,12 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 25,
-    "valid_count": 25
+    "total_combinations": 30,
+    "valid_count": 30
   },
-  "cache_hit_rate": 0.9486004779501355,
-  "valid_count": 25,
-  "total_count": 25,
+  "cache_hit_rate": 0.9447115263113564,
+  "valid_count": 30,
+  "total_count": 30,
   "combinations": [
     {
       "agent": "Antigravity SDK v0.1.12",
@@ -33,6 +33,17 @@
       "total_tokens": 5543624.597359739
     },
     {
+      "agent": "Codex",
+      "model_slug": "openai_quasar-alpha",
+      "display_label": "Codex - GPT-6.1 Sol (low) ({'reasoning_effort': 'low'})",
+      "cache_hit_rate": 0.9135762473536158,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 1713818.9181950986
+    },
+    {
       "agent": "Claude Code",
       "model_slug": "anthropic_claude-fable-5-1",
       "display_label": "Claude Code - Fable 5.1 (max) (with fallback)",
@@ -55,6 +66,39 @@
       "total_tokens": 6074134.4950494915
     },
     {
+      "agent": "Codex",
+      "model_slug": "openai_quasar-alpha",
+      "display_label": "Codex - GPT-6.1 Sol (medium) ({'reasoning_effort': 'medium'})",
+      "cache_hit_rate": 0.9239660644436648,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 2298278.745423723
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_quasar-alpha",
+      "display_label": "Codex - GPT-6.1 Sol (high) ({'reasoning_effort': 'high'})",
+      "cache_hit_rate": 0.9278388366571141,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 2819911.9903514963
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_quasar-alpha",
+      "display_label": "Codex - GPT-6.1 Sol (max)",
+      "cache_hit_rate": 0.9281954641245814,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 3999501.6107955067
+    },
+    {
       "agent": "Claude Code",
       "model_slug": "private-anthropic_claude-beignet-eap-low",
       "display_label": "Claude Code - Sonnet 5.5 (low)",
@@ -64,6 +108,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 977284.7700770069
+    },
+    {
+      "agent": "Codex",
+      "model_slug": "openai_quasar-alpha",
+      "display_label": "Codex - GPT-6.1 Sol (xhigh) ({'reasoning_effort': 'xhigh'})",
+      "cache_hit_rate": 0.9327572280083256,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 3212528.1094519314
     },
     {
       "agent": "Codex",
