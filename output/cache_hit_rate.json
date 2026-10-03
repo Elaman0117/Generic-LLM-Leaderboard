@@ -35,7 +35,7 @@
     {
       "agent": null,
       "model_slug": null,
-      "display_label": null,
+      "display_label": "Grok Build - Grok 4.6 (xhigh)",
       "cache_hit_rate": 0.9057792630165156,
       "input_tokens": null,
       "cache_tokens": null,
@@ -91,7 +91,7 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9278388366571144,
+      "cache_hit_rate": 0.9278388366571143,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
