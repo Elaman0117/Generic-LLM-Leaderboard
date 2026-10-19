@@ -3,12 +3,12 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 41,
+    "total_combinations": 42,
     "valid_count": 41
   },
   "cache_hit_rate": 0.9424372506300105,
   "valid_count": 41,
-  "total_count": 41,
+  "total_count": 42,
   "combinations": [
     {
       "agent": "Antigravity SDK v0.1.12",
