@@ -232,7 +232,19 @@ LABEL_OVERRIDES = {
     ("(high)", "SpaceXAI"): "online-first",         # Grok 4.6 High
 }
 # Base URL of the creator logos as served by the AA page (src="/img/logos/...")
+AA_BASE_URL = "https://artificialanalysis.ai"
 LOGO_BASE_URL = "https://artificialanalysis.ai/img/logos/"
+
+
+def resolve_logo_url(logo: str):
+    """Resolve creator logo to an absolute URL without double-prefixing."""
+    if not logo:
+        return ""
+    if logo.startswith("http://") or logo.startswith("https://"):
+        return logo
+    if logo.startswith("/"):
+        return f"{AA_BASE_URL}{logo}"
+    return f"{LOGO_BASE_URL}{logo}"
 
 # ── Chart style (V11: black background) ──
 BG_COLOR = "#000000"            # 黑底
@@ -2483,7 +2495,7 @@ def _frac_to_json(v):
 def _brand_cell(creator, logo):
     """Requirement 6: brand column = the AA page's own logo + creator name."""
     if logo:
-        url = f"{LOGO_BASE_URL}{logo}"
+        url = resolve_logo_url(logo)
         return f'<img src="{url}" width="18" alt="{creator}" /> {creator}'
     return creator or "--"
 
@@ -2579,7 +2591,7 @@ def save_results(models, pareto, brand_frontiers, metric_ranges, x_dist, mapping
                 "creator": m["creator"],
                 "creator_slug": m["creator_slug"],
                 "creator_color": m["creator_color"],
-                "creator_logo_url": (LOGO_BASE_URL + m["creator_logo"]) if m["creator_logo"] else None,
+                "creator_logo_url": resolve_logo_url(m["creator_logo"]) if m["creator_logo"] else None,
                 "is_deprecated": m["is_deprecated"],
                 "composite_ability": float(m["composite_ability"]),
                 "per_request_cost": _frac_to_json(m.get("per_request_cost")),
@@ -2608,7 +2620,7 @@ def _export_model(m, rank):
         "full_name": m["full_name"],
         "creator": m["creator"],
         "creator_color": m["creator_color"],
-        "creator_logo_url": (LOGO_BASE_URL + m["creator_logo"]) if m["creator_logo"] else None,
+        "creator_logo_url": resolve_logo_url(m["creator_logo"]) if m["creator_logo"] else None,
         "is_reasoning": m["is_reasoning"],
         "is_pareto": True,
         "chart_label": m.get("chart_label"),
