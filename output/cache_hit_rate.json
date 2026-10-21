@@ -6,7 +6,7 @@
     "total_combinations": 42,
     "valid_count": 41
   },
-  "cache_hit_rate": 0.9424372506300107,
+  "cache_hit_rate": 0.9424295218369185,
   "valid_count": 41,
   "total_count": 42,
   "combinations": [
@@ -36,23 +36,23 @@
       "agent": "Devin Fusion CLI",
       "model_slug": null,
       "display_label": "Devin Fusion CLI - Claude Opus 5.5 Max + GPT-6 Luna High",
-      "cache_hit_rate": 0.8712080457734013,
+      "cache_hit_rate": 0.8712620382241437,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 12806701.57480748
+      "total_tokens": 12862715.575907571
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.8918200950779239,
+      "cache_hit_rate": 0.8914806265675513,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 13769015.177704195
+      "total_tokens": 13843602.998344375
     },
     {
       "agent": null,
@@ -91,12 +91,12 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.920061132172241,
+      "cache_hit_rate": 0.9199281814192396,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 6074134.4950494915
+      "total_tokens": 6091041.658356591
     },
     {
       "agent": null,
@@ -113,7 +113,7 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9278388366571144,
+      "cache_hit_rate": 0.9278388366571141,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -157,12 +157,12 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9335591564904552,
+      "cache_hit_rate": 0.9335374217538733,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3346611.012209417
+      "total_tokens": 3345996.469855181
     },
     {
       "agent": null,
@@ -179,12 +179,12 @@
       "agent": "Muse Code",
       "model_slug": null,
       "display_label": "Muse Code - Muse Wonder (max)",
-      "cache_hit_rate": 0.935735212525825,
+      "cache_hit_rate": 0.9358639622980014,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 15016299.67931794
+      "total_tokens": 15007201.978547867
     },
     {
       "agent": "Grok Build",
@@ -399,12 +399,12 @@
       "agent": "Muse Code",
       "model_slug": null,
       "display_label": "Muse Code - Muse Spark 1.3 (max)",
-      "cache_hit_rate": 0.9712826195905685,
+      "cache_hit_rate": 0.9712771508508302,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 16709444.57370737
+      "total_tokens": 16122474.147964787
     },
     {
       "agent": "Codex",
