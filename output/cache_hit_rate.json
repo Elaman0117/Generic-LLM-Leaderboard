@@ -6,7 +6,7 @@
     "total_combinations": 42,
     "valid_count": 41
   },
-  "cache_hit_rate": 0.9424295218369185,
+  "cache_hit_rate": 0.9424209209247795,
   "valid_count": 41,
   "total_count": 42,
   "combinations": [
@@ -69,12 +69,12 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9135762473536158,
+      "cache_hit_rate": 0.9135252011157503,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 1713818.9181950986
+      "total_tokens": 1716621.760879366
     },
     {
       "agent": null,
@@ -102,34 +102,34 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9239660644436648,
+      "cache_hit_rate": 0.9239632669191677,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 2298278.745423723
+      "total_tokens": 2301380.208570039
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9278388366571141,
+      "cache_hit_rate": 0.9277866092003811,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 2819911.9903514963
+      "total_tokens": 2823739.651517614
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9281954641245814,
+      "cache_hit_rate": 0.9280414051904134,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3999501.6107955067
+      "total_tokens": 4014041.761005608
     },
     {
       "agent": null,
@@ -146,23 +146,23 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9327572280083256,
+      "cache_hit_rate": 0.9327267746735622,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3212528.1094519314
+      "total_tokens": 3219106.085393785
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9335374217538733,
+      "cache_hit_rate": 0.9335199965570197,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3345996.469855181
+      "total_tokens": 3357139.803008172
     },
     {
       "agent": null,
@@ -201,12 +201,12 @@
       "agent": null,
       "model_slug": null,
       "display_label": "Codex - GPT-5.6 Sol (max) ({'reasoning_effort': 'max'})",
-      "cache_hit_rate": 0.9458037017976718,
+      "cache_hit_rate": 0.9460315340894812,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 10170136.632563243
+      "total_tokens": 10214074.763476348
     },
     {
       "agent": null,
@@ -333,12 +333,12 @@
       "agent": "Codex",
       "model_slug": null,
       "display_label": "Codex - GPT-6 Luna (max) ({'reasoning_effort': 'max'})",
-      "cache_hit_rate": 0.9606438143896164,
+      "cache_hit_rate": 0.9604662048734249,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 10218069.248074815
+      "total_tokens": 10284265.05555557
     },
     {
       "agent": "Muse Code",
@@ -355,12 +355,12 @@
       "agent": "Codex",
       "model_slug": null,
       "display_label": "Codex - GPT-6 Sol (max)",
-      "cache_hit_rate": 0.9640119921972632,
+      "cache_hit_rate": 0.9639719451023205,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 9840777.763476355
+      "total_tokens": 9865698.770077005
     },
     {
       "agent": "Muse Code 1.0.2 RC",
@@ -371,7 +371,7 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 16237094.352035202
+      "total_tokens": 16232390.46094608
     },
     {
       "agent": "Muse Code",
@@ -404,18 +404,18 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 16122474.147964787
+      "total_tokens": 16017366.754675454
     },
     {
       "agent": "Codex",
       "model_slug": null,
       "display_label": "Codex - GPT-5.6 Luna (max)",
-      "cache_hit_rate": 0.971880328680834,
+      "cache_hit_rate": 0.971825260640438,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 14854524.539053895
+      "total_tokens": 14946565.033003304
     },
     {
       "agent": "Opencode",
@@ -426,24 +426,24 @@
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 14276424.426842693
+      "total_tokens": 14304524.38833882
     },
     {
       "agent": "Codex",
       "model_slug": null,
       "display_label": "Codex - DeepSeek V4 Flash 0731 (max)",
-      "cache_hit_rate": 0.9869993314104538,
+      "cache_hit_rate": 0.9869998448543432,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 15350225.299229927
+      "total_tokens": 15350417.073707376
     },
     {
       "agent": "Claude Code",
       "model_slug": null,
       "display_label": "Claude Code - Step 5 Preview",
-      "cache_hit_rate": 0.9870352061053834,
+      "cache_hit_rate": 0.987035206105383,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
@@ -454,12 +454,12 @@
       "agent": "Codex",
       "model_slug": null,
       "display_label": "Codex - DeepSeek V4 Pro 0813 (max)",
-      "cache_hit_rate": 0.9898485564269163,
+      "cache_hit_rate": 0.9898483066299235,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 24180108.028052814
+      "total_tokens": 24180269.408690877
     }
   ]
 }
