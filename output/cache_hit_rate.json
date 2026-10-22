@@ -443,7 +443,7 @@
       "agent": "Claude Code",
       "model_slug": null,
       "display_label": "Claude Code - Step 5 Preview",
-      "cache_hit_rate": 0.987035206105383,
+      "cache_hit_rate": 0.9870352061053834,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
