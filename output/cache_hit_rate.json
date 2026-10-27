@@ -3,24 +3,13 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 24,
-    "valid_count": 24
+    "total_combinations": 30,
+    "valid_count": 30
   },
-  "cache_hit_rate": 0.9131367211163858,
-  "valid_count": 24,
-  "total_count": 24,
+  "cache_hit_rate": 0.9412629462648404,
+  "valid_count": 30,
+  "total_count": 30,
   "combinations": [
-    {
-      "agent": null,
-      "model_slug": null,
-      "display_label": null,
-      "cache_hit_rate": 0.319061166570896,
-      "input_tokens": null,
-      "cache_tokens": null,
-      "cache_write_tokens": null,
-      "output_tokens": null,
-      "total_tokens": 4890063.07487998
-    },
     {
       "agent": null,
       "model_slug": null,
@@ -102,6 +91,17 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
+      "cache_hit_rate": 0.925808219461337,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 1886086.8732888
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
       "cache_hit_rate": 0.928466255516988,
       "input_tokens": null,
       "cache_tokens": null,
@@ -135,12 +135,45 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
+      "cache_hit_rate": 0.942138888163568,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 4075423.19637776
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
       "cache_hit_rate": 0.947205701820927,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 9153421.02933002
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.947531776215516,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 5776354.240164
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.949839928351402,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 5600133.87243293
     },
     {
       "agent": null,
@@ -163,6 +196,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 13336678.8257109
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.95239449990423,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 4890063.07487998
     },
     {
       "agent": null,
@@ -196,6 +240,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 8885939.03237863
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.956934601768947,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 6886239.03807863
     },
     {
       "agent": null,
@@ -245,6 +300,17 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
+      "cache_hit_rate": 0.967020333857851,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 12280717.4101086
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
       "cache_hit_rate": 0.967966386781858,
       "input_tokens": null,
       "cache_tokens": null,
@@ -267,7 +333,7 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.984007673153142,
+      "cache_hit_rate": 0.984007673153141,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
