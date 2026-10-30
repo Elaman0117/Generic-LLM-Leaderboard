@@ -3,12 +3,12 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 32,
-    "valid_count": 32
+    "total_combinations": 34,
+    "valid_count": 34
   },
-  "cache_hit_rate": 0.942578390055144,
-  "valid_count": 32,
-  "total_count": 32,
+  "cache_hit_rate": 0.9410926657079832,
+  "valid_count": 34,
+  "total_count": 34,
   "combinations": [
     {
       "agent": null,
@@ -47,6 +47,17 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
+      "cache_hit_rate": 0.911751306302099,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 8453863.20289236
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
       "cache_hit_rate": 0.91270190622461,
       "input_tokens": null,
       "cache_tokens": null,
@@ -75,6 +86,17 @@
       "cache_write_tokens": null,
       "output_tokens": null,
       "total_tokens": 3944222.64509301
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.922890846004726,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 5758751.98349191
     },
     {
       "agent": null,
