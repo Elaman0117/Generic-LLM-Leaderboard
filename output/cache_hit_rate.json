@@ -6,7 +6,7 @@
     "total_combinations": 34,
     "valid_count": 34
   },
-  "cache_hit_rate": 0.9410926657079832,
+  "cache_hit_rate": 0.9410926657079833,
   "valid_count": 34,
   "total_count": 34,
   "combinations": [
@@ -124,7 +124,7 @@
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.928466255516987,
+      "cache_hit_rate": 0.928466255516988,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
