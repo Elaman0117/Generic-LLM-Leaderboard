@@ -1,0 +1,4 @@
+Tier \ Version,Mistral v1,Mistral v2,Mistral v3,Mistral v3.1,Mistral v3.2,Mistral v3.5,Mistral v4
+Tier 1 (Large / High-MoE),Mistral Large (Feb),Mistral Large 2 (Jul) / Mistral Large 2 (Nov) / Pixtral Large / Mixtral 8x22B,Mistral Large 3,,,,Mistral Large 4 Preview / Mistral Large 4
+Tier 2 (Medium),Mistral Medium / Mixtral 8x7B,,Mistral Medium 3,Mistral Medium 3.1,,Mistral Medium 3.5,
+Tier 3 (Small / Ministral / 7B),Mistral 7B / Mistral Small (Feb) / Mistral Small (Sep),,Mistral Small 3 / Ministral 3 8B / Ministral 3 14B / Ministral 3 3B,Mistral Small 3.1,Mistral Small 3.2,,Mistral Small 4

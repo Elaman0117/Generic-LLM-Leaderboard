@@ -1,0 +1,6 @@
+Tier \ Version,Qwen 2,Qwen 2.5,Qwen 3,Qwen 3.5,Qwen 3.6,Qwen 3.7,Qwen 3.8,Qwen 4
+Tier 1 (Max / Reasoning),,Qwen2.5 Max,Qwen3 Max / Qwen3 Max Thinking / Qwen3 Max (Preview) / Qwen3 Max Thinking (Preview),,Qwen3.6 Max Preview,Qwen3.7 Max,Qwen3.8 Max / Qwen3.8 Max (0902),Qwen4 Max
+Tier 2 (Plus / Ultra MoE),,,Qwen3 235B 2507 / Qwen3 235B A22B 2507 / Qwen3 VL 235B A22B,Qwen3.5 Omni Plus / Qwen3.5 397B A17B,Qwen3.6 Plus,Qwen3.7 Plus,Qwen3.8 2.4T A95B,
+Tier 3 (Large: 122B-27B),Qwen2 72B,Qwen2.5 72B / Qwen2.5 Coder 32B / Qwen2.5 Instruct 32B / Qwen2.5 Turbo,Qwen3 30B / Qwen3 32B / Qwen3 235B / Qwen3 Coder 480B / Qwen3 Next 80B A3B / Qwen3 Coder Next / Qwen3 Omni 30B A3B / Qwen3 VL 30B A3B / Qwen3 30B A3B 2507 / Qwen3 VL 32B / Qwen3 Coder 30B A3B,Qwen3.5 122B A10B / Qwen3.5 35B A3B / Qwen3.5 27B / Qwen3.5 Omni Flash,Qwen3.6 35B A3B / Qwen3.6 27B,,Qwen3.8 27B / Qwen3.8-Flash-Next,
+Tier 4 (Small: 14B-4B),,Qwen2.5 Coder 7B,Qwen3 14B / Qwen3 8B / Qwen3 4B / Qwen3 VL 8B / Qwen3 4B 2507 / Qwen3 VL 4B,Qwen3.5 9B / Qwen3.5 4B,,,,
+Tier 5 (Nano: 2B-0.6B),,,Qwen3 1.7B / Qwen3 0.6B,Qwen3.5 2B / Qwen3.5 0.8B,,,,

@@ -1,0 +1,5 @@
+Tier \ Version,Claude 2,Claude 3,Claude 3.5,Claude 3.7,Claude 4,Claude 4.1,Claude 4.5,Claude 4.6,Claude 4.7,Claude 4.8,Claude 5,Claude 5.1,Claude 5.2,Claude 5.5
+Tier 1 (Opus),,Claude 3 Opus,,,Claude 4 Opus,Claude 4.1 Opus,Claude Opus 4.5,Claude Opus 4.6,Claude Opus 4.7,Claude Opus 4.8,Claude Opus 5,,,Claude Opus 5.5
+Tier 2 (Fable),,,,,,,,,,,Claude Fable 5,Claude Fable 5.1,Claude Fable 5.2,
+Tier 3 (Sonnet),,Claude 3 Sonnet,Claude 3.5 Sonnet (June) / Claude 3.5 Sonnet (Oct),Claude 3.7 Sonnet,Claude 4 Sonnet,,Claude 4.5 Sonnet,Claude Sonnet 4.6,,,Claude Sonnet 5,,,Claude Sonnet 5.5
+Tier 4 (Haiku),Claude Instant / Claude 2.0 / Claude 2.1,Claude 3 Haiku,Claude 3.5 Haiku,,,,Claude 4.5 Haiku,,,,,,,Claude Haiku 5.5

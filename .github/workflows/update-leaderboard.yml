@@ -40,8 +40,14 @@ jobs:
       - name: Scrape Cache Hit Rate from coding-agents page
         run: python src/cache_hit_rate.py
 
+      - name: Run model hierarchy and monotonic scoring engine
+        run: python src/hierarchy.py
+
       - name: Run analysis
         run: python src/analyze.py
+
+      - name: Run tests
+        run: python -m unittest discover tests
 
       - name: Commit and push results
         run: |

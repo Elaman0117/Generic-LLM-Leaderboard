@@ -1,0 +1,4 @@
+Tier \ Version,o1,o3,o4
+Tier 1 (Pro),o1-pro,o3-pro,
+Tier 2 (Standard),o1 / o1-preview,o3,
+Tier 3 (Mini),o1-mini,o3-mini,o4-mini

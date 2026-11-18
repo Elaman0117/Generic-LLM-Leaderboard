@@ -1,0 +1,5 @@
+Tier \ Version,2025-04,2025-07,2025-12,2026-03,2026-04,2026-06,2026-08,2026-10
+Tier 1 (Flagship / Large),Llama Nemotron Ultra,,,,,Nemotron 3 Ultra,,
+Tier 2 (Medium / MoE),,,,Nemotron Cascade 2 30B A3B,Nemotron 3 Nano Omni 30B A3B,,,
+Tier 3 (Small / Fast),,,,Nemotron 3 Nano 4B,,,,Nemotron 3.5 Bolt 74B-A9B
+Tier 4 (Compact / Nano),,Llama Nemotron Super 49B v1.5,Nemotron 3 Nano,Nemotron 3 Super,,,Nemotron 3.5 Lightning,Nemotron 3.5 Super VL

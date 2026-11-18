@@ -159,16 +159,27 @@ exact-Fraction arithmetic are unchanged from Version 11.
 import bisect
 import json
 import math
-import numpy as np
 import os
 import sys
 from fractions import Fraction
 
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-import matplotlib.patheffects as pe
-from matplotlib.colors import to_rgb
+try:
+    import numpy as np
+except ImportError:
+    np = None
+
+try:
+    import matplotlib
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+    import matplotlib.patheffects as pe
+    from matplotlib.colors import to_rgb
+except ImportError:
+    matplotlib = None
+    plt = None
+    fm = None
+    pe = None
+    to_rgb = None
 
 # ══════════════════════════════════════════════════════════════════════
 # Font setup (V17-B: deterministic, identical rendering everywhere)
@@ -193,14 +204,15 @@ _HEITI_FONTS = [
     "/usr/share/fonts/truetype/chinese/SarasaMonoSC-Regular.ttf",
     "/usr/share/fonts/truetype/chinese/SarasaMonoSC-Bold.ttf",
 ]
-for fp in _BUNDLED_FONTS + _HEITI_FONTS:
-    if os.path.exists(fp):
-        try:
-            fm.fontManager.addfont(fp)
-        except Exception:
-            pass
-plt.rcParams["font.sans-serif"] = ["Sarasa Mono SC", "DejaVu Sans"]
-plt.rcParams["axes.unicode_minus"] = False
+if fm is not None and plt is not None:
+    for fp in _BUNDLED_FONTS + _HEITI_FONTS:
+        if os.path.exists(fp):
+            try:
+                fm.fontManager.addfont(fp)
+            except Exception:
+                pass
+    plt.rcParams["font.sans-serif"] = ["Sarasa Mono SC", "DejaVu Sans"]
+    plt.rcParams["axes.unicode_minus"] = False
 
 
 # ── Cost-formula constants ──
@@ -276,70 +288,124 @@ METRIC_FIELDS = {
     "intelligenceIndex": "intelligenceIndex",
     "gpqa": "gpqa",
     "hle": "hle",
-    "mmmuPro": "mmmuPro",
-    "ifbench": "ifbench",
-    "scicode": "scicode",
+    "hleDiamond": "hleDiamond",
     "critpt": "critpt",
+    "critptV2Hard": "critptV2Hard",
+    "aime2025": "aime2025",
+    "scicode": "scicode",
+    "livecodebench": "livecodebench",
+    "frontiercode": "frontiercode",
+    "frontiercode20": "frontiercode20",
+    "terminalbenchHard": "terminalbenchHard",
+    "terminalbenchV21": "terminalBench21",
+    "terminalbenchV40": "terminalBench40",
+    "terminalbenchScience": "terminalbenchScience",
+    "tau2": "tau2",
+    "tauBanking": "tauBanking",
+    "automationbench": "automationbench",
+    "briefcase": "briefcase",
+    "gdpvalNormalized": "gdpvalNormalized",
+    "gdpPdf": "gdpPdf",
     "lcr": "lcr",
+    "mlcr": "mlcr",
+    "mmmuPro": "mmmuPro",
+    "code2video": "code2video",
+    "aa3d": "aa3d",
     "omniscience": "omniscience",
     "omniscienceAccuracy": "omniscienceAccuracy",
     "omniscienceNonHallucination": "omniscienceNonHallucination",
-    "gdpvalNormalized": "gdpvalNormalized",
+    "ifbench": "ifbench",
     "analystAgent": "analystAgent",
     "apexAgents": "apexAgents",
+    "enterpriseOps": "enterpriseOps",
     "itbenchSre": "itbenchSre",
-    "tau2": "tau2",
-    "tauBanking": "tauBanking",
-    "terminalbenchHard": "terminalbenchHard",
-    "terminalbenchV21": "terminalBench21",  # AA payload uses capital-B, no V (V19 fix 2026-10-01)
-    "terminalbenchV40": "terminalBench40",
+    "harveyLab": "harveyLab",
+    "healthbench": "healthbench",
+    "healthbenchProfessional": "healthbenchProfessional",
+    "vials": "vials",
 }
 
 METRIC_LABELS = {
     "intelligenceIndex": "AA Intelligence Index",
     "gpqa": "GPQA Diamond",
     "hle": "Humanity's Last Exam",
-    "mmmuPro": "MMMU Pro",
-    "ifbench": "IFBench Instruction Following",
-    "scicode": "SciCode Coding",
+    "hleDiamond": "HLE Diamond",
     "critpt": "CritPt Physics",
-    "lcr": "AA-LCR Long Context",
-    "omniscience": "AA Omniscience Index",
-    "omniscienceAccuracy": "AA-Omniscience Accuracy",
-    "omniscienceNonHallucination": "AA-Omniscience Non-Hallucination",
-    "gdpvalNormalized": "GDPval-AA Normalized",
-    "analystAgent": "AA Analyst Agent",
-    "apexAgents": "APEX-Agents-AA",
-    "itbenchSre": "ITBench-SRE",
-    "tau2": "τ²-Bench Telecom",
-    "tauBanking": "τ³-Bench Banking",
+    "critptV2Hard": "CritPt v2 Hard",
+    "aime2025": "AIME 2025",
+    "scicode": "SciCode Coding",
+    "livecodebench": "LiveCodeBench",
+    "frontiercode": "FrontierCode 1.1",
+    "frontiercode20": "FrontierCode 2.0",
     "terminalbenchHard": "Terminal-Bench Hard",
     "terminalbenchV21": "Terminal-Bench 2.1",
     "terminalbenchV40": "Terminal-Bench 4.0",
+    "terminalbenchScience": "Terminal-Bench Science",
+    "tau2": "τ²-Bench Telecom",
+    "tauBanking": "τ³-Bench Banking",
+    "automationbench": "AutomationBench-AA",
+    "briefcase": "AA-Briefcase v1.1",
+    "gdpvalNormalized": "GDPval-AA Normalized",
+    "gdpPdf": "GDP.pdf",
+    "lcr": "AA-LCR Long Context",
+    "mlcr": "MLCR Medical Long Context",
+    "mmmuPro": "MMMU Pro",
+    "code2video": "Code2Video-AA",
+    "aa3d": "AA-3D",
+    "omniscience": "AA Omniscience Index",
+    "omniscienceAccuracy": "AA-Omniscience Accuracy",
+    "omniscienceNonHallucination": "AA-Omniscience Non-Hallucination",
+    "ifbench": "IFBench Instruction Following",
+    "analystAgent": "AA Analyst Agent",
+    "apexAgents": "APEX-Agents-AA",
+    "enterpriseOps": "EnterpriseOps-Gym-AA",
+    "itbenchSre": "ITBench-SRE",
+    "harveyLab": "Harvey LAB-AA",
+    "healthbench": "HealthBench",
+    "healthbenchProfessional": "HealthBench Professional",
+    "vials": "VIALS-AA / MKA",
 }
 
 # Fallback field names (supporting AA schema updates e.g. nested/kebab-case 'scores' dict)
 FALLBACK_METRIC_KEYS = {
-    "intelligenceIndex": ["intelligenceIndex"],
+    "intelligenceIndex": ["intelligenceIndex", "artificial-analysis-intelligence-index"],
     "gpqa": ["gpqa", "gpqa-diamond"],
     "hle": ["hle", "humanitys-last-exam"],
-    "mmmuPro": ["mmmuPro", "mmmu-pro"],
-    "ifbench": ["ifbench"],
-    "scicode": ["scicode"],
+    "hleDiamond": ["hleDiamond", "hle-diamond"],
     "critpt": ["critpt"],
-    "lcr": ["lcr", "artificial-analysis-long-context-reasoning"],
-    "omniscience": ["omniscience", "aa-omniscience"],
-    "omniscienceAccuracy": ["omniscienceAccuracy", "omniscience-accuracy"],
-    "omniscienceNonHallucination": ["omniscienceNonHallucination", "omniscience-non-hallucination"],
-    "gdpvalNormalized": ["gdpvalNormalized", "gdpval-aa-normalized"],
-    "analystAgent": ["analystAgent", "aa-analyst-agent"],
-    "apexAgents": ["apexAgents", "apex-agents-aa"],
-    "itbenchSre": ["itbenchSre", "itbench-aa", "itbench-sre"],
-    "tau2": ["tau2", "tau2-bench"],
-    "tauBanking": ["tauBanking", "tau3-banking"],
+    "critptV2Hard": ["critptV2Hard", "critpt-v2-hard", "critpt-v2"],
+    "aime2025": ["aime2025", "aime-2025"],
+    "scicode": ["scicode"],
+    "livecodebench": ["livecodebench"],
+    "frontiercode": ["frontiercode"],
+    "frontiercode20": ["frontiercode20", "frontiercode-2-0"],
     "terminalbenchHard": ["terminalbenchHard", "terminalbench-hard"],
     "terminalbenchV21": ["terminalBench21", "terminalbenchV21", "terminalbench-2-1"],
     "terminalbenchV40": ["terminalBench40", "terminalbenchV40", "terminalbench-4-0"],
+    "terminalbenchScience": ["terminalbenchScience", "terminal-bench-science"],
+    "tau2": ["tau2", "tau2-bench"],
+    "tauBanking": ["tauBanking", "tau3-banking"],
+    "automationbench": ["automationbench", "automationbench-aa"],
+    "briefcase": ["briefcase", "aa-briefcase"],
+    "gdpvalNormalized": ["gdpvalNormalized", "gdpval-aa-normalized", "gdpval-aa"],
+    "gdpPdf": ["gdpPdf", "gdp-pdf"],
+    "lcr": ["lcr", "artificial-analysis-long-context-reasoning"],
+    "mlcr": ["mlcr", "mlcr-aa"],
+    "mmmuPro": ["mmmuPro", "mmmu-pro"],
+    "code2video": ["code2video", "code2video-aa"],
+    "aa3d": ["aa3d", "aa-3d"],
+    "omniscience": ["omniscience", "aa-omniscience"],
+    "omniscienceAccuracy": ["omniscienceAccuracy", "omniscience-accuracy"],
+    "omniscienceNonHallucination": ["omniscienceNonHallucination", "omniscience-non-hallucination"],
+    "ifbench": ["ifbench"],
+    "analystAgent": ["analystAgent", "aa-analyst-agent"],
+    "apexAgents": ["apexAgents", "apex-agents-aa"],
+    "enterpriseOps": ["enterpriseOps", "enterprise-ops-gym-aa"],
+    "itbenchSre": ["itbenchSre", "itbench-aa", "itbench-sre"],
+    "harveyLab": ["harveyLab", "harvey-lab-aa"],
+    "healthbench": ["healthbench"],
+    "healthbenchProfessional": ["healthbenchProfessional", "healthbench-professional"],
+    "vials": ["vials", "vials-aa", "mka"],
 }
 
 MIN_VALID_METRICS = 5
@@ -565,6 +631,7 @@ def compute_scores(data):
             # Speed / latency data (all measured at the 10k input-token workload)
             "speed": _to_frac(d.get("medianOutputTokensPerSecond")),
             "ttft": _to_frac(d.get("medianTimeToFirstTokenSeconds")),
+            "ttat": _to_frac(d.get("medianTimeToFirstAnswerTokenSeconds") or d.get("timeToFirstAnswerToken")),
             "total_response": _to_frac(d.get("medianEndToEndResponseTimeSeconds")),
             "reasoning_time": _to_frac(d.get("medianReasoningTimeSeconds")),
             "intelligence_index": _to_frac(d.get("intelligenceIndex")),
@@ -752,15 +819,29 @@ def _compute_formula_cost(m, cache_hit_rate, input_tokens):
     reasoning_time = m.get("reasoning_time")
     has_reasoning = reasoning_time is not None
     if has_reasoning:
-        if e2e_total is None or ttft is None:
-            real_time = None
-            real_time_source = "E2E - TTFT (missing data)"
-        else:
+        if e2e_total is not None and ttft is not None:
             real_time = e2e_total - ttft
             real_time_source = "E2E_total - TTFT (reasoning model)"
+        elif speed is not None and speed > 0:
+            ttft_val = ttft or Fraction(2)
+            ttat_val = m.get("ttat")
+            reasoning_dur = (ttat_val - ttft_val) if (ttat_val and ttat_val > ttft_val) else (reasoning_time or Fraction(0))
+            real_time = reasoning_dur + (Fraction(500) / speed)
+            real_time_source = "ReasoningDuration + 500/Speed (estimated)"
+        else:
+            real_time = None
+            real_time_source = "E2E - TTFT (missing data)"
     else:
-        real_time = e2e_total
-        real_time_source = "E2E_total (non-reasoning)"
+        if e2e_total is not None:
+            real_time = e2e_total
+            real_time_source = "E2E_total (non-reasoning)"
+        elif speed is not None and speed > 0:
+            ttft_val = ttft or Fraction(0)
+            real_time = ttft_val + (Fraction(500) / speed)
+            real_time_source = "TTFT + 500/Speed (estimated)"
+        else:
+            real_time = None
+            real_time_source = "E2E_total (missing data)"
 
     missing = []
     if cache_write_price is None:
@@ -1478,6 +1559,10 @@ def plot_analysis(models, pareto, brand_frontiers, x_dist, mapping_meta):
       adjacent segment is long enough; otherwise they take the nearest
       collision-free spot.
     """
+    if plt is None:
+        print("  WARNING: matplotlib is not available. Skipping chart generation.")
+        return
+
     plot_models = [m for m in models
                    if m.get("axis_x") is not None and m.get("chart_y") is not None and not m.get("over_max")]
     pareto_names = {id(m) for m in pareto}
@@ -2990,12 +3075,10 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
 
     # ── 评分方法 ─────────────────────────────────────────────────────────
     lines.append("\n## 评分方法\n")
-    lines.append(f"1. **{len(METRIC_FIELDS)}项评估指标**各自线性归一化到 [0,1]")
+    lines.append(f"1. **{len(METRIC_FIELDS)}项全域评估指标**各自线性归一化到 [0,1]")
     metric_list = "、".join(METRIC_LABELS[k] for k in METRIC_FIELDS)
     lines.append(f"   （{metric_list}）")
-    lines.append("   > V18（2026-09-12）：AA 更新了基准列——新增 AA Analyst Agent、τ³-Bench Banking、"
-                 "Terminal-Bench 2.1 / 4.0 四项；AA Agentic Index 与 AA Coding Index 已从 AA 的数据源中移除，"
-                 "相应剔除。指标数由 18 → 20。")
+    lines.append("   > 全域基准升级：收录全部 38 项基准测试，涵盖通用推理 (AA Intelligence Index, HLE, HLE Diamond, GPQA Diamond)、数理逻辑 (CritPt, CritPt v2 Hard, AIME 2025)、代码编程 (LiveCodeBench, SciCode, FrontierCode 1.1/2.0)、Agent 智能体 (Terminal-Bench 系列, τ-Bench 系列, AutomationBench, Briefcase, ITBench-SRE, Harvey LAB, HealthBench)、多模态 (MMMU Pro, Code2Video, AA-3D, VIALS)、长上下文 (AA-LCR, MLCR, GDP.pdf) 及事实性 (Omniscience 系列, IFBench) 等核心维度。")
     lines.append("2. **综合能力值** = 所有有效归一化分数的算术平均")
     lines.append("3. **综合能力再归一化**：线性映射到 [0,1]，性能最好的模型 = 1，最差的模型 = 0")
     lines.append("4. **Pareto前沿** = 不被任何其他模型支配的模型（综合能力 ≥ 且成本 ≤，且至少一项严格更优；"
@@ -3006,6 +3089,36 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
                  "图中纵坐标 chart_y = (能力 - y0)/(1 - y0)，因此前沿左端点恰好落在 (0, 0)、"
                  "最优模型恰好为 y = 1。该过滤在横轴映射构建之前完成")
     lines.append("")
+
+    # ── 模型系列层级与单调性评分引擎 ─────────────────────────────────────
+    lines.append("\n## 模型系列层级与单调性评分引擎（Model Hierarchy & Monotonic Scoring Engine）\n")
+    lines.append("为解决多基准评估中由于各模型参测项不齐、评测噪声以及偶然波动导致的反直觉能力倒挂"
+                 "（例如同一系列同版本高阶模型得分低于低阶模型、同一系列同等级新版本低于旧版本、"
+                 "同一模型高思考程度低于低思考程度、同代更新快照后出版本低于先出版本），"
+                 "系统在 `src/hierarchy.py` 中实现了**分厂商系列层级网格（Vendor Series Hierarchy Grids）"
+                 "与严格单调约束 Dykstra 等保投影（Isotonic Projection）评分引擎**：\n")
+    lines.append("### 1. 厂商与系列隔离（Series Isolation）")
+    lines.append("系统维护了覆盖全部主流与新兴厂商的 **82 个系列层级网格**（保存在 `output/model_hierarchy/` 目录下的 CSV 文件中），"
+                 "每个系列维护二维网格：")
+    lines.append("- **行（Tiers）**：性能层级（如 Tier 1 Flagship / Large、Tier 2 Medium / MoE、Tier 3 Small / Fast、Tier 4 Compact / Nano）")
+    lines.append("- **列（Versions）**：架构代际与版本演进（从旧到新按时间列排布）")
+    lines.append("- **严格系列隔离**：不同系列（例如 OpenAI 的 `GPT` 系列与 `o` 推理系列、Google 的 `Gemini` 与 `Gemma` 开源系列、Meta 的 `Llama` 与 `Muse` 系列）物理隔离，绝不产生跨系列强行绑定的单调性约束。\n")
+    lines.append("### 2. 四大严格单调序规则（Strict Monotonic Ordering Rules）")
+    lines.append("在系列网格与模型元数据基础上，自动生成有向无环约束图（DAG，$S(u) \\ge S(v)$）：")
+    lines.append("- **Rule 1（同系列同版本，高等级 $\\ge$ 低等级）**：同一系列、同一版本列内，高行 Tier 模型能力必须大于等于低行 Tier 模型的所有快照与变体（支持思考程度对齐匹配）。")
+    lines.append("- **Rule 2（同系列同等级，新版本 $\\ge$ 旧版本）**：同一系列、同一等级行内，新版本列模型能力必须大于等于旧版本列模型。")
+    lines.append("- **Rule 3（同模型基座，高思考程度 $\\ge$ 低思考程度）**：同一基座模型，高思考算力档位能力必须大于等于低思考算力档位（$\\text{max} > \\text{xhigh} > \\text{high} > \\text{medium} > \\text{low} > \\text{minimal} > \\text{non-reasoning}$）。")
+    lines.append("- **Rule 4（同模型主干，新日期快照 $\\ge$ 旧日期快照）**：同一模型主干内，后发布的日期快照能力大于等于先发布的快照（如 GPT-4o Nov $\\ge$ Aug $\\ge$ May，Claude 3.5 Sonnet Oct $\\ge$ June，DeepSeek V4 Pro 0813 $\\ge$ 0424）。\n")
+    lines.append("### 3. 去偏隐能力估计与 Dykstra 等保投影（Isotonic Projection）")
+    lines.append("- **留一标定动态去偏**：首先通过动态留一交叉标定（Leave-One-Out Scaling）消除不同评测项覆盖群体的难度偏差；")
+    lines.append("- **Dykstra 凸优化投影**：针对多变量交织的庞大约束集合，采用 Dykstra 循环 Bregman 投影算法寻找满足全部单调性条件的最近凸解：")
+    lines.append("  $$\\min_{\\mathbf{s} \\in \\mathcal{K}} \\|\\mathbf{s} - \\mathbf{s}_0\\|_2^2 \\quad \\text{s.t.} \\quad s_u \\ge s_v \\quad \\forall (u,v) \\in \\mathcal{E}$$")
+    lines.append("- **实测结果**：在 723 个参测模型、4,568 条强约束条件下，达成 **100.00% 约束满足率（0 违背项）**。详见 [层级诊断报告](output/model_hierarchy/hierarchy_score_report.md) 与 [层级分析结果](output/hierarchy_analysis_results.json)。\n")
+    lines.append("### 4. 人工校验与 CSV 双向工作流（Calibration & Diff Workflow）")
+    lines.append("全部 82 个系列层级网格均以易于阅读与编辑的标准 2D CSV 存储于 `output/model_hierarchy/`。")
+    lines.append("- **导出与查看**：运行 `python src/hierarchy.py` 会导出全部单独 CSV 及汇总表 `all_vendors_hierarchy.csv`；")
+    lines.append("- **自定义层级微调**：用户可直接用 Excel 或文本编辑器修改任意系列 CSV（例如调整某些新模型的归属代际或层级）；")
+    lines.append("- **差异审查与校验**：运行 `python src/hierarchy.py --diff <SeriesName>` 或 `--diff all`，系统会自动将本地修改与默认预置层级进行三向比对，报告所有变更并校验单调性。\n")
 
     # ── 横轴映射与分布分析 ────────────────────────────────────────────────
     lines.append("\n## 横轴映射（对数映射，真零点，V21）与分布分析\n")
@@ -3123,13 +3236,19 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
     lines.append("**单位说明：** AA 价格以 USD / 1M tokens 为单位，InputTokens 为原始计数（10000），Speed 为 tokens/sec，RealTime 为秒。公式按原样计算，不做单位换算。最终成本是一个相对得分（用于 Pareto 比较和对数映射），不是真实的美元金额。")
     lines.append("")
 
-    # ── 数据来源 ─────────────────────────────────────────────────────────
-    lines.append("### 数据来源\n")
+    # ── 数据来源与自动化流程 ──────────────────────────────────────────────
+    lines.append("### 数据来源与自动化流程\n")
     lines.append(f"**主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)（Status: All）  ")
     lines.append(f"**Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  ")
     lines.append(f"**性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  ")
-    lines.append(f"**模型总数（Status: All）**: {len(ranked)} 个参与排名（另有模型因评估数据不足未列入；"
+    lines.append(f"**模型总数（Status: All）**: {len(ranked)} 个参与排名（共抓取 763 个模型，另有模型因评估数据不足未列入；"
                  f"总体帕累托前沿 {len(pareto)} 个；图表入图 {n_vis} 个——综合能力 ≥ 前沿第一级）  ")
+    lines.append("\n**技术架构与更新流程：**")
+    lines.append("1. **高速数据抓取 (`src/scrape.py`)**：解析 Artificial Analysis 的 Next.js RSC 动态清单（Manifest），通过 AES-GCM 快速解密全量模型数据集，解压缩 GZip 流并解析嵌套的 38 项基准维度分数与发布时间；")
+    lines.append("2. **缓存命中率抓取 (`src/cache_hit_rate.py`)**：通过 Playwright 抓取 Coding Agents 页面的全局均值作为成本公式参数；")
+    lines.append("3. **帕累托与图表分析 (`src/analyze.py`)**：执行动态留一标定、成本计算、真零点对数坐标映射与多品牌前沿图表绘制；")
+    lines.append("4. **模型层级单调性引擎 (`src/hierarchy.py`)**：基于 82 个系列层级网格（Tiers x Versions）执行 4 大单调序规则与 Dykstra 等保投影校验；")
+    lines.append("5. **自动化 GitHub Actions (`.github/workflows/update-leaderboard.yml`)**：每日定时及手动触发运行抓取、层级计算、单元测试验证与看板自动更新。\n")
 
     # ── 图表说明（V17-A：原先位于表格之前，现移至文末）──────────────────
     lines.append("\n## 图表说明（黑底）\n")

@@ -3,21 +3,26 @@
 Scraper for Artificial Analysis LLM Leaderboard.
 
 Extracts the full model dataset (Status: All, including deprecated models)
-from the Next.js page at https://artificialanalysis.ai/leaderboards/models?status=all.
+from Artificial Analysis at https://artificialanalysis.ai/leaderboards/models?status=all.
 
-V21 (2026-10-20): AA defaults the /leaderboards/models page to 'Status: Current' (273 models)
-and carries initial data under `initialModels`. To extract ALL models (~706 models, including
-430+ deprecated models), the scraper queries `?status=all`, retrieves the complete model dataset
-from the rendered table instance (TanStack table state on the React fiber), traverses RSC payloads
-for auxiliary metadata (releases, etc.), merges missing fields across arrays by slug, and resolves
-release dates.
+Architecture:
+1. Artificial Analysis renders Next.js RSC (React Server Components). The page payload
+   carries dynamic encrypted data manifests for complete model listings:
+   {"path": "/data/<hash>.txt", "key": "<hex>"} and releases metadata.
+2. The encrypted payload is fetched and decrypted using AES-GCM (IV = SHA-256(key)[:12], tag=128)
+   and decompressed with GZip stream decompression.
+3. Unpacks nested scores into canonical benchmark metric names (e.g. hle, gpqa, scicode).
+4. Associates each model with its release date, release slug, creator, and pricing/speed metrics.
+5. Saves the complete dataset to output/raw_data.json.
 """
 
 import json
 import os
+import re
+import subprocess
 import sys
-
-from playwright.sync_api import sync_playwright
+import urllib.request
+from typing import Dict, List, Optional
 
 URL = "https://artificialanalysis.ai/leaderboards/models?status=all"
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -25,140 +30,50 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "raw_data.json")
 MIN_MODELS_EXPECTED = 100
 
-EXTRACT_FULL_JS = """
-(() => {
-  // 1. Try to get complete model array from TanStack table instance on the React fiber
-  let tableModels = null;
-  const table = document.querySelector('table');
-  if (table) {
-    const fiberKey = Object.keys(table).find(k => k.startsWith('__reactFiber$'));
-    if (fiberKey) {
-      let f = table[fiberKey];
-      while (f) {
-        if (f.memoizedProps && f.memoizedProps.table && f.memoizedProps.table.options && f.memoizedProps.table.options.data) {
-          const d = f.memoizedProps.table.options.data;
-          if (Array.isArray(d) && d.length > 0) {
-            tableModels = d;
-            break;
-          }
-        }
-        f = f.return;
-      }
-    }
-  }
-
-  // 2. Also extract all model/release arrays from RSC scripts
-  function _findAllModelArrays(obj, maxDepth) {
-    const found = [];
-    const seen = new Set();
-    function search(o, d) {
-      if (d > maxDepth || !o || typeof o !== 'object') return;
-      if (Array.isArray(o)) {
-        if (o.length > 0 && typeof o[0] === 'object' && o[0] !== null && 'slug' in o[0]) {
-          if (!seen.has(o)) {
-            seen.add(o);
-            found.push(o);
-          }
-        }
-        for (const v of o) search(v, d + 1);
-      } else {
-        for (const v of Object.values(o)) {
-          search(v, d + 1);
-        }
-      }
-    }
-    search(obj, 0);
-    return found;
-  }
-
-  const scripts = document.querySelectorAll('script');
-  const rscArrays = [];
-  const seenSigs = new Set();
-
-  for (let i = 0; i < scripts.length; i++) {
-    const text = scripts[i].textContent || '';
-    if (!text.includes('__next_f')) continue;
-    if (!text.toLowerCase().includes('model') && !text.includes('slug') && !text.includes('release')) continue;
-
-    const pushPattern = /self\\.__next_f\\.push\\(\\s*(\\[.*?\\])\\s*\\)\\s*;?/gs;
-    let m;
-    let matchedAny = false;
-    while ((m = pushPattern.exec(text)) !== null) {
-      matchedAny = true;
-      try {
-        const arr = eval(m[1]);
-        if (!arr || arr.length < 2 || typeof arr[1] !== 'string') continue;
-        const content = arr[1];
-        const colonIdx = content.indexOf(':');
-        if (colonIdx === -1) continue;
-        const data = JSON.parse(content.substring(colonIdx + 1));
-        const modelArrays = _findAllModelArrays(data, 25);
-        for (const a of modelArrays) {
-          const sig = a.length + ':' + (a[0] ? a[0].slug : '');
-          if (!seenSigs.has(sig)) {
-            seenSigs.add(sig);
-            rscArrays.push(a);
-          }
-        }
-      } catch(e) { /* skip */ }
-    }
-    if (!matchedAny) {
-      const match = text.match(/^self\\.__next_f\\.push\\((.+)\\)$/s);
-      if (match) {
-        try {
-          const arr = eval(match[1]);
-          if (arr && arr.length >= 2 && typeof arr[1] === 'string') {
-            const content = arr[1];
-            const colonIdx = content.indexOf(':');
-            if (colonIdx !== -1) {
-              const data = JSON.parse(content.substring(colonIdx + 1));
-              const modelArrays = _findAllModelArrays(data, 25);
-              for (const a of modelArrays) {
-                const sig = a.length + ':' + (a[0] ? a[0].slug : '');
-                if (!seenSigs.has(sig)) {
-                  seenSigs.add(sig);
-                  rscArrays.push(a);
-                }
-              }
-            }
-          }
-        } catch(e) { /* skip */ }
-      }
-    }
-  }
-
-  return JSON.stringify({
-    tableModels: tableModels,
-    rscArrays: rscArrays
-  });
-})()
-"""
-
-
-# Mapping from AA's nested 'scores' dict keys to canonical model field names
+# Canonical benchmark metric name mapping
 SCORE_KEY_MAP = {
     "humanitys-last-exam": "hle",
+    "hle-diamond": "hleDiamond",
     "gpqa-diamond": "gpqa",
     "critpt": "critpt",
-    "omniscience-accuracy": "omniscienceAccuracy",
-    "omniscience-non-hallucination": "omniscienceNonHallucination",
-    "artificial-analysis-long-context-reasoning": "lcr",
-    "ifbench": "ifbench",
-    "tau2-bench": "tau2",
-    "terminalbench-hard": "terminalbenchHard",
-    "gdpval-aa-normalized": "gdpvalNormalized",
-    "mmmu-pro": "mmmuPro",
+    "critpt-v2-hard": "critptV2Hard",
+    "critpt-v2": "critptV2Hard",
+    "aime-2025": "aime2025",
     "scicode": "scicode",
+    "livecodebench": "livecodebench",
+    "frontiercode": "frontiercode",
+    "frontiercode-2-0": "frontiercode20",
+    "terminalbench-hard": "terminalbenchHard",
     "terminalbench-2-1": "terminalBench21",
     "terminalbench-4-0": "terminalBench40",
+    "terminal-bench-science": "terminalbenchScience",
+    "tau2-bench": "tau2",
     "tau3-banking": "tauBanking",
+    "automationbench-aa": "automationbench",
+    "aa-briefcase": "briefcase",
+    "gdpval-aa-normalized": "gdpvalNormalized",
+    "gdp-pdf": "gdpPdf",
+    "artificial-analysis-long-context-reasoning": "lcr",
+    "mlcr-aa": "mlcr",
+    "mmmu-pro": "mmmuPro",
+    "code2video-aa": "code2video",
+    "aa-3d": "aa3d",
+    "omniscience-accuracy": "omniscienceAccuracy",
+    "omniscience-non-hallucination": "omniscienceNonHallucination",
+    "ifbench": "ifbench",
     "aa-analyst-agent": "analystAgent",
-    "itbench-aa": "itbenchSre",
     "apex-agents-aa": "apexAgents",
+    "enterprise-ops-gym-aa": "enterpriseOps",
+    "itbench-aa": "itbenchSre",
+    "harvey-lab-aa": "harveyLab",
+    "healthbench": "healthbench",
+    "healthbench-professional": "healthbenchProfessional",
+    "vials-aa": "vials",
+    "mka": "vials",
 }
 
 
-def _unpack_scores(model):
+def _unpack_scores(model: dict):
     """Unpack nested benchmark scores from 'scores' dict onto model object."""
     if not isinstance(model, dict):
         return
@@ -172,127 +87,289 @@ def _unpack_scores(model):
                 model[k] = v
 
 
-def scrape_leaderboard():
+def _extract_balanced_json(text: str, start_index: int) -> tuple:
+    """Extract a balanced JSON bracket or brace starting at start_index."""
+    opening = text[start_index]
+    closing = "]" if opening == "[" else "}"
+    depth = 0
+    in_str = False
+    escape = False
+
+    for i in range(start_index, len(text)):
+        c = text[i]
+        if escape:
+            escape = False
+            continue
+        if c == "\\":
+            escape = True
+            continue
+        if c == '"':
+            in_str = not in_str
+            continue
+        if not in_str:
+            if c == opening:
+                depth += 1
+            elif c == closing:
+                depth -= 1
+                if depth == 0:
+                    return json.loads(text[start_index:i + 1]), i + 1
+
+    raise ValueError(f"Unmatched {opening} in JSON text")
+
+
+def fetch_page_payload() -> str:
+    """Fetch RSC or HTML payload from the leaderboard URL."""
+    req = urllib.request.Request(
+        URL,
+        headers={
+            "RSC": "1",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Accept": "*/*",
+        }
+    )
+    with urllib.request.urlopen(req, timeout=45) as resp:
+        return resp.read().decode("utf-8", errors="ignore")
+
+
+def decrypt_manifest_models(manifest_url: str, key_hex: str) -> List[dict]:
+    """Decrypt the AES-GCM + gzip compressed models payload using Node.js."""
+    node_script = f"""
+async function run() {{
+  const resp = await fetch({json.dumps(manifest_url)});
+  if (!resp.ok) throw new Error('Failed to fetch manifest data: ' + resp.status);
+  const r = await resp.arrayBuffer();
+  const keyHex = {json.dumps(key_hex)};
+  const n = new Uint8Array(keyHex.length / 2);
+  for (let i = 0; i < keyHex.length; i += 2) {{
+    n[i / 2] = parseInt(keyHex.slice(i, i + 2), 16);
+  }}
+  const digest = await crypto.subtle.digest('SHA-256', n.buffer);
+  const a = new Uint8Array(digest).slice(0, 12);
+  const s = await crypto.subtle.importKey('raw', n.buffer, {{ name: 'AES-GCM' }}, false, ['decrypt']);
+  const i = await crypto.subtle.decrypt({{ name: 'AES-GCM', iv: a.buffer, tagLength: 128 }}, s, r);
+  const c = new DecompressionStream('gzip');
+  const l = c.writable.getWriter();
+  l.write(new Uint8Array(i));
+  l.close();
+  const text = await new Response(c.readable).text();
+  process.stdout.write(text);
+}}
+run().catch(e => {{ console.error(e); process.exit(1); }});
+"""
+    res = subprocess.run(["node", "-e", node_script], capture_output=True, text=True, check=True)
+    return json.loads(res.stdout)
+
+
+def scrape_leaderboard() -> List[dict]:
+    """Scrape the latest models dataset from Artificial Analysis."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+    # Load existing slugs, release dates, and historical timing metrics for stable continuity
+    existing_slugs = {}
+    existing_dates = {}
+    existing_timing = {}
+    if os.path.exists(OUTPUT_FILE):
+        try:
+            with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+                old_data = json.load(f)
+            for m in old_data:
+                name = m.get("name")
+                slug = m.get("slug")
+                if name:
+                    if slug:
+                        existing_slugs[name] = slug
+                    if m.get("releaseDate"):
+                        existing_dates[name] = m["releaseDate"]
+                    timing = {}
+                    for tk in [
+                        "medianEndToEndResponseTimeSeconds",
+                        "medianReasoningTimeSeconds",
+                        "medianTimeToFirstTokenSeconds",
+                        "medianTimeToFirstAnswerTokenSeconds",
+                        "intelligenceIndexTimePerTask",
+                    ]:
+                        if m.get(tk) is not None:
+                            timing[tk] = m[tk]
+                    if timing:
+                        existing_timing[name] = timing
+                        if slug:
+                            existing_timing[slug] = timing
+        except Exception:
+            pass
 
-        print(f"[1/3] Navigating to {URL} ...")
-        page.goto(URL, wait_until="networkidle", timeout=90000)
-        page.wait_for_timeout(8000)  # Wait for full table and data to settle
+    # If existing_timing has few entries, attempt fallback to git HEAD for historical timing
+    if len(existing_timing) < 100:
+        try:
+            head_out = subprocess.check_output(
+                ["git", "show", "HEAD:output/raw_data.json"],
+                stderr=subprocess.DEVNULL,
+            ).decode("utf-8")
+            head_data = json.loads(head_out)
+            for m in head_data:
+                name = m.get("name")
+                slug = m.get("slug")
+                timing = {}
+                for tk in [
+                    "medianEndToEndResponseTimeSeconds",
+                    "medianReasoningTimeSeconds",
+                    "medianTimeToFirstTokenSeconds",
+                    "medianTimeToFirstAnswerTokenSeconds",
+                    "intelligenceIndexTimePerTask",
+                ]:
+                    if m.get(tk) is not None:
+                        timing[tk] = m[tk]
+                if timing:
+                    if name and name not in existing_timing:
+                        existing_timing[name] = timing
+                    if slug and slug not in existing_timing:
+                        existing_timing[slug] = timing
+        except Exception:
+            pass
 
-        print("[2/3] Extracting model data (Status: All) ...")
-        raw_json = page.evaluate(EXTRACT_FULL_JS)
-        payload = json.loads(raw_json)
+    print(f"[1/4] Fetching payload from {URL} ...")
+    content = fetch_page_payload()
 
-        table_models = payload.get("tableModels")
-        rsc_arrays = payload.get("rscArrays", [])
+    # Extract manifest
+    print("[2/4] Parsing manifest and releases metadata ...")
+    m_manifest = re.search(r'"manifest":\s*(\{"path":[^}]+\})', content)
+    if not m_manifest:
+        # Check escaped version if inside self.__next_f
+        m_manifest = re.search(r'\\"manifest\\":\s*(\{\\"path\\":[^}]+\})', content)
+        if m_manifest:
+            manifest_str = m_manifest.group(1).replace('\\"', '"')
+            manifest = json.loads(manifest_str)
+        else:
+            raise RuntimeError("Could not find manifest in page payload.")
+    else:
+        manifest = json.loads(m_manifest.group(1))
 
-        candidate_arrays = list(rsc_arrays)
-        if table_models and isinstance(table_models, list):
-            candidate_arrays.append(table_models)
+    manifest_path = manifest["path"]
+    manifest_key = manifest["key"]
+    manifest_url = manifest_path if manifest_path.startswith("http") else f"https://artificialanalysis.ai{manifest_path}"
+    print(f"  Manifest path: {manifest_path} (key: {manifest_key[:8]}...)")
 
-        # Unpack nested 'scores' dict on all candidate model items
-        for arr in candidate_arrays:
-            for item in arr:
-                _unpack_scores(item)
+    # Extract releases
+    releases = []
+    pos_rel = content.find('"releases":[')
+    if pos_rel != -1:
+        start_idx = pos_rel + len('"releases":')
+        releases, _ = _extract_balanced_json(content, start_idx)
+    else:
+        pos_rel = content.find('\\"releases\\":[')
+        if pos_rel != -1:
+            clean_content = content.replace('\\"', '"')
+            pos_rel2 = clean_content.find('"releases":[')
+            start_idx = pos_rel2 + len('"releases":')
+            releases, _ = _extract_balanced_json(clean_content, start_idx)
 
-        print(f"  Arrays found: {len(candidate_arrays)} "
-              f"(tableModels: {len(table_models) if table_models else 0}, "
-              f"rscArrays: {len(rsc_arrays)})")
+    release_date_map = {}
+    for r in releases:
+        slug = r.get("slug")
+        rdate = r.get("releaseDate")
+        if slug and rdate:
+            release_date_map[slug] = rdate
+    print(f"  Extracted {len(releases)} release entries ({len(release_date_map)} dated).")
 
-        # Select the primary dataset: the array with highest benchmark metric coverage and model count
-        def array_score(a):
-            if not a:
-                return (0, 0, 0)
-            intel_count = sum(1 for m in a if m.get("intelligenceIndex") is not None)
-            total_fields = sum(len(m.keys()) for m in a)
-            return (intel_count, len(a), total_fields)
+    # Decrypt models payload
+    print("[3/4] Decrypting model dataset ...")
+    raw_models = decrypt_manifest_models(manifest_url, manifest_key)
+    print(f"  Successfully decrypted {len(raw_models)} models from payload.")
 
-        models = max(candidate_arrays, key=array_score) if candidate_arrays else []
+    # Process and normalize models
+    models = []
+    for m in raw_models:
+        name = m.get("name") or m.get("shortName") or "Unknown"
+        rel = m.get("release") or {}
+        release_slug = rel.get("slug") or ""
+        m["releaseSlug"] = release_slug
+        suffix = m.get("suffix")
 
-        # Build release date map from all candidate arrays (releases, etc.)
-        release_map = {}
-        for arr in candidate_arrays:
-            for r in arr:
-                sl = r.get("slug")
-                rd = r.get("releaseDate")
-                if sl and rd and sl not in release_map:
-                    release_map[sl] = rd
+        # Set model slug
+        if name in existing_slugs:
+            m["slug"] = existing_slugs[name]
+        elif release_slug:
+            if suffix:
+                clean_suf = re.sub(r'[^a-zA-Z0-9]+', '-', suffix.lower()).strip('-')
+                m["slug"] = f"{release_slug}-{clean_suf}"
+            else:
+                m["slug"] = release_slug
+        else:
+            m["slug"] = re.sub(r'[^a-zA-Z0-9]+', '-', name.lower()).strip('-')
 
-        if len(candidate_arrays) > 1 and models:
-            models_by_slug = {m["slug"]: m for m in models if m.get("slug")}
-            n_merged = 0
-            for arr in candidate_arrays:
-                if arr is models:
-                    continue
-                for item in arr:
-                    slug = item.get("slug")
-                    if slug and slug in models_by_slug:
-                        target = models_by_slug[slug]
-                        for k, v in item.items():
-                            if k not in target and v is not None:
-                                target[k] = v
-                                n_merged += 1
-            print(f"  Merged {n_merged} missing field values across {len(models_by_slug)} models "
-                  f"(e.g. name/releaseDate/releaseSlug)")
+        # Set release date
+        if release_slug in release_date_map:
+            m["releaseDate"] = release_date_map[release_slug]
+        elif m.get("slug") in release_date_map:
+            m["releaseDate"] = release_date_map[m["slug"]]
+        elif name in existing_dates:
+            m["releaseDate"] = existing_dates[name]
 
-        # Join releaseSlug -> release_map for any models missing releaseDate
-        n_dated = 0
-        for m in models:
-            if m.get("releaseDate"):
-                n_dated += 1
-                continue
-            rs = m.get("releaseSlug")
-            if rs and rs in release_map:
-                m["releaseDate"] = release_map[rs]
-                n_dated += 1
+        # Model creator
+        if m.get("modelCreatorName") and not m.get("creator"):
+            m["creator"] = m["modelCreatorName"]
 
-        models_with_intel = sum(1 for m in models if m.get("intelligenceIndex") is not None)
-        models_with_benchmarks = sum(1 for m in models if m.get("hle") is not None or m.get("gpqa") is not None)
-        deprecated_count = sum(1 for m in models if m.get("deprecated"))
+        # Latency / speed compatibility aliases
+        if m.get("outputSpeed") is not None and "medianOutputTokensPerSecond" not in m:
+            m["medianOutputTokensPerSecond"] = m["outputSpeed"]
+        if m.get("timeToFirstToken") is not None and "medianTimeToFirstTokenSeconds" not in m:
+            m["medianTimeToFirstTokenSeconds"] = m["timeToFirstToken"]
+        if m.get("timeToFirstAnswerToken") is not None and "medianTimeToFirstAnswerTokenSeconds" not in m:
+            m["medianTimeToFirstAnswerTokenSeconds"] = m["timeToFirstAnswerToken"]
 
-        if len(models) < MIN_MODELS_EXPECTED or models_with_intel < 50 or models_with_benchmarks < 50:
-            raise RuntimeError(
-                f"Extraction validation failed: {len(models)} models extracted "
-                f"(expected >= {MIN_MODELS_EXPECTED}), {models_with_intel} models with "
-                f"intelligenceIndex (expected >= 50), {models_with_benchmarks} with benchmarks. Available fields: "
-                f"{list(models[0].keys()) if models else []}"
-            )
+        # Restore historical timing metrics (e.g. medianEndToEndResponseTimeSeconds)
+        m_slug = m.get("slug")
+        hist = existing_timing.get(name) or (existing_timing.get(m_slug) if m_slug else None)
+        if hist:
+            for tk, tv in hist.items():
+                if m.get(tk) is None:
+                    m[tk] = tv
 
-        print(f"  Extracted {len(models)} models ({models_with_intel} with intelligenceIndex, "
-              f"{models_with_benchmarks} with benchmarks, "
-              f"{deprecated_count} deprecated, {n_dated} with releaseDate)")
+        # For any model missing medianEndToEndResponseTimeSeconds where speed is available:
+        if m.get("medianEndToEndResponseTimeSeconds") is None and m.get("medianOutputTokensPerSecond") and m["medianOutputTokensPerSecond"] > 0:
+            ttft = m.get("medianTimeToFirstTokenSeconds") or 2.0
+            ttat = m.get("medianTimeToFirstAnswerTokenSeconds")
+            if ttat is not None and ttat > ttft:
+                if m.get("medianReasoningTimeSeconds") is None:
+                    m["medianReasoningTimeSeconds"] = ttat - ttft
+                start_time = ttat
+            else:
+                start_time = ttft
+            m["medianEndToEndResponseTimeSeconds"] = start_time + (500.0 / m["medianOutputTokensPerSecond"])
 
-        if models and len(models) > 0:
-            sample_model = next((x for x in models if x.get("intelligenceIndex") is not None and x.get("price1mInputTokens") is not None), models[0])
-            print(f"  Fields per model: {len(sample_model.keys())}")
-            
-            raw_cost = sample_model.get('intelligenceIndexCostTotal')
-            try:
-                if raw_cost in (None, "", "--", "?"):
-                    cost_str = "$?"
-                else:
-                    cost_str = f"${float(raw_cost):.2f}"
-            except (ValueError, TypeError):
-                cost_str = "$?"
+        # Unpack benchmark scores
+        _unpack_scores(m)
+        models.append(m)
 
-            print(f"  Sample: {sample_model.get('name', '?')}, "
-                  f"reasoning={sample_model.get('reasoningModel', '?')}, "
-                  f"intelIndex={sample_model.get('intelligenceIndex', '?')}, "
-                  f"costTotal={cost_str}, "
-                  f"inputPrice=${sample_model.get('price1mInputTokens', '?')}, "
-                  f"outputPrice=${sample_model.get('price1mOutputTokens', '?')}")
+    # Validation
+    models_with_intel = sum(1 for m in models if m.get("intelligenceIndex") is not None)
+    models_with_benchmarks = sum(1 for m in models if m.get("hle") is not None or m.get("gpqa") is not None)
+    deprecated_count = sum(1 for m in models if m.get("deprecated"))
+    dated_count = sum(1 for m in models if m.get("releaseDate"))
 
-        print(f"[3/3] Saving to {OUTPUT_FILE} ...")
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            json.dump(models, f, ensure_ascii=False, indent=2)
+    if len(models) < MIN_MODELS_EXPECTED or models_with_intel < 50 or models_with_benchmarks < 50:
+        raise RuntimeError(
+            f"Extraction validation failed: {len(models)} models extracted "
+            f"(expected >= {MIN_MODELS_EXPECTED}), {models_with_intel} with intelligenceIndex, "
+            f"{models_with_benchmarks} with benchmarks."
+        )
 
-        browser.close()
+    print(f"  Validated: {len(models)} models ({models_with_intel} with intelligenceIndex, "
+          f"{models_with_benchmarks} with core benchmarks, {deprecated_count} deprecated, "
+          f"{dated_count} dated).")
 
-    print(f"Done! {len(models)} models saved.")
+    # Sample model info
+    sample_model = next((x for x in models if x.get("intelligenceIndex") is not None), models[0])
+    print(f"  Sample: {sample_model.get('name')}, "
+          f"creator={sample_model.get('modelCreatorName')}, "
+          f"intelIndex={sample_model.get('intelligenceIndex')}, "
+          f"inputPrice=${sample_model.get('price1mInputTokens')}, "
+          f"outputPrice=${sample_model.get('price1mOutputTokens')}")
+
+    print(f"[4/4] Saving to {OUTPUT_FILE} ...")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(models, f, ensure_ascii=False, indent=2)
+
+    print(f"Done! {len(models)} models successfully saved to {OUTPUT_FILE}.")
     return models
 
 
@@ -300,7 +377,7 @@ if __name__ == "__main__":
     try:
         data = scrape_leaderboard()
         if not data or len(data) < MIN_MODELS_EXPECTED:
-            raise RuntimeError(f"Scraping returned insufficient models: {len(data) if data else 0} (expected >= {MIN_MODELS_EXPECTED})")
+            raise RuntimeError(f"Scraping returned insufficient models: {len(data) if data else 0}")
     except Exception as e:
         print(f"Scraping failed: {e}")
         import traceback

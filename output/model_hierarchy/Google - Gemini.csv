@@ -1,0 +1,5 @@
+Tier \ Version,Gemini 1.0,Gemini 1.5,Gemini 2.0,Gemini 2.5,Gemini 3.0,Gemini 3.1,Gemini 3.5,Gemini 3.6,Gemini 3.7,Gemini 3.8,Gemini 4 Argon,Gemini 4 Carbon,Gemini 4 Hydrogen,Gemini 4 Neon
+Tier 1 (Ultra / Deep Think),Gemini 1.0 Ultra,,,,Gemini 3 Deep Think,,,,,,,,,Gemini 4 Neon
+Tier 2 (Pro),Gemini 1.0 Pro,Gemini 1.5 Pro (May) / Gemini 1.5 Pro (Sep),Gemini 2.0 Pro Experimental,Gemini 2.5 Pro / Gemini 2.5 Pro (Mar) / Gemini 2.5 Pro (May),Gemini 3 Pro Preview,Gemini 3.1 Pro Preview,,,,,Gemini 4 Argon,Gemini 4 Carbon,,
+Tier 3 (Flash),,Gemini 1.5 Flash (May) / Gemini 1.5 Flash (Sep),Gemini 2.0 Flash / Gemini 2.0 Flash (exp) / Gemini 2.0 Flash Thinking exp. (Dec) / Gemini 2.0 Flash Thinking exp. (Jan),Gemini 2.5 Flash / Gemini 2.5 Flash (Apr) / Gemini 2.5 Flash (Sep),Gemini 3 Flash,,Gemini 3.5 Flash,Gemini 3.6 Flash,Gemini 3.7 Flash,Gemini 3.8 Flash,,,Gemini 4 Hydrogen,
+Tier 4 (Flash-Lite / Nano),,Gemini 1.5 Flash-8B,Gemini 2.0 Flash-Lite (Feb) / Gemini 2.0 Flash-Lite (Preview),Gemini 2.5 Flash-Lite / Gemini 2.5 Flash-Lite (Sep),,Gemini 3.1 Flash-Lite,Gemini 3.5 Flash-Lite,,,,,,,
