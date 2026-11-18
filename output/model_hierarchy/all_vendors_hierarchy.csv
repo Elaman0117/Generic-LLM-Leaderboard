@@ -224,148 +224,10 @@ Xiaomi,MiMo,Tier 1 (Pro / Omni),MiMo V2.6,MiMo-V2.6-Pro
 Xiaomi,MiMo,Tier 2 (Flash / Base),MiMo V2,MiMo-V2-Flash / MiMo-V2-Flash (Feb 2026)
 Xiaomi,MiMo,Tier 2 (Flash / Base),MiMo V2.5,MiMo-V2.5
 Xiaomi,MiMo,Tier 2 (Flash / Base),MiMo V2.6,MiMo-V2.6-Flash
-China Mobile,JT,Tier 3 (Small / Fast),2026-04,JT-MINI
-China Mobile,JT,Tier 3 (Small / Fast),2026-05,JT-35B-Flash
-China Mobile,JT,Tier 3 (Small / Fast),2026-07,JT-4.1 Flash 236B A21B 0709
-China Mobile,JT,Tier 3 (Small / Fast),2026-11,JT-4.1 Flash 236B A21B
-Inception,Mercury,Tier 4 (Compact / Nano),2026-02,Mercury 2
-Inception,Mercury,Tier 4 (Compact / Nano),2026-09,Mercury 2.5
-Apodex,Apodex,Tier 4 (Compact / Nano),2026-08,Apodex 1.1
-StepFun,Step,Tier 3 (Small / Fast),2026-02,Step 3.5 Flash
-StepFun,Step,Tier 3 (Small / Fast),2026-04,Step 3.5 Flash 2603
-StepFun,Step,Tier 3 (Small / Fast),2026-05,Step 3.7 Flash
-StepFun,Step,Tier 4 (Compact / Nano),2026-01,Step3 VL 10B
-StepFun,Step,Tier 4 (Compact / Nano),2026-09,Step 5 Preview
-IBM,Granite,Tier 2 (Medium / MoE),2026-04,Granite 4.1 30B
-IBM,Granite,Tier 2 (Medium / MoE),2026-08,Granite 4.2 30B
-IBM,Granite,Tier 3 (Small / Fast),2025-04,Granite 3.3 8B
-IBM,Granite,Tier 3 (Small / Fast),2025-09,Granite 4.0 H Small
-IBM,Granite,Tier 3 (Small / Fast),2026-04,Granite 4.1 8B
-IBM,Granite,Tier 3 (Small / Fast),2026-08,Granite 4.2 8B
-IBM,Granite,Tier 4 (Compact / Nano),2025-09,Granite 4.0 Micro
-IBM,Granite,Tier 4 (Compact / Nano),2025-10,Granite 4.0 350M / Granite 4.0 1B / Granite 4.0 H 350M / Granite 4.0 H 1B
-IBM,Granite,Tier 4 (Compact / Nano),2026-04,Granite 4.1 3B
-IBM,Granite,Tier 4 (Compact / Nano),2026-08,Granite 4.2 3B
-Thinking Machines,Inkling,Tier 3 (Small / Fast),2026-07,Inkling Small
-Thinking Machines,Inkling,Tier 3 (Small / Fast),2026-11,Inkling 2 Small
-Thinking Machines,Inkling,Tier 4 (Compact / Nano),2026-07,Inkling
-Liquid AI,LFM,Tier 2 (Medium / MoE),2026-02,LFM2 24B A2B
-Liquid AI,LFM,Tier 3 (Small / Fast),2025-10,LFM2 8B A1B
-Liquid AI,LFM,Tier 3 (Small / Fast),2026-05,LFM2.5-8B-A1B
-Liquid AI,LFM,Tier 3 (Small / Fast),2026-10,LFM3-1.7B
-Liquid AI,LFM,Tier 4 (Compact / Nano),2024-09,LFM 40B
-Liquid AI,LFM,Tier 4 (Compact / Nano),2025-07,LFM2 1.2B
-Liquid AI,LFM,Tier 4 (Compact / Nano),2025-09,LFM2 2.6B
-Liquid AI,LFM,Tier 4 (Compact / Nano),2026-01,LFM2.5-VL-1.6B / LFM2.5-1.2B-Instruct / LFM2.5-1.2B-Thinking
-Liquid AI,LFM,Tier 4 (Compact / Nano),2026-08,LFM2.5-2.6B
-Liquid AI,LFM,Tier 4 (Compact / Nano),2026-10,LFM3-VL-2B
-Institute of Foundation Models,K2,Tier 2 (Medium / MoE),2026-09,K2 Horizon 32B
-Institute of Foundation Models,K2,Tier 3 (Small / Fast),2026-09,K2 Horizon 7B / K2 Horizon 3.7B / K2 Horizon MoVA 36B A4B
-Institute of Foundation Models,K2,Tier 4 (Compact / Nano),2025-12,K2-V2 / K2 Think V2
-Institute of Foundation Models,K2,Tier 4 (Compact / Nano),2026-09,K2 Horizon 0.9B / K2 Horizon 375B A23B
-MiniMax,MiniMax,Tier 1 (Flagship / Large),2025-06,MiniMax M1 40k / MiniMax M1 80k
-MiniMax,MiniMax,Tier 1 (Flagship / Large),2025-10,MiniMax-M2
-MiniMax,MiniMax,Tier 1 (Flagship / Large),2025-12,MiniMax-M2.1
-MiniMax,MiniMax,Tier 1 (Flagship / Large),2026-02,MiniMax-M2.5
-MiniMax,MiniMax,Tier 1 (Flagship / Large),2026-03,MiniMax-M2.7
-MiniMax,MiniMax,Tier 1 (Flagship / Large),2026-06,MiniMax-M3
-MiniMax,MiniMax,Tier 1 (Flagship / Large),2026-10,MiniMax-M3.1-Flash
-InclusionAI,Ling,Tier 3 (Small / Fast),2025-09,Ling-mini-2.0 / Ling-flash-2.0
-InclusionAI,Ling,Tier 3 (Small / Fast),2026-04,Ling 2.6 Flash
-InclusionAI,Ling,Tier 3 (Small / Fast),2026-08,Ling 3.0 Flash
-InclusionAI,Ling,Tier 3 (Small / Fast),2026-09,Ling-3.0-flash-VL / Ling-3.0-flash-Fin
-InclusionAI,Ling,Tier 3 (Small / Fast),2026-10,Ling 3.1 Flash / Ling 3.1 Flash 1019
-InclusionAI,Ling,Tier 4 (Compact / Nano),2025-10,Ling-1T
-InclusionAI,Ling,Tier 4 (Compact / Nano),2026-04,Ling-2.6-1T
-InclusionAI,Ling,Tier 4 (Compact / Nano),2026-08,Ling 3.0 Tiny
-InclusionAI,Ring,Tier 3 (Small / Fast),2025-09,Ring-flash-2.0
-InclusionAI,Ring,Tier 4 (Compact / Nano),2025-10,Ring-1T
-InclusionAI,Ring,Tier 4 (Compact / Nano),2026-05,Ring-2.6-1T
-LG AI Research,K,Tier 4 (Compact / Nano),2025-12,K-EXAONE
-LG AI Research,K,Tier 4 (Compact / Nano),2026-08,K-EXAONE 2.0
-LG AI Research,EXAONE,Tier 2 (Medium / MoE),2025-07,EXAONE 4.0 32B
-LG AI Research,EXAONE,Tier 4 (Compact / Nano),2026-04,EXAONE 4.5 33B
-LG AI Research,Exaone,Tier 4 (Compact / Nano),2025-07,Exaone 4.0 1.2B
-NVIDIA,3.3,Tier 4 (Compact / Nano),2025-03,Llama 3.3 Nemotron Super 49B
-NVIDIA,NVIDIA,Tier 4 (Compact / Nano),2025-08,NVIDIA Nemotron Nano 9B V2
-NVIDIA,NVIDIA,Tier 4 (Compact / Nano),2025-10,NVIDIA Nemotron Nano 12B v2 VL
-NVIDIA,3.1,Tier 1 (Flagship / Large),2024-10,Llama 3.1 Nemotron 70B
-NVIDIA,3.1,Tier 3 (Small / Fast),2025-05,Llama 3.1 Nemotron Nano 4B v1.1
-Databricks,DBRX,Tier 4 (Compact / Nano),2024-03,DBRX
-Nous Research,Hermes,Tier 1 (Flagship / Large),2024-08,Hermes 3 - Llama-3.1 70B
-Nous Research,Hermes,Tier 1 (Flagship / Large),2025-08,Hermes 4 70B / Hermes 4 405B
-Nous Research,DeepHermes,Tier 2 (Medium / MoE),2025-03,DeepHermes 3 - Mistral 24B
-Nous Research,DeepHermes,Tier 3 (Small / Fast),2025-02,DeepHermes 3 - Llama-3.1 8B
-Cohere,North,Tier 3 (Small / Fast),2026-06,North Mini Code
-Cohere,Command,Tier 4 (Compact / Nano),2024-03,Command-R (Mar)
-Cohere,Command,Tier 4 (Compact / Nano),2024-04,Command-R+ (Apr)
-Cohere,Command,Tier 4 (Compact / Nano),2025-03,Command A
-Cohere,Command,Tier 4 (Compact / Nano),2026-05,Command A+
-Cohere,Tiny,Tier 4 (Compact / Nano),2026-02,Tiny Aya Global
 Microsoft,Phi,Tier 3 (Small / Fast),2024-04,Phi-3 Mini
 Microsoft,Phi,Tier 3 (Small / Fast),2025-02,Phi-4 Mini
 Microsoft,Phi,Tier 4 (Compact / Nano),2024-12,Phi-4
 Microsoft,Phi,Tier 4 (Compact / Nano),2025-02,Phi-4 Multimodal
-AI9Stars,G9v3,Tier 4 (Compact / Nano),2026-07,G9v3-3B
-AI9Stars,G9v3,Tier 4 (Compact / Nano),2026-08,G9v3-39A5B
-Allen Institute for AI,Olmo,Tier 2 (Medium / MoE),2025-11,Olmo 3 32B Think
-Allen Institute for AI,Olmo,Tier 2 (Medium / MoE),2025-12,Olmo 3.1 32B Think
-Allen Institute for AI,Olmo,Tier 2 (Medium / MoE),2026-01,Olmo 3.1 32B Instruct
-Allen Institute for AI,Olmo,Tier 3 (Small / Fast),2025-11,Olmo 3 7B Think / Olmo 3 7B
-Allen Institute for AI,Molmo,Tier 3 (Small / Fast),2024-09,Molmo 7B-D
-Allen Institute for AI,Molmo,Tier 3 (Small / Fast),2025-12,Molmo2-8B
-Allen Institute for AI,OLMo,Tier 2 (Medium / MoE),2025-03,OLMo 2 32B
-Allen Institute for AI,OLMo,Tier 3 (Small / Fast),2024-11,OLMo 2 7B
-Allen Institute for AI,Tulu,Tier 1 (Flagship / Large),2025-01,Tulu3 405B
-Naver,HyperCLOVA,Tier 2 (Medium / MoE),2025-12,HyperCLOVA X SEED Think (32B)
-Multiverse Computing,HyperNova,Tier 4 (Compact / Nano),2026-05,HyperNova 60B 2605
-Multiverse Computing,Quasar,Tier 3 (Small / Fast),2026-08,Quasar 438B
-Sarvam,Sarvam,Tier 2 (Medium / MoE),2026-03,Sarvam 30B
-Sarvam,Sarvam,Tier 4 (Compact / Nano),2025-05,Sarvam M
-Sarvam,Sarvam,Tier 4 (Compact / Nano),2026-03,Sarvam 105B
-Prime Intellect,INTELLECT,Tier 4 (Compact / Nano),2025-11,INTELLECT-3
-Nex AGI,Nex,Tier 1 (Flagship / Large),2026-06,Nex-N2-Pro
-OpenBMB,MiniCPM,Tier 3 (Small / Fast),2026-05,MiniCPM-V 4.6 1.3B / MiniCPM5-1B
-OpenBMB,MiniCPM,Tier 3 (Small / Fast),2026-09,MiniCPM5-2B
-Swiss AI Initiative,Apertus,Tier 1 (Flagship / Large),2025-09,Apertus 70B Instruct
-Swiss AI Initiative,Apertus,Tier 3 (Small / Fast),2025-09,Apertus 8B Instruct
-Nanbeige,Nanbeige,Tier 4 (Compact / Nano),2026-02,Nanbeige4.1-3B
-Nanbeige,Nanbeige,Tier 4 (Compact / Nano),2026-10,Nanbeige4.3-33B
-ByteDance Seed,Doubao,Tier 4 (Compact / Nano),2025-11,Doubao Seed Code
-ByteDance Seed,Seed,Tier 4 (Compact / Nano),2025-08,Seed-OSS-36B-Instruct
-AI21 Labs,Jamba,Tier 1 (Flagship / Large),2024-08,Jamba 1.5 Large
-AI21 Labs,Jamba,Tier 1 (Flagship / Large),2025-03,Jamba 1.6 Large
-AI21 Labs,Jamba,Tier 1 (Flagship / Large),2025-07,Jamba 1.7 Large
-AI21 Labs,Jamba,Tier 3 (Small / Fast),2024-08,Jamba 1.5 Mini
-AI21 Labs,Jamba,Tier 3 (Small / Fast),2025-03,Jamba 1.6 Mini
-AI21 Labs,Jamba,Tier 3 (Small / Fast),2025-07,Jamba 1.7 Mini
-AI21 Labs,Jamba,Tier 4 (Compact / Nano),2025-10,Jamba Reasoning 3B
-LongCat,LongCat,Tier 3 (Small / Fast),2026-01,LongCat Flash Lite
-LongCat,LongCat,Tier 4 (Compact / Nano),2026-06,LongCat 2.0
-Trillion Labs,Tri,Tier 4 (Compact / Nano),2026-02,Tri-21B-Think / Tri-21B-think Preview
-Motif Technologies,Motif,Tier 3 (Small / Fast),2025-12,Motif-2-12.7B
-Motif Technologies,Motif,Tier 4 (Compact / Nano),2026-07,Motif 3 (Beta)
-Motif Technologies,Motif,Tier 4 (Compact / Nano),2026-08,Motif 3
-Reflection,Beam,Tier 4 (Compact / Nano),2026-10,Beam 1.0
-Celeris,Celeris,Tier 4 (Compact / Nano),2026-07,Celeris-1
-SK Telecom,A.X,Tier 4 (Compact / Nano),2026-08,A.X-K2
-Tencent,Hy,Tier 4 (Compact / Nano),2026-04,Hy3-preview
-Tencent,Hy,Tier 4 (Compact / Nano),2026-07,Hy3
-Tencent,Hy,Tier 4 (Compact / Nano),2026-11,Tencent Hy4
-Baidu,ERNIE,Tier 3 (Small / Fast),2025-06,ERNIE 4.5 300B A47B
-Baidu,ERNIE,Tier 4 (Compact / Nano),2025-11,ERNIE 5.0 Thinking Preview
-ServiceNow,Apriel,Tier 4 (Compact / Nano),2025-09,Apriel-v1.5-15B-Thinker
-ServiceNow,Apriel,Tier 4 (Compact / Nano),2025-11,Apriel-v1.6-15B-Thinker
-Arcee AI,Trinity,Tier 1 (Flagship / Large),2026-04,Trinity Large Thinking
-TII UAE,Falcon,Tier 3 (Small / Fast),2026-01,Falcon-H1R-7B
-Korea Telecom,Mi,Tier 1 (Flagship / Large),2025-12,Mi:dm K 2.5 Pro / Mi:dm K 2.5 Pro Preview
-Deep Cogito,Cogito,Tier 4 (Compact / Nano),2025-11,Cogito v2.1
-OpenChat,3.5,Tier 4 (Compact / Nano),2023-12,OpenChat 3.5
-Sapiens AI,Agnes,Tier 1 (Flagship / Large),2026-08,Agnes 2.5 Pro Beta
-Sapiens AI,Agnes,Tier 1 (Flagship / Large),2026-11,Agnes 2.5 Pro Theta
-KwaiKAT,KAT,Tier 1 (Flagship / Large),2025-11,KAT-Coder-Pro V1
-KwaiKAT,KAT,Tier 1 (Flagship / Large),2026-03,KAT-Coder-Pro V2
-Joy Future Academy,JoyAI,Tier 4 (Compact / Nano),2026-11,JoyAI-VL-Preview
 NVIDIA,Nemotron,Tier 1 (Flagship / Large),2025-04,Llama Nemotron Ultra
 NVIDIA,Nemotron,Tier 1 (Flagship / Large),2026-06,Nemotron 3 Ultra
 NVIDIA,Nemotron,Tier 2 (Medium / MoE),2026-03,Nemotron Cascade 2 30B A3B
@@ -377,10 +239,87 @@ NVIDIA,Nemotron,Tier 4 (Compact / Nano),2025-12,Nemotron 3 Nano
 NVIDIA,Nemotron,Tier 4 (Compact / Nano),2026-03,Nemotron 3 Super
 NVIDIA,Nemotron,Tier 4 (Compact / Nano),2026-08,Nemotron 3.5 Lightning
 NVIDIA,Nemotron,Tier 4 (Compact / Nano),2026-10,Nemotron 3.5 Super VL
+Nex AGI,Nex,Tier 1 (Flagship / Large),2026-06,Nex-N2-Pro
+InclusionAI,Ring,Tier 3 (Small / Fast),2025-09,Ring-flash-2.0
+InclusionAI,Ring,Tier 4 (Compact / Nano),2025-10,Ring-1T
+InclusionAI,Ring,Tier 4 (Compact / Nano),2026-05,Ring-2.6-1T
+Allen Institute for AI,OLMo,Tier 2 (Medium / MoE),2025-03,OLMo 2 32B
+Allen Institute for AI,OLMo,Tier 3 (Small / Fast),2024-11,OLMo 2 7B
+Nanbeige,Nanbeige,Tier 4 (Compact / Nano),2026-02,Nanbeige4.1-3B
+Nanbeige,Nanbeige,Tier 4 (Compact / Nano),2026-10,Nanbeige4.3-33B
+Perplexity,R1,Tier 4 (Compact / Nano),2025-02,R1 1776
+Apodex,Apodex,Tier 4 (Compact / Nano),2026-08,Apodex 1.1
+Allen Institute for AI,Molmo,Tier 3 (Small / Fast),2024-09,Molmo 7B-D
+Allen Institute for AI,Molmo,Tier 3 (Small / Fast),2025-12,Molmo2-8B
+Liquid AI,LFM,Tier 2 (Medium / MoE),2026-02,LFM2 24B A2B
+Liquid AI,LFM,Tier 3 (Small / Fast),2025-10,LFM2 8B A1B
+Liquid AI,LFM,Tier 3 (Small / Fast),2026-05,LFM2.5-8B-A1B
+Liquid AI,LFM,Tier 3 (Small / Fast),2026-10,LFM3-1.7B
+Liquid AI,LFM,Tier 4 (Compact / Nano),2024-09,LFM 40B
+Liquid AI,LFM,Tier 4 (Compact / Nano),2025-07,LFM2 1.2B
+Liquid AI,LFM,Tier 4 (Compact / Nano),2025-09,LFM2 2.6B
+Liquid AI,LFM,Tier 4 (Compact / Nano),2026-01,LFM2.5-VL-1.6B / LFM2.5-1.2B-Instruct / LFM2.5-1.2B-Thinking
+Liquid AI,LFM,Tier 4 (Compact / Nano),2026-08,LFM2.5-2.6B
+Liquid AI,LFM,Tier 4 (Compact / Nano),2026-10,LFM3-VL-2B
+AI21 Labs,Jamba,Tier 1 (Flagship / Large),2024-08,Jamba 1.5 Large
+AI21 Labs,Jamba,Tier 1 (Flagship / Large),2025-03,Jamba 1.6 Large
+AI21 Labs,Jamba,Tier 1 (Flagship / Large),2025-07,Jamba 1.7 Large
+AI21 Labs,Jamba,Tier 3 (Small / Fast),2024-08,Jamba 1.5 Mini
+AI21 Labs,Jamba,Tier 3 (Small / Fast),2025-03,Jamba 1.6 Mini
+AI21 Labs,Jamba,Tier 3 (Small / Fast),2025-07,Jamba 1.7 Mini
+AI21 Labs,Jamba,Tier 4 (Compact / Nano),2025-10,Jamba Reasoning 3B
+Multiverse Computing,Quasar,Tier 3 (Small / Fast),2026-08,Quasar 438B
+TII UAE,Falcon,Tier 3 (Small / Fast),2026-01,Falcon-H1R-7B
+Nous Research,DeepHermes,Tier 2 (Medium / MoE),2025-03,DeepHermes 3 - Mistral 24B
+Nous Research,DeepHermes,Tier 3 (Small / Fast),2025-02,DeepHermes 3 - Llama-3.1 8B
+InclusionAI,Ling,Tier 3 (Small / Fast),2025-09,Ling-mini-2.0 / Ling-flash-2.0
+InclusionAI,Ling,Tier 3 (Small / Fast),2026-04,Ling 2.6 Flash
+InclusionAI,Ling,Tier 3 (Small / Fast),2026-08,Ling 3.0 Flash
+InclusionAI,Ling,Tier 3 (Small / Fast),2026-09,Ling-3.0-flash-VL / Ling-3.0-flash-Fin
+InclusionAI,Ling,Tier 3 (Small / Fast),2026-10,Ling 3.1 Flash / Ling 3.1 Flash 1019
+InclusionAI,Ling,Tier 4 (Compact / Nano),2025-10,Ling-1T
+InclusionAI,Ling,Tier 4 (Compact / Nano),2026-04,Ling-2.6-1T
+InclusionAI,Ling,Tier 4 (Compact / Nano),2026-08,Ling 3.0 Tiny
+ByteDance Seed,Doubao,Tier 4 (Compact / Nano),2025-11,Doubao Seed Code
+Motif Technologies,Motif,Tier 3 (Small / Fast),2025-12,Motif-2-12.7B
+Motif Technologies,Motif,Tier 4 (Compact / Nano),2026-07,Motif 3 (Beta)
+Motif Technologies,Motif,Tier 4 (Compact / Nano),2026-08,Motif 3
+KwaiKAT,KAT,Tier 1 (Flagship / Large),2025-11,KAT-Coder-Pro V1
+KwaiKAT,KAT,Tier 1 (Flagship / Large),2026-03,KAT-Coder-Pro V2
+Sapiens AI,Agnes,Tier 1 (Flagship / Large),2026-08,Agnes 2.5 Pro Beta
+Sapiens AI,Agnes,Tier 1 (Flagship / Large),2026-11,Agnes 2.5 Pro Theta
+Allen Institute for AI,Tulu,Tier 1 (Flagship / Large),2025-01,Tulu3 405B
+ServiceNow,Apriel,Tier 4 (Compact / Nano),2025-09,Apriel-v1.5-15B-Thinker
+ServiceNow,Apriel,Tier 4 (Compact / Nano),2025-11,Apriel-v1.6-15B-Thinker
+OpenChat,3.5,Tier 4 (Compact / Nano),2023-12,OpenChat 3.5
+Databricks,DBRX,Tier 4 (Compact / Nano),2024-03,DBRX
+OpenBMB,MiniCPM,Tier 3 (Small / Fast),2026-05,MiniCPM-V 4.6 1.3B / MiniCPM5-1B
+OpenBMB,MiniCPM,Tier 3 (Small / Fast),2026-09,MiniCPM5-2B
+Swiss AI Initiative,Apertus,Tier 1 (Flagship / Large),2025-09,Apertus 70B Instruct
+Swiss AI Initiative,Apertus,Tier 3 (Small / Fast),2025-09,Apertus 8B Instruct
+Cohere,North,Tier 3 (Small / Fast),2026-06,North Mini Code
+NVIDIA,3.1,Tier 1 (Flagship / Large),2024-10,Llama 3.1 Nemotron 70B
+NVIDIA,3.1,Tier 3 (Small / Fast),2025-05,Llama 3.1 Nemotron Nano 4B v1.1
+NVIDIA,NVIDIA,Tier 4 (Compact / Nano),2025-08,NVIDIA Nemotron Nano 9B V2
+NVIDIA,NVIDIA,Tier 4 (Compact / Nano),2025-10,NVIDIA Nemotron Nano 12B v2 VL
+Naver,HyperCLOVA,Tier 2 (Medium / MoE),2025-12,HyperCLOVA X SEED Think (32B)
 Perplexity,Sonar,Tier 1 (Flagship / Large),2025-01,Sonar Pro / Sonar Reasoning Pro
 Perplexity,Sonar,Tier 4 (Compact / Nano),2025-01,Sonar / Sonar Reasoning
-Reka AI,Reka,Tier 3 (Small / Fast),2025-03,Reka Flash 3
-Reka AI,Reka,Tier 3 (Small / Fast),2024-10,Reka Flash
+Reflection,Beam,Tier 4 (Compact / Nano),2026-10,Beam 1.0
+SK Telecom,A.X,Tier 4 (Compact / Nano),2026-08,A.X-K2
+China Mobile,JT,Tier 3 (Small / Fast),2026-04,JT-MINI
+China Mobile,JT,Tier 3 (Small / Fast),2026-05,JT-35B-Flash
+China Mobile,JT,Tier 3 (Small / Fast),2026-07,JT-4.1 Flash 236B A21B 0709
+China Mobile,JT,Tier 3 (Small / Fast),2026-11,JT-4.1 Flash 236B A21B
+Multiverse Computing,HyperNova,Tier 4 (Compact / Nano),2026-05,HyperNova 60B 2605
+MiniMax,MiniMax,Tier 1 (Flagship / Large),2025-06,MiniMax M1 40k / MiniMax M1 80k
+MiniMax,MiniMax,Tier 1 (Flagship / Large),2025-10,MiniMax-M2
+MiniMax,MiniMax,Tier 1 (Flagship / Large),2025-12,MiniMax-M2.1
+MiniMax,MiniMax,Tier 1 (Flagship / Large),2026-02,MiniMax-M2.5
+MiniMax,MiniMax,Tier 1 (Flagship / Large),2026-03,MiniMax-M2.7
+MiniMax,MiniMax,Tier 1 (Flagship / Large),2026-06,MiniMax-M3
+MiniMax,MiniMax,Tier 1 (Flagship / Large),2026-10,MiniMax-M3.1-Flash
+Celeris,Celeris,Tier 4 (Compact / Nano),2026-07,Celeris-1
 Upstage,Solar,Tier 1 (Flagship / Large),2025-05,Solar Pro 2 (Preview)
 Upstage,Solar,Tier 1 (Flagship / Large),2025-07,Solar Pro 2
 Upstage,Solar,Tier 1 (Flagship / Large),2026-04,Solar Pro 3
@@ -389,5 +328,66 @@ Upstage,Solar,Tier 2 (Medium / MoE),2024-01,Solar Mini
 Upstage,Solar,Tier 3 (Small / Fast),2026-09,Solar Mini 4
 Upstage,Solar,Tier 4 (Compact / Nano),2025-12,Solar Open 100B
 Upstage,Solar,Tier 4 (Compact / Nano),2026-08,Solar Open2 250B
-Perplexity,R1,Tier 4 (Compact / Nano),2025-02,R1 1776
+LG AI Research,EXAONE,Tier 2 (Medium / MoE),2025-07,EXAONE 4.0 32B
+LG AI Research,EXAONE,Tier 4 (Compact / Nano),2026-04,EXAONE 4.5 33B
 Snowflake,Arctic,Tier 4 (Compact / Nano),2024-04,Arctic
+Reka AI,Reka,Tier 3 (Small / Fast),2025-03,Reka Flash 3
+Reka AI,Reka,Tier 3 (Small / Fast),2024-10,Reka Flash
+Arcee AI,Trinity,Tier 1 (Flagship / Large),2026-04,Trinity Large Thinking
+Cohere,Command,Tier 4 (Compact / Nano),2024-03,Command-R (Mar)
+Cohere,Command,Tier 4 (Compact / Nano),2024-04,Command-R+ (Apr)
+Cohere,Command,Tier 4 (Compact / Nano),2025-03,Command A
+Cohere,Command,Tier 4 (Compact / Nano),2026-05,Command A+
+Thinking Machines,Inkling,Tier 3 (Small / Fast),2026-07,Inkling Small
+Thinking Machines,Inkling,Tier 3 (Small / Fast),2026-11,Inkling 2 Small
+Thinking Machines,Inkling,Tier 4 (Compact / Nano),2026-07,Inkling
+Institute of Foundation Models,K2,Tier 2 (Medium / MoE),2026-09,K2 Horizon 32B
+Institute of Foundation Models,K2,Tier 3 (Small / Fast),2026-09,K2 Horizon 7B / K2 Horizon 3.7B / K2 Horizon MoVA 36B A4B
+Institute of Foundation Models,K2,Tier 4 (Compact / Nano),2025-12,K2-V2 / K2 Think V2
+Institute of Foundation Models,K2,Tier 4 (Compact / Nano),2026-09,K2 Horizon 0.9B / K2 Horizon 375B A23B
+Sarvam,Sarvam,Tier 2 (Medium / MoE),2026-03,Sarvam 30B
+Sarvam,Sarvam,Tier 4 (Compact / Nano),2025-05,Sarvam M
+Sarvam,Sarvam,Tier 4 (Compact / Nano),2026-03,Sarvam 105B
+LongCat,LongCat,Tier 3 (Small / Fast),2026-01,LongCat Flash Lite
+LongCat,LongCat,Tier 4 (Compact / Nano),2026-06,LongCat 2.0
+AI9Stars,G9v3,Tier 4 (Compact / Nano),2026-07,G9v3-3B
+AI9Stars,G9v3,Tier 4 (Compact / Nano),2026-08,G9v3-39A5B
+Cohere,Tiny,Tier 4 (Compact / Nano),2026-02,Tiny Aya Global
+StepFun,Step,Tier 3 (Small / Fast),2026-02,Step 3.5 Flash
+StepFun,Step,Tier 3 (Small / Fast),2026-04,Step 3.5 Flash 2603
+StepFun,Step,Tier 3 (Small / Fast),2026-05,Step 3.7 Flash
+StepFun,Step,Tier 4 (Compact / Nano),2026-01,Step3 VL 10B
+StepFun,Step,Tier 4 (Compact / Nano),2026-09,Step 5 Preview
+LG AI Research,Exaone,Tier 4 (Compact / Nano),2025-07,Exaone 4.0 1.2B
+Baidu,ERNIE,Tier 3 (Small / Fast),2025-06,ERNIE 4.5 300B A47B
+Baidu,ERNIE,Tier 4 (Compact / Nano),2025-11,ERNIE 5.0 Thinking Preview
+LG AI Research,K,Tier 4 (Compact / Nano),2025-12,K-EXAONE
+LG AI Research,K,Tier 4 (Compact / Nano),2026-08,K-EXAONE 2.0
+Deep Cogito,Cogito,Tier 4 (Compact / Nano),2025-11,Cogito v2.1
+Prime Intellect,INTELLECT,Tier 4 (Compact / Nano),2025-11,INTELLECT-3
+Trillion Labs,Tri,Tier 4 (Compact / Nano),2026-02,Tri-21B-Think / Tri-21B-think Preview
+Inception,Mercury,Tier 4 (Compact / Nano),2026-02,Mercury 2
+Inception,Mercury,Tier 4 (Compact / Nano),2026-09,Mercury 2.5
+IBM,Granite,Tier 2 (Medium / MoE),2026-04,Granite 4.1 30B
+IBM,Granite,Tier 2 (Medium / MoE),2026-08,Granite 4.2 30B
+IBM,Granite,Tier 3 (Small / Fast),2025-04,Granite 3.3 8B
+IBM,Granite,Tier 3 (Small / Fast),2025-09,Granite 4.0 H Small
+IBM,Granite,Tier 3 (Small / Fast),2026-04,Granite 4.1 8B
+IBM,Granite,Tier 3 (Small / Fast),2026-08,Granite 4.2 8B
+IBM,Granite,Tier 4 (Compact / Nano),2025-09,Granite 4.0 Micro
+IBM,Granite,Tier 4 (Compact / Nano),2025-10,Granite 4.0 350M / Granite 4.0 1B / Granite 4.0 H 350M / Granite 4.0 H 1B
+IBM,Granite,Tier 4 (Compact / Nano),2026-04,Granite 4.1 3B
+IBM,Granite,Tier 4 (Compact / Nano),2026-08,Granite 4.2 3B
+Allen Institute for AI,Olmo,Tier 2 (Medium / MoE),2025-11,Olmo 3 32B Think
+Allen Institute for AI,Olmo,Tier 2 (Medium / MoE),2025-12,Olmo 3.1 32B Think
+Allen Institute for AI,Olmo,Tier 2 (Medium / MoE),2026-01,Olmo 3.1 32B Instruct
+Allen Institute for AI,Olmo,Tier 3 (Small / Fast),2025-11,Olmo 3 7B Think / Olmo 3 7B
+Korea Telecom,Mi,Tier 1 (Flagship / Large),2025-12,Mi:dm K 2.5 Pro / Mi:dm K 2.5 Pro Preview
+Tencent,Hy,Tier 4 (Compact / Nano),2026-04,Hy3-preview
+Tencent,Hy,Tier 4 (Compact / Nano),2026-07,Hy3
+Tencent,Hy,Tier 4 (Compact / Nano),2026-11,Tencent Hy4
+Nous Research,Hermes,Tier 1 (Flagship / Large),2024-08,Hermes 3 - Llama-3.1 70B
+Nous Research,Hermes,Tier 1 (Flagship / Large),2025-08,Hermes 4 70B / Hermes 4 405B
+NVIDIA,3.3,Tier 4 (Compact / Nano),2025-03,Llama 3.3 Nemotron Super 49B
+ByteDance Seed,Seed,Tier 4 (Compact / Nano),2025-08,Seed-OSS-36B-Instruct
+Joy Future Academy,JoyAI,Tier 4 (Compact / Nano),2026-11,JoyAI-VL-Preview
