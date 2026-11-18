@@ -188,6 +188,53 @@ class TestHierarchyConstraintsRules(unittest.TestCase):
             series = self.mgr.get_model_series(bn)
             self.assertIsNotNone(series, f"Evaluated model '{m['name']}' (base: '{bn}') has no series grid mapping!")
 
+    def test_full_dataset_zero_unmapped(self):
+        """Assert that 100% of ALL models in the raw dataset (min_valid=0) are mapped to hierarchy grids."""
+        with open(os.path.join(OUTPUT_DIR, "raw_data.json"), "r", encoding="utf-8") as f:
+            raw_data = json.load(f)
+        models_all, _ = extract_benchmarks(raw_data, min_valid=0)
+        mgr = VendorHierarchyManager(all_models=models_all, load_from_disk=True)
+        unmapped = []
+        for m in models_all:
+            bn = m["base_name"]
+            series = mgr.get_model_series(bn)
+            if series is None:
+                unmapped.append((m["name"], bn, m["creator"]))
+        self.assertEqual(len(unmapped), 0, f"Found unmapped models in full dataset: {unmapped}")
+
+    def test_curated_grids_contain_qwen_palm_saba(self):
+        """Verify that curated grids properly contain and position edge-case models."""
+        with open(os.path.join(OUTPUT_DIR, "raw_data.json"), "r", encoding="utf-8") as f:
+            raw_data = json.load(f)
+        models_all, _ = extract_benchmarks(raw_data, min_valid=0)
+        mgr = VendorHierarchyManager(all_models=models_all, load_from_disk=True)
+
+        self.assertEqual(mgr.get_model_series("Qwen Chat 72B"), "Alibaba - Qwen")
+        self.assertEqual(mgr.get_model_series("Qwen1.5 Chat 110B"), "Alibaba - Qwen")
+        self.assertEqual(mgr.get_model_series("Qwen Chat 14B"), "Alibaba - Qwen")
+        self.assertEqual(mgr.get_model_series("PALM-2"), "Google - PaLM")
+        self.assertEqual(mgr.get_model_series("Mistral Saba"), "Mistral - Saba")
+
+    def test_curated_vendor_new_model_dynamic_mapping(self):
+        """Assert that when an unseen new model is introduced for a curated vendor, it dynamically maps to the correct series."""
+        dummy_model = {
+            "name": "GPT-7 Sol",
+            "base_name": "GPT-7 Sol",
+            "creator": "OpenAI",
+            "slug": "gpt-7-sol",
+            "date": "2027-01-01",
+            "thinking_tag": "standard",
+            "thinking_level": 0,
+            "parsed": {"hle": 0.5, "gpqa": 0.5, "aime2025": 0.5},
+            "valid_count": 3
+        }
+        mgr = VendorHierarchyManager(all_models=[dummy_model], load_from_disk=True)
+        series = mgr.get_model_series("GPT-7 Sol")
+        self.assertEqual(series, "OpenAI - GPT")
+        pos = mgr.get_model_position("OpenAI - GPT", "GPT-7 Sol")
+        self.assertIsNotNone(pos)
+        self.assertEqual(pos[0], 1, "GPT-7 Sol should be placed in Tier 2 (Sol / Standard)")
+
     def test_series_isolation(self):
         """Verify strict series isolation: Rule 1 & Rule 2 NEVER cross between distinct series."""
         with open(os.path.join(OUTPUT_DIR, "raw_data.json"), "r", encoding="utf-8") as f:
@@ -449,6 +496,26 @@ class TestUserCSVEditingAndDiff(unittest.TestCase):
 
         # Check total series grids count >= 50
         self.assertGreaterEqual(len(mgr.grids), 50, "All creators/series should have a grid")
+
+    def test_analyze_log_mapping_pure_python_fallback(self):
+        """Verify that src/analyze.py build_axis_mapping works and matches when numpy is absent."""
+        import src.analyze as az
+        old_np = az.np
+        try:
+            az.np = None  # Force pure Python fallback branch
+            mock_models = [
+                {"model": "M1", "per_request_cost": 500.0, "composite_ability": 0.8, "chart_y": 0.5},
+                {"model": "M2", "per_request_cost": 5000.0, "composite_ability": 0.85, "chart_y": 0.6},
+                {"model": "M3", "per_request_cost": 50000.0, "composite_ability": 0.9, "chart_y": 0.7},
+            ]
+            mock_frontiers = {"VendorA": mock_models}
+            meta = az.build_axis_mapping(mock_models, mock_frontiers)
+            self.assertIn("fit", meta)
+            self.assertGreater(meta["fit"]["r"], 0)
+            self.assertGreater(meta["fit"]["C"], 0)
+            self.assertTrue(all("axis_x" in m for m in mock_models))
+        finally:
+            az.np = old_np
 
 
 if __name__ == "__main__":

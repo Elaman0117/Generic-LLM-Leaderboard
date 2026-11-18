@@ -151,7 +151,7 @@
 | 141 | <img src="https://artificialanalysis.ai/img/logos/anthropic.svg" width="18" alt="Anthropic" /> Anthropic | Claude 4 Opus | 0.6739 | — | — | — |
 | 142 | <img src="https://artificialanalysis.ai/img/logos/openai.svg" width="18" alt="OpenAI" /> OpenAI | GPT-5 (low) | 0.6724 | 12,871.96 | 0.5219 | ❌ |
 | 143 | <img src="https://artificialanalysis.ai/img/logos/openai.svg" width="18" alt="OpenAI" /> OpenAI | GPT-5 mini (medium) | 0.6714 | 3,399.44 | 0.3792 | ❌ |
-| 144 | <img src="https://artificialanalysis.ai/img/logos/minimax.svg" width="18" alt="MiniMax" /> MiniMax | MiniMax-M2.5 | 0.6686 | 2,023.54 | 0.3249 | ❌ |
+| 144 | <img src="https://artificialanalysis.ai/img/logos/minimax.svg" width="18" alt="MiniMax" /> MiniMax | MiniMax-M2.5 | 0.6686 | 2,185.61 | 0.3329 | ❌ |
 | 145 | <img src="https://artificialanalysis.ai/img/logos/spacexai.svg" width="18" alt="SpaceXAI" /> SpaceXAI | Grok 4.7 (high) | 0.6682 | 24,768.51 | 0.5928 | ❌ |
 | 146 | <img src="https://artificialanalysis.ai/img/logos/anthropic.svg" width="18" alt="Anthropic" /> Anthropic | Claude Opus 5.5 (low) | 0.6670 | 25,827.53 | 0.5973 | ❌ |
 | 147 | <img src="https://artificialanalysis.ai/img/logos/google.svg" width="18" alt="Google" /> Google | Gemini 3.6 Flash (high) | 0.6661 | 12,029.36 | 0.5145 | ❌ |
@@ -756,7 +756,7 @@
 为解决多基准评估中由于各模型参测项不齐、评测噪声以及偶然波动导致的反直觉能力倒挂（例如同一系列同版本高阶模型得分低于低阶模型、同一系列同等级新版本低于旧版本、同一模型高思考程度低于低思考程度、同代更新快照后出版本低于先出版本），系统在 `src/hierarchy.py` 中实现了**分厂商系列层级网格（Vendor Series Hierarchy Grids）与严格单调约束 Dykstra 等保投影（Isotonic Projection）评分引擎**：
 
 ### 1. 厂商与系列隔离（Series Isolation）
-系统维护了覆盖全部主流与新兴厂商的 **82 个系列层级网格**（保存在 `output/model_hierarchy/` 目录下的 CSV 文件中），每个系列维护二维网格：
+系统维护了覆盖全部主流与新兴厂商的 **86 个系列层级网格**（保存在 `output/model_hierarchy/` 目录下的 CSV 文件中），每个系列维护二维网格：
 - **行（Tiers）**：性能层级（如 Tier 1 Flagship / Large、Tier 2 Medium / MoE、Tier 3 Small / Fast、Tier 4 Compact / Nano）
 - **列（Versions）**：架构代际与版本演进（从旧到新按时间列排布）
 - **严格系列隔离**：不同系列（例如 OpenAI 的 `GPT` 系列与 `o` 推理系列、Google 的 `Gemini` 与 `Gemma` 开源系列、Meta 的 `Llama` 与 `Muse` 系列）物理隔离，绝不产生跨系列强行绑定的单调性约束。
@@ -775,7 +775,7 @@
 - **实测结果**：在 723 个参测模型、4,568 条强约束条件下，达成 **100.00% 约束满足率（0 违背项）**。详见 [层级诊断报告](output/model_hierarchy/hierarchy_score_report.md) 与 [层级分析结果](output/hierarchy_analysis_results.json)。
 
 ### 4. 人工校验与 CSV 双向工作流（Calibration & Diff Workflow）
-全部 82 个系列层级网格均以易于阅读与编辑的标准 2D CSV 存储于 `output/model_hierarchy/`。
+全部 86 个系列层级网格均以易于阅读与编辑的标准 2D CSV 存储于 `output/model_hierarchy/`。
 - **导出与查看**：运行 `python src/hierarchy.py` 会导出全部单独 CSV 及汇总表 `all_vendors_hierarchy.csv`；
 - **自定义层级微调**：用户可直接用 Excel 或文本编辑器修改任意系列 CSV（例如调整某些新模型的归属代际或层级）；
 - **差异审查与校验**：运行 `python src/hierarchy.py --diff <SeriesName>` 或 `--diff all`，系统会自动将本地修改与默认预置层级进行三向比对，报告所有变更并校验单调性。
@@ -790,7 +790,7 @@ x = 0                            当 c = 0（免费模型，真零点）
 x = A·ln(c+C)+D                  当 c > 0（B = 1 并入；A、D 由端点解出）
 ```
 
-其中 C = 108.16（r = B/C = 0.00924585），拟合集为 11 品牌前沿入图正成本模型（综合能力 ≥ 前沿第一级）的成本分布，目标为组内名次分位数（最小二乘误差 mse = 0.014772，最大偏离 0.2064）。该映射在 **y 基线过滤之后**构建（V17：先以帕累托前沿第一级为 y = 0、剔除低性能模型，再对入图模型建映射）。
+其中 C = 108.16（r = B/C = 0.00924585），拟合集为 11 品牌前沿入图正成本模型（综合能力 ≥ 前沿第一级）的成本分布，目标为组内名次分位数（最小二乘误差 mse = 0.014780，最大偏离 0.2064）。该映射在 **y 基线过滤之后**构建（V17：先以帕累托前沿第一级为 y = 0、剔除低性能模型，再对入图模型建映射）。
 
 **该映射保证：**
 
@@ -861,7 +861,7 @@ cost = (CacheHitRate × CacheHitPrice × InputTokens)
 1. **高速数据抓取 (`src/scrape.py`)**：解析 Artificial Analysis 的 Next.js RSC 动态清单（Manifest），通过 AES-GCM 快速解密全量模型数据集，解压缩 GZip 流并解析嵌套的 38 项基准维度分数与发布时间；
 2. **缓存命中率抓取 (`src/cache_hit_rate.py`)**：通过 Playwright 抓取 Coding Agents 页面的全局均值作为成本公式参数；
 3. **帕累托与图表分析 (`src/analyze.py`)**：执行动态留一标定、成本计算、真零点对数坐标映射与多品牌前沿图表绘制；
-4. **模型层级单调性引擎 (`src/hierarchy.py`)**：基于 82 个系列层级网格（Tiers x Versions）执行 4 大单调序规则与 Dykstra 等保投影校验；
+4. **模型层级单调性引擎 (`src/hierarchy.py`)**：基于 86 个系列层级网格（Tiers x Versions）执行 4 大单调序规则与 Dykstra 等保投影校验；
 5. **自动化 GitHub Actions (`.github/workflows/update-leaderboard.yml`)**：每日定时及手动触发运行抓取、层级计算、单元测试验证与看板自动更新。
 
 

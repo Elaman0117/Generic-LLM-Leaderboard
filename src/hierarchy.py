@@ -683,6 +683,19 @@ DEFAULT_SERIES_GRIDS = {
             }
         }
     },
+    "Google - PaLM": {
+        "vendor": "Google",
+        "series": "PaLM",
+        "versions": ["PaLM 2"],
+        "tiers": [
+            "Tier 1 (Flagship / Large)",
+        ],
+        "mapping": {
+            "Tier 1 (Flagship / Large)": {
+                "PaLM 2": ["PALM-2"],
+            }
+        }
+    },
     "Anthropic - Claude": {
         "vendor": "Anthropic",
         "series": "Claude",
@@ -859,10 +872,24 @@ DEFAULT_SERIES_GRIDS = {
             }
         }
     },
+    "Mistral - Saba": {
+        "vendor": "Mistral",
+        "series": "Saba",
+        "versions": ["Saba 24B"],
+        "tiers": [
+            "Tier 1 (24B)",
+        ],
+        "mapping": {
+            "Tier 1 (24B)": {
+                "Saba 24B": ["Mistral Saba"],
+            }
+        }
+    },
     "Alibaba - Qwen": {
         "vendor": "Alibaba",
         "series": "Qwen",
         "versions": [
+            "Qwen 1", "Qwen 1.5",
             "Qwen 2", "Qwen 2.5", "Qwen 3", "Qwen 3.5",
             "Qwen 3.6", "Qwen 3.7", "Qwen 3.8", "Qwen 4"
         ],
@@ -890,6 +917,8 @@ DEFAULT_SERIES_GRIDS = {
                 "Qwen 3.8": ["Qwen3.8 2.4T A95B"],
             },
             "Tier 3 (Large: 122B-27B)": {
+                "Qwen 1": ["Qwen Chat 72B"],
+                "Qwen 1.5": ["Qwen1.5 Chat 110B"],
                 "Qwen 2": ["Qwen2 72B"],
                 "Qwen 2.5": ["Qwen2.5 72B", "Qwen2.5 Coder 32B", "Qwen2.5 Instruct 32B", "Qwen2.5 Turbo"],
                 "Qwen 3": ["Qwen3 30B", "Qwen3 32B", "Qwen3 235B", "Qwen3 Coder 480B", "Qwen3 Next 80B A3B", "Qwen3 Coder Next", "Qwen3 Omni 30B A3B", "Qwen3 VL 30B A3B", "Qwen3 30B A3B 2507", "Qwen3 VL 32B", "Qwen3 Coder 30B A3B"],
@@ -898,6 +927,7 @@ DEFAULT_SERIES_GRIDS = {
                 "Qwen 3.8": ["Qwen3.8 27B", "Qwen3.8-Flash-Next"],
             },
             "Tier 4 (Small: 14B-4B)": {
+                "Qwen 1": ["Qwen Chat 14B"],
                 "Qwen 2.5": ["Qwen2.5 Coder 7B"],
                 "Qwen 3": ["Qwen3 14B", "Qwen3 8B", "Qwen3 4B", "Qwen3 VL 8B", "Qwen3 4B 2507", "Qwen3 VL 4B"],
                 "Qwen 3.5": ["Qwen3.5 9B", "Qwen3.5 4B"],
@@ -1210,6 +1240,40 @@ class VendorHierarchyManager:
         self.grids = {}
         self._initialize_grids(all_models or [], load_from_disk=load_from_disk)
 
+    @staticmethod
+    def _infer_tier_for_grid(base_name: str, tiers: List[str]) -> str:
+        """Infer the appropriate tier from base_name given grid's available tiers."""
+        if not tiers:
+            return "Tier 1"
+        n = base_name.lower()
+        if any(w in n for w in ["ultra", "max", "pro", "large", "astra", "405b", "397b", "235b", "120b", "70b", "67b", "65b"]):
+            return tiers[0]
+        elif any(w in n for w in ["medium", "plus", "mid", "sol", "standard", "32b", "30b", "27b", "24b", "20b", "14b"]):
+            return tiers[min(1, len(tiers) - 1)]
+        elif any(w in n for w in ["small", "flash", "mini", "terra", "8b", "7b", "4b"]):
+            return tiers[min(2, len(tiers) - 1)]
+        else:
+            return tiers[-1]
+
+    @staticmethod
+    def _infer_version_for_grid(base_name: str, release_date: Optional[str], versions: List[str]) -> str:
+        """Infer or insert a version name from base_name or release_date."""
+        for v in sorted(versions, key=lambda x: -len(x)):
+            if re.search(r'\b' + re.escape(v) + r'\b', base_name, re.I):
+                return v
+
+        m = re.search(r'(GPT-\d+(?:\.\d+)?)', base_name, re.I)
+        if m:
+            cand = m.group(1).upper()
+            if cand not in versions:
+                versions.append(cand)
+            return cand
+
+        d = release_date[:7] if release_date else "2025-01"
+        if d not in versions:
+            versions.append(d)
+        return d
+
     def _initialize_grids(self, all_models: List[dict], load_from_disk: bool = True):
         """Initialize series grids from disk if CSVs exist, else load default or auto-generate and export."""
         curated_vendors = set()
@@ -1224,43 +1288,121 @@ class VendorHierarchyManager:
                 grid = self._load_csv_grid(csv_path)
                 grid["vendor"] = default_data.get("vendor", series_key.split(" - ")[0])
                 grid["series"] = default_data.get("series", series_key.split(" - ")[-1])
+                for v in default_data.get("versions", []):
+                    if v not in grid["versions"]:
+                        grid["versions"].append(v)
+                for t in default_data.get("tiers", []):
+                    if t not in grid["tiers"]:
+                        grid["tiers"].append(t)
+                all_grid_models = {
+                    x.lower().strip()
+                    for t_map in grid.get("mapping", {}).values()
+                    for v_list in t_map.values()
+                    for x in v_list
+                }
+                for t, v_dict in default_data.get("mapping", {}).items():
+                    cur_t = grid.setdefault("mapping", {}).setdefault(t, {})
+                    for v, m_list in v_dict.items():
+                        cur_v = cur_t.setdefault(v, [])
+                        for m_name in m_list:
+                            if m_name.lower().strip() not in all_grid_models:
+                                cur_v.append(m_name)
+                                all_grid_models.add(m_name.lower().strip())
                 self.grids[series_key] = grid
             else:
                 self.grids[series_key] = default_data
                 self._save_csv_grid(csv_path, default_data)
 
-        # 2. Auto-generate for remaining creators with models
-        if all_models:
-            creator_models = defaultdict(list)
-            for m in all_models:
-                creator_models[m["creator"]].append(m)
-
-            for creator, mlist in creator_models.items():
-                c_clean = creator.replace("_", " ")
-                if creator in curated_vendors or c_clean in curated_vendors or creator.replace(" ", "_") in curated_vendors:
-                    continue
-
-                series_map = detect_creator_series(creator, mlist)
-                for series_name, s_models in series_map.items():
-                    series_key = f"{creator} - {series_name}"
-                    csv_path = os.path.join(self.hierarchy_dir, f"{series_key}.csv")
-                    if load_from_disk and os.path.exists(csv_path):
-                        grid = self._load_csv_grid(csv_path)
-                        grid["vendor"] = creator
-                        grid["series"] = series_name
-                        self.grids[series_key] = grid
-                    else:
-                        auto_grid = auto_generate_series_grid(creator, series_name, s_models)
-                        self.grids[series_key] = auto_grid
-                        self._save_csv_grid(csv_path, auto_grid)
-
-        # 3. Load any extra custom series CSVs on disk
+        # 2. Load any extra custom series CSVs on disk
         if load_from_disk and os.path.exists(self.hierarchy_dir):
             for fname in os.listdir(self.hierarchy_dir):
                 if fname.endswith(".csv") and fname != "all_vendors_hierarchy.csv" and " - " in fname:
                     s_key = fname[:-4]
                     if s_key not in self.grids:
                         self.grids[s_key] = self._load_csv_grid(os.path.join(self.hierarchy_dir, fname))
+
+        # 3. Dynamic mapping / Auto-generate for models
+        if all_models:
+            mapped_names = set()
+            for s_k, g in self.grids.items():
+                for t, v_dict in g.get("mapping", {}).items():
+                    for v, m_list in v_dict.items():
+                        for m_name in m_list:
+                            mapped_names.add(m_name.lower().strip())
+
+            creator_models = defaultdict(list)
+            for m in all_models:
+                creator_models[m["creator"]].append(m)
+
+            for creator, mlist in creator_models.items():
+                unmapped_for_creator = [
+                    m for m in mlist if m["base_name"].lower().strip() not in mapped_names
+                ]
+                if not unmapped_for_creator:
+                    continue
+
+                remaining = []
+                for m in unmapped_for_creator:
+                    bn = m["base_name"]
+                    matched_series_key = None
+                    for s_k, g in self.grids.items():
+                        v_name = g.get("vendor", s_k.split(" - ")[0])
+                        s_name = g.get("series", s_k.split(" - ")[-1])
+                        c_match = v_name.lower().strip() in (
+                            creator.lower().strip(),
+                            creator.replace("_", " ").lower().strip(),
+                            creator.replace(" ", "_").lower().strip()
+                        )
+                        if c_match:
+                            if re.search(r'\b' + re.escape(s_name) + r'\b', bn, re.I) or s_name.lower() in bn.lower():
+                                matched_series_key = s_k
+                                break
+
+                    if matched_series_key:
+                        grid = self.grids[matched_series_key]
+                        tier = self._infer_tier_for_grid(bn, grid["tiers"])
+                        version = self._infer_version_for_grid(bn, m.get("date"), grid["versions"])
+                        grid.setdefault("mapping", {}).setdefault(tier, {}).setdefault(version, [])
+                        if bn not in grid["mapping"][tier][version]:
+                            grid["mapping"][tier][version].append(bn)
+                        mapped_names.add(bn.lower().strip())
+                    else:
+                        remaining.append(m)
+
+                if remaining:
+                    series_map = detect_creator_series(creator, remaining)
+                    for series_name, s_models in series_map.items():
+                        series_key = f"{creator} - {series_name}"
+                        csv_path = os.path.join(self.hierarchy_dir, f"{series_key}.csv")
+                        if series_key in self.grids:
+                            grid = self.grids[series_key]
+                            for sm in s_models:
+                                bn = sm["base_name"]
+                                tier = self._infer_tier_for_grid(bn, grid["tiers"])
+                                version = self._infer_version_for_grid(bn, sm.get("date"), grid["versions"])
+                                grid.setdefault("mapping", {}).setdefault(tier, {}).setdefault(version, [])
+                                if bn not in grid["mapping"][tier][version]:
+                                    grid["mapping"][tier][version].append(bn)
+                                mapped_names.add(bn.lower().strip())
+                        elif load_from_disk and os.path.exists(csv_path):
+                            grid = self._load_csv_grid(csv_path)
+                            grid["vendor"] = creator
+                            grid["series"] = series_name
+                            self.grids[series_key] = grid
+                            for sm in s_models:
+                                bn = sm["base_name"]
+                                if not any(bn.lower() == x.lower() for t in grid.get("mapping", {}).values() for v in t.values() for x in v):
+                                    tier = self._infer_tier_for_grid(bn, grid["tiers"])
+                                    version = self._infer_version_for_grid(bn, sm.get("date"), grid["versions"])
+                                    grid.setdefault("mapping", {}).setdefault(tier, {}).setdefault(version, [])
+                                    grid["mapping"][tier][version].append(bn)
+                                mapped_names.add(bn.lower().strip())
+                        else:
+                            auto_grid = auto_generate_series_grid(creator, series_name, s_models)
+                            self.grids[series_key] = auto_grid
+                            self._save_csv_grid(csv_path, auto_grid)
+                            for sm in s_models:
+                                mapped_names.add(sm["base_name"].lower().strip())
 
     def _save_csv_grid(self, filepath: str, grid_data: dict):
         """Export a 2D hierarchy grid to CSV."""
@@ -1792,15 +1934,16 @@ def run_hierarchy_analysis(tolerance: float = 1e-4) -> dict:
         raw_data = json.load(f)
 
     print("2. Extracting 38 benchmark metrics across models...")
+    models_all, _ = extract_benchmarks(raw_data, min_valid=0)
     models, metric_ranges = extract_benchmarks(raw_data, min_valid=3)
-    print(f"   Evaluated {len(models)} models across {len(BENCHMARK_DEFS)} benchmarks.")
+    print(f"   Evaluated {len(models)} models across {len(BENCHMARK_DEFS)} benchmarks (catalog total: {len(models_all)}).")
 
     print("3. Running leave-one-out dynamic calibration...")
     bounds, converged_round = calibrate_benchmark_bounds(models, metric_ranges, tolerance=tolerance)
     print(f"   Dynamic calibration converged at round {converged_round}!")
 
     print("4. Initializing Series Hierarchy Grids (Tiers x Versions)...")
-    hierarchy_mgr = VendorHierarchyManager(all_models=models)
+    hierarchy_mgr = VendorHierarchyManager(all_models=models_all)
     hierarchy_mgr.export_all_csvs(overwrite_existing=False)
     print(f"   Exported / Loaded {len(hierarchy_mgr.grids)} series CSV grids to {hierarchy_mgr.hierarchy_dir}")
 
@@ -1895,8 +2038,8 @@ def main():
     if args.export_csv:
         with open(RAW_DATA_FILE, "r", encoding="utf-8") as f:
             raw_data = json.load(f)
-        models, _ = extract_benchmarks(raw_data)
-        mgr = VendorHierarchyManager(all_models=models, load_from_disk=False)
+        models_all, _ = extract_benchmarks(raw_data, min_valid=0)
+        mgr = VendorHierarchyManager(all_models=models_all, load_from_disk=False)
         mgr.export_all_csvs(overwrite_existing=True)
         print(f"Exported {len(mgr.grids)} series hierarchy CSVs to {mgr.hierarchy_dir}")
         return

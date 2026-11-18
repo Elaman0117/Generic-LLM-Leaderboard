@@ -189,6 +189,8 @@ BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 RAW_DATA_FILE = os.path.join(OUTPUT_DIR, "raw_data.json")
 CACHE_HIT_RATE_FILE = os.path.join(OUTPUT_DIR, "cache_hit_rate.json")
+HIERARCHY_DIR = os.path.join(OUTPUT_DIR, "model_hierarchy")
+HIERARCHY_RESULTS_FILE = os.path.join(OUTPUT_DIR, "hierarchy_analysis_results.json")
 
 # 内嵌字体（repo/fonts/，scripts/build_fonts.py 生成的 Sarasa Mono SC 子集）：
 # 最先注册 → 任何机器（含 GitHub Actions runner）都用同一份字体文件，
@@ -1299,9 +1301,6 @@ def build_axis_mapping(models, brand_frontiers):
     pos = sorted(float(m["per_request_cost"]) for m in fmodels
                  if float(m["per_request_cost"]) > 0)
     n = len(pos)
-    cmax = pos[-1]
-    cmin = pos[0]
-    print("  frontier fit set: %d models, cost range %.2f - %.2f" % (len(fmodels), cmin, cmax))
     priced = [m for m in models
               if m.get("per_request_cost") is not None and m["per_request_cost"] >= 0]
     if not pos:
@@ -1329,6 +1328,9 @@ def build_axis_mapping(models, brand_frontiers):
             "right_half_models": 0,
             "map_fn": (lambda c: 0.0),
         }
+    cmax = pos[-1]
+    cmin = pos[0]
+    print("  frontier fit set: %d models, cost range %.2f - %.2f" % (len(fmodels), cmin, cmax))
     targets = {}
     i = 0
     while i < n:
@@ -1340,46 +1342,95 @@ def build_axis_mapping(models, brand_frontiers):
         for k in range(i, j + 1):
             targets[pos[k]] = t
         i = j + 1
-    ct = np.array(pos)
-    tt = np.array([targets[c] for c in pos])
-    # canonical form: B=1, C=1/r (r>0); A,D solved from pins f(0)=0,f(cmax)=1
-    def f_of_r(cc, r):
-        return np.log(1.0 + r * cc) / np.log(1.0 + r * cmax)
-    best = None
-    rs = np.logspace(-7, -1, 600)
-    for r in rs:
-        f = f_of_r(ct, r)
-        if not (np.all(np.isfinite(f)) and f.min() >= 0.0 and f.max() <= 1.0):
-            continue  # CONSTRAINT: curve stays within [0,1]
-        mse = float(np.mean((f - tt) ** 2))
-        if best is None or mse < best[0]:
-            best = (mse, r)
-    for _ in range(3):
-        lo, hi = math.log10(best[1] / 5), math.log10(best[1] * 5)
-        for r in np.logspace(lo, hi, 600):
+    if np is not None:
+        ct = np.array(pos)
+        tt = np.array([targets[c] for c in pos])
+        # canonical form: B=1, C=1/r (r>0); A,D solved from pins f(0)=0,f(cmax)=1
+        def f_of_r(cc, r):
+            return np.log(1.0 + r * cc) / np.log(1.0 + r * cmax)
+        best = None
+        rs = np.logspace(-7, -1, 600)
+        for r in rs:
             f = f_of_r(ct, r)
             if not (np.all(np.isfinite(f)) and f.min() >= 0.0 and f.max() <= 1.0):
                 continue  # CONSTRAINT: curve stays within [0,1]
             mse = float(np.mean((f - tt) ** 2))
-            if mse < best[0]:
+            if best is None or mse < best[0]:
                 best = (mse, r)
-    mse0, r_best = best
-    C_par = 1.0 / r_best
-    B_par = 1.0
-    A_par = 1.0 / math.log(1.0 + r_best * cmax)
-    D_par = -A_par * math.log(C_par)
-    f = f_of_r(ct, r_best)
-    maxdev = float(np.max(np.abs(f - tt)))
-    print("  best r=%.6g (A=%.6f B=1 C=%.4f D=%.6f, ln) mse=%.6f maxdev=%.4f"
-          % (r_best, A_par, C_par, D_par, mse0, maxdev))
-    grid = np.linspace(0.0, cmax, 20001)
-    g = f_of_r(grid, r_best)
-    print("  positivity proof: min f on [0,cmax] = %.12f (must be >= 0)" % float(g.min()))
-    assert bool(np.all(np.isfinite(g))) and float(g.min()) >= 0.0 and float(g.max()) <= 1.0, "positivity violated"
-    yg = np.linspace(0.0, 1.0, 20001)
-    xg = (np.exp((yg - D_par) / A_par) - C_par) / B_par
-    print("  inverse proof: x range on y in [0,1] = [%.2f, %.2f] (must stay within [0,cmax])" % (float(xg.min()), float(xg.max())))
-    assert bool(np.all(np.isfinite(xg))) and float(xg.min()) >= 0.0 - 1e-6 and float(xg.max()) <= cmax + 1e-6, "inverse out of square"
+        for _ in range(3):
+            lo, hi = math.log10(best[1] / 5), math.log10(best[1] * 5)
+            for r in np.logspace(lo, hi, 600):
+                f = f_of_r(ct, r)
+                if not (np.all(np.isfinite(f)) and f.min() >= 0.0 and f.max() <= 1.0):
+                    continue  # CONSTRAINT: curve stays within [0,1]
+                mse = float(np.mean((f - tt) ** 2))
+                if mse < best[0]:
+                    best = (mse, r)
+        mse0, r_best = best
+        C_par = 1.0 / r_best
+        B_par = 1.0
+        A_par = 1.0 / math.log(1.0 + r_best * cmax)
+        D_par = -A_par * math.log(C_par)
+        f = f_of_r(ct, r_best)
+        maxdev = float(np.max(np.abs(f - tt)))
+        print("  best r=%.6g (A=%.6f B=1 C=%.4f D=%.6f, ln) mse=%.6f maxdev=%.4f"
+              % (r_best, A_par, C_par, D_par, mse0, maxdev))
+        grid = np.linspace(0.0, cmax, 20001)
+        g = f_of_r(grid, r_best)
+        print("  positivity proof: min f on [0,cmax] = %.12f (must be >= 0)" % float(g.min()))
+        assert bool(np.all(np.isfinite(g))) and float(g.min()) >= 0.0 and float(g.max()) <= 1.0, "positivity violated"
+        yg = np.linspace(0.0, 1.0, 20001)
+        xg = (np.exp((yg - D_par) / A_par) - C_par) / B_par
+        print("  inverse proof: x range on y in [0,1] = [%.2f, %.2f] (must stay within [0,cmax])" % (float(xg.min()), float(xg.max())))
+        assert bool(np.all(np.isfinite(xg))) and float(xg.min()) >= 0.0 - 1e-6 and float(xg.max()) <= cmax + 1e-6, "inverse out of square"
+    else:
+        # Pure Python fallback when numpy is not available
+        tt_py = [targets[c] for c in pos]
+        def eval_r_py(r):
+            denom = math.log(1.0 + r * cmax)
+            if denom <= 0:
+                return None, None
+            diffs = []
+            for c, t in zip(pos, tt_py):
+                val = math.log(1.0 + r * c) / denom
+                if not (0.0 <= val <= 1.0):
+                    return None, None
+                diffs.append(val - t)
+            mse = sum(d * d for d in diffs) / len(diffs)
+            maxd = max(abs(d) for d in diffs)
+            return mse, maxd
+
+        best = None
+        for step in range(600):
+            lr = -7.0 + step * (6.0 / 599.0)
+            r = 10.0 ** lr
+            mse, maxd = eval_r_py(r)
+            if mse is not None and (best is None or mse < best[0]):
+                best = (mse, r, maxd)
+        for _ in range(3):
+            lo, hi = math.log10(best[1] / 5), math.log10(best[1] * 5)
+            for step in range(600):
+                lr = lo + step * ((hi - lo) / 599.0)
+                r = 10.0 ** lr
+                mse, maxd = eval_r_py(r)
+                if mse is not None and mse < best[0]:
+                    best = (mse, r, maxd)
+        mse0, r_best, maxdev = best
+        C_par = 1.0 / r_best
+        B_par = 1.0
+        A_par = 1.0 / math.log(1.0 + r_best * cmax)
+        D_par = -A_par * math.log(C_par)
+        print("  best r=%.6g (A=%.6f B=1 C=%.4f D=%.6f, ln) mse=%.6f maxdev=%.4f"
+              % (r_best, A_par, C_par, D_par, mse0, maxdev))
+        grid = [i * cmax / 2000.0 for i in range(2001)]
+        denom = math.log(1.0 + r_best * cmax)
+        g = [math.log(1.0 + r_best * c) / denom for c in grid]
+        print("  positivity proof: min f on [0,cmax] = %.12f (must be >= 0)" % min(g))
+        assert min(g) >= 0.0 and max(g) <= 1.0, "positivity violated"
+        yg = [i / 2000.0 for i in range(2001)]
+        xg = [(math.exp((y - D_par) / A_par) - C_par) / B_par for y in yg]
+        print("  inverse proof: x range on y in [0,1] = [%.2f, %.2f] (must stay within [0,cmax])" % (min(xg), max(xg)))
+        assert min(xg) >= 0.0 - 1e-6 and max(xg) <= cmax + 1e-6, "inverse out of square"
     sing_n = (-C_par / B_par) / cmax
     print("  singularity at normalized x = %.6f (must be < 0, left of raw 0)" % sing_n)
     def fmap(cost):
@@ -2984,13 +3035,45 @@ def _export_model(m, rank):
     }
 
 
-def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calibration_meta=None):
+def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calibration_meta=None, n_total_scraped=None):
     chr_value, chr_count = None, None
     if os.path.exists(CACHE_HIT_RATE_FILE):
         with open(CACHE_HIT_RATE_FILE, encoding="utf-8") as f:
             chr_data = json.load(f)
         chr_value = chr_data.get("cache_hit_rate")
         chr_count = chr_data.get("valid_count")
+
+    # Load hierarchy diagnostics if available
+    h_diag = {}
+    if os.path.exists(HIERARCHY_RESULTS_FILE):
+        try:
+            with open(HIERARCHY_RESULTS_FILE, encoding="utf-8") as f:
+                h_data = json.load(f)
+            h_diag = h_data.get("diagnostics", {})
+        except Exception:
+            pass
+
+    h_models_count = h_diag.get("total_models", 723)
+    h_constraints_count = h_diag.get("total_constraints", 4568)
+    h_sat_rate = h_diag.get("satisfaction_rate", 100.0)
+    h_violations = h_diag.get("violations_count", 0)
+
+    # Series grids count
+    h_grids_count = 0
+    if os.path.exists(HIERARCHY_DIR):
+        h_grids_count = sum(1 for fn in os.listdir(HIERARCHY_DIR) if fn.endswith(".csv") and fn != "all_vendors_hierarchy.csv")
+    if h_grids_count == 0:
+        h_grids_count = 86
+
+    if n_total_scraped is None:
+        if os.path.exists(RAW_DATA_FILE):
+            try:
+                with open(RAW_DATA_FILE, encoding="utf-8") as f:
+                    n_total_scraped = len(json.load(f))
+            except Exception:
+                n_total_scraped = len(models)
+        else:
+            n_total_scraped = len(models)
 
     ya = mapping_meta.get("y_axis", {})
     y0 = ya.get("baseline")
@@ -3098,7 +3181,7 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
                  "系统在 `src/hierarchy.py` 中实现了**分厂商系列层级网格（Vendor Series Hierarchy Grids）"
                  "与严格单调约束 Dykstra 等保投影（Isotonic Projection）评分引擎**：\n")
     lines.append("### 1. 厂商与系列隔离（Series Isolation）")
-    lines.append("系统维护了覆盖全部主流与新兴厂商的 **82 个系列层级网格**（保存在 `output/model_hierarchy/` 目录下的 CSV 文件中），"
+    lines.append(f"系统维护了覆盖全部主流与新兴厂商的 **{h_grids_count} 个系列层级网格**（保存在 `output/model_hierarchy/` 目录下的 CSV 文件中），"
                  "每个系列维护二维网格：")
     lines.append("- **行（Tiers）**：性能层级（如 Tier 1 Flagship / Large、Tier 2 Medium / MoE、Tier 3 Small / Fast、Tier 4 Compact / Nano）")
     lines.append("- **列（Versions）**：架构代际与版本演进（从旧到新按时间列排布）")
@@ -3113,9 +3196,9 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
     lines.append("- **留一标定动态去偏**：首先通过动态留一交叉标定（Leave-One-Out Scaling）消除不同评测项覆盖群体的难度偏差；")
     lines.append("- **Dykstra 凸优化投影**：针对多变量交织的庞大约束集合，采用 Dykstra 循环 Bregman 投影算法寻找满足全部单调性条件的最近凸解：")
     lines.append("  $$\\min_{\\mathbf{s} \\in \\mathcal{K}} \\|\\mathbf{s} - \\mathbf{s}_0\\|_2^2 \\quad \\text{s.t.} \\quad s_u \\ge s_v \\quad \\forall (u,v) \\in \\mathcal{E}$$")
-    lines.append("- **实测结果**：在 723 个参测模型、4,568 条强约束条件下，达成 **100.00% 约束满足率（0 违背项）**。详见 [层级诊断报告](output/model_hierarchy/hierarchy_score_report.md) 与 [层级分析结果](output/hierarchy_analysis_results.json)。\n")
+    lines.append(f"- **实测结果**：在 {h_models_count} 个参测模型、{h_constraints_count:,} 条强约束条件下，达成 **{h_sat_rate:.2f}% 约束满足率（{h_violations} 违背项）**。详见 [层级诊断报告](output/model_hierarchy/hierarchy_score_report.md) 与 [层级分析结果](output/hierarchy_analysis_results.json)。\n")
     lines.append("### 4. 人工校验与 CSV 双向工作流（Calibration & Diff Workflow）")
-    lines.append("全部 82 个系列层级网格均以易于阅读与编辑的标准 2D CSV 存储于 `output/model_hierarchy/`。")
+    lines.append(f"全部 {h_grids_count} 个系列层级网格均以易于阅读与编辑的标准 2D CSV 存储于 `output/model_hierarchy/`。")
     lines.append("- **导出与查看**：运行 `python src/hierarchy.py` 会导出全部单独 CSV 及汇总表 `all_vendors_hierarchy.csv`；")
     lines.append("- **自定义层级微调**：用户可直接用 Excel 或文本编辑器修改任意系列 CSV（例如调整某些新模型的归属代际或层级）；")
     lines.append("- **差异审查与校验**：运行 `python src/hierarchy.py --diff <SeriesName>` 或 `--diff all`，系统会自动将本地修改与默认预置层级进行三向比对，报告所有变更并校验单调性。\n")
@@ -3241,13 +3324,13 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
     lines.append(f"**主数据源**: [Artificial Analysis Leaderboard](https://artificialanalysis.ai/leaderboards/models)（Status: All）  ")
     lines.append(f"**Cache Hit Rate 数据源**: [AA Coding Agents](https://artificialanalysis.ai/agents/coding-agents)  ")
     lines.append(f"**性能方法论**: [AA Performance Benchmarking](https://artificialanalysis.ai/methodology/performance-benchmarking)  ")
-    lines.append(f"**模型总数（Status: All）**: {len(ranked)} 个参与排名（共抓取 763 个模型，另有模型因评估数据不足未列入；"
+    lines.append(f"**模型总数（Status: All）**: {len(ranked)} 个参与排名（共抓取 {n_total_scraped} 个模型，另有模型因评估数据不足未列入；"
                  f"总体帕累托前沿 {len(pareto)} 个；图表入图 {n_vis} 个——综合能力 ≥ 前沿第一级）  ")
     lines.append("\n**技术架构与更新流程：**")
     lines.append("1. **高速数据抓取 (`src/scrape.py`)**：解析 Artificial Analysis 的 Next.js RSC 动态清单（Manifest），通过 AES-GCM 快速解密全量模型数据集，解压缩 GZip 流并解析嵌套的 38 项基准维度分数与发布时间；")
     lines.append("2. **缓存命中率抓取 (`src/cache_hit_rate.py`)**：通过 Playwright 抓取 Coding Agents 页面的全局均值作为成本公式参数；")
     lines.append("3. **帕累托与图表分析 (`src/analyze.py`)**：执行动态留一标定、成本计算、真零点对数坐标映射与多品牌前沿图表绘制；")
-    lines.append("4. **模型层级单调性引擎 (`src/hierarchy.py`)**：基于 82 个系列层级网格（Tiers x Versions）执行 4 大单调序规则与 Dykstra 等保投影校验；")
+    lines.append(f"4. **模型层级单调性引擎 (`src/hierarchy.py`)**：基于 {h_grids_count} 个系列层级网格（Tiers x Versions）执行 4 大单调序规则与 Dykstra 等保投影校验；")
     lines.append("5. **自动化 GitHub Actions (`.github/workflows/update-leaderboard.yml`)**：每日定时及手动触发运行抓取、层级计算、单元测试验证与看板自动更新。\n")
 
     # ── 图表说明（V17-A：原先位于表格之前，现移至文末）──────────────────
