@@ -3,386 +3,452 @@
     "source": "https://artificialanalysis.ai/agents/coding-agents",
     "description": "Average Cache Hit Rate across all model-agent combinations on the Artificial Analysis Coding Agents benchmark. Used by analyze.py as the global Cache Hit Rate in the per-request cost formula.",
     "methodology": "All model-agent combinations' `mean.cacheHitRate` values are extracted from the page's __next_f RSC payload. Valid (positive, finite) values are averaged into a single global Cache Hit Rate that is applied uniformly to every model in the leaderboard.",
-    "total_combinations": 34,
-    "valid_count": 34
+    "total_combinations": 40,
+    "valid_count": 40
   },
-  "cache_hit_rate": 0.9410926657079833,
-  "valid_count": 34,
-  "total_count": 34,
+  "cache_hit_rate": 0.9366759373501399,
+  "valid_count": 40,
+  "total_count": 40,
   "combinations": [
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.87,
+      "cache_hit_rate": 0.869265155734102,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 13865930.859975
+      "total_tokens": 12394556.2136418
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.870466942043008,
+      "cache_hit_rate": 0.870000000000001,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 10463266.3479852
+      "total_tokens": 16446079.7342511
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.879198645177312,
+      "cache_hit_rate": 0.892464282353719,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 14251510.9748887
+      "total_tokens": 551427.540500635
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.911751306302099,
+      "cache_hit_rate": 0.902068989740056,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 8453863.20289236
+      "total_tokens": 12414138.9248669
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.91270190622461,
+      "cache_hit_rate": 0.907367649094521,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3625399.81721408
+      "total_tokens": 1305458.7342531
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.918420370906708,
+      "cache_hit_rate": 0.91676496421076,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 16053233.8058097
+      "total_tokens": 9419483.79673075
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.921352278288341,
+      "cache_hit_rate": 0.919037281114028,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3944222.64509301
+      "total_tokens": 1017093.94328531
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.922890846004726,
+      "cache_hit_rate": 0.920405632907548,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 5758751.98349191
+      "total_tokens": 1638980.60323667
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.923288749508769,
+      "cache_hit_rate": 0.921439135806452,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 5989151.58443575
+      "total_tokens": 7734756.91965353
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.925808219461337,
+      "cache_hit_rate": 0.923013453925517,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 1886086.8732888
+      "total_tokens": 5566504.12094059
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.928466255516988,
+      "cache_hit_rate": 0.92305479741076,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 3228511.32437048
+      "total_tokens": 6684287.3322472
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.939000029822895,
+      "cache_hit_rate": 0.924614934120701,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 14479705.3019539
+      "total_tokens": 1902882.24057782
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.942067920005139,
+      "cache_hit_rate": 0.927081670090333,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 15914547.7950299
+      "total_tokens": 4325533.06883038
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.942138888163568,
+      "cache_hit_rate": 0.93075814066695,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 4075423.19637776
+      "total_tokens": 3474078.67649169
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.947205701820927,
+      "cache_hit_rate": 0.932813768703189,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 9153421.02933002
+      "total_tokens": 18536943.2773976
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.947531776215516,
+      "cache_hit_rate": 0.934447318742749,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 5776354.240164
+      "total_tokens": 24031073.667264
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.949839928351402,
+      "cache_hit_rate": 0.937597167637376,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 5600133.87243293
+      "total_tokens": 2283352.00391897
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.949845583680754,
+      "cache_hit_rate": 0.938082550213213,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 15908435.1191376
+      "total_tokens": 15991791.1684859
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.951550733530632,
+      "cache_hit_rate": 0.940007659252234,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 13336678.8257109
+      "total_tokens": 5117806.36583578
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.951903021414925,
+      "cache_hit_rate": 0.940746001367815,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 12548516.9639495
+      "total_tokens": 2262375.64772037
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.95239449990423,
+      "cache_hit_rate": 0.943108968415709,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 4890063.07487998
+      "total_tokens": 9754403.10983491
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.952959879951284,
+      "cache_hit_rate": 0.943341325243881,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 24129277.9119089
+      "total_tokens": 2960996.70475244
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.9532457550498,
+      "cache_hit_rate": 0.943651091388689,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 14517552.0207549
+      "total_tokens": 3261840.41567312
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.954514555274975,
+      "cache_hit_rate": 0.945395030568765,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 8885939.03237863
+      "total_tokens": 3087610.85681956
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.956934601768947,
+      "cache_hit_rate": 0.945619759747551,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 6886239.03807863
+      "total_tokens": 9635768.59328625
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.957829308304356,
+      "cache_hit_rate": 0.946447684658443,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 9809458.18526447
+      "total_tokens": 4254921.74435613
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.96006477881447,
+      "cache_hit_rate": 0.94805090601804,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 9010345.58218855
+      "total_tokens": 15431286.6294939
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.962325196630197,
+      "cache_hit_rate": 0.951764740084977,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 14497965.3172412
+      "total_tokens": 26365824.8076328
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.966617846464586,
+      "cache_hit_rate": 0.952412808962046,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 17824340.6533789
+      "total_tokens": 15885265.6600141
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.967020333857851,
+      "cache_hit_rate": 0.953059170554515,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 12280717.4101086
+      "total_tokens": 17067118.8290703
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.967966386781858,
+      "cache_hit_rate": 0.95309096328167,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 16739365.2564321
+      "total_tokens": 16687151.2383513
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.972717072404472,
+      "cache_hit_rate": 0.953712235411027,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 7339450.14544803
+      "total_tokens": 4665449.11941823
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.98312364327161,
+      "cache_hit_rate": 0.956896317905761,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 27235627.5942381
+      "total_tokens": 10141373.6729934
     },
     {
       "agent": null,
       "model_slug": null,
       "display_label": null,
-      "cache_hit_rate": 0.984007673153142,
+      "cache_hit_rate": 0.95771397973891,
       "input_tokens": null,
       "cache_tokens": null,
       "cache_write_tokens": null,
       "output_tokens": null,
-      "total_tokens": 22141655.7546106
+      "total_tokens": 8893459.6281362
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.962283044007579,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 21159542.4485174
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.963181849585072,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 15707547.1206419
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.966480336308356,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 17732690.9570164
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.966519693090673,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 19965955.6950961
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.967733801272048,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 14350373.2568426
+    },
+    {
+      "agent": null,
+      "model_slug": null,
+      "display_label": null,
+      "cache_hit_rate": 0.975543234669856,
+      "input_tokens": null,
+      "cache_tokens": null,
+      "cache_write_tokens": null,
+      "output_tokens": null,
+      "total_tokens": 24489158.7724557
     }
   ]
 }
