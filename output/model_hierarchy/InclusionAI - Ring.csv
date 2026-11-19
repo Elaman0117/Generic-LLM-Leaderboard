@@ -1,5 +1,4 @@
-Tier \ Version,2025-09,2025-10,2026-05
-Tier 1 (Flagship / Large),,,
-Tier 2 (Medium / MoE),,,
-Tier 3 (Small / Fast),Ring-flash-2.0,,
-Tier 4 (Compact / Nano),,Ring-1T,Ring-2.6-1T
+Tier \ Version,Ring 2.0,Ring 2.6
+Tier 1 (1T / Flagship),Ring-1T,Ring-2.6-1T
+Tier 2 (Mid),,
+Tier 3 (Flash),Ring-flash-2.0,

@@ -1,0 +1,4 @@
+Tier \ Version,Qwen 2.5,Qwen 3,Qwen 3 Next
+Tier 1 (Flagship Coder: 480B / Next / 32B),Qwen2.5 Coder 32B,Qwen3 Coder 480B,Qwen3 Coder Next
+Tier 2 (Mid Coder: 30B A3B),,Qwen3 Coder 30B A3B,
+Tier 3 (Small Coder: 7B),Qwen2.5 Coder 7B,,

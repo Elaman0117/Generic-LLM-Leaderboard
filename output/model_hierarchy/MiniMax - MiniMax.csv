@@ -1,5 +1,5 @@
 Tier \ Version,2025-06,2025-10,2025-12,2026-02,2026-03,2026-06,2026-10
-Tier 1 (Flagship / Large),MiniMax M1 40k / MiniMax M1 80k,MiniMax-M2,MiniMax-M2.1,MiniMax-M2.5,MiniMax-M2.7,MiniMax-M3,MiniMax-M3.1-Flash
-Tier 2 (Medium / MoE),,,,,,,
-Tier 3 (Small / Fast),,,,,,,
+Tier 1 (Flagship / Large),,,,,,,
+Tier 2 (Medium / MoE),MiniMax M1 40k / MiniMax M1 80k,MiniMax-M2,MiniMax-M2.1,MiniMax-M2.5,MiniMax-M2.7,MiniMax-M3,
+Tier 3 (Small / Fast),,,,,,,MiniMax-M3.1-Flash
 Tier 4 (Compact / Nano),,,,,,,

@@ -1,5 +1,5 @@
 Tier \ Version,Gemma 3,Gemma 4
-Tier 1 (Large: 31B-26B),Gemma 3 27B,Gemma 4 31B / Gemma 4 26B A4B / DiffusionGemma 26B A4B
+Tier 1 (Large: 31B-26B),Gemma 3 27B,Gemma 4 31B / Gemma 4 26B A4B
 Tier 2 (Mid: 12B),Gemma 3 12B,Gemma 4 12B
 Tier 3 (Small: 4B-E4B),Gemma 3 4B / Gemma 3n E4B / Gemma 3n E4B (May),Gemma 4 E4B
 Tier 4 (Nano: 2B-270M),Gemma 3 1B / Gemma 3 270M / Gemma 3n E2B,Gemma 4 E2B

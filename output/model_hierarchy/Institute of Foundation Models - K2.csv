@@ -1,5 +1,5 @@
-Tier \ Version,2025-12,2026-09
-Tier 1 (Flagship / Large),,
-Tier 2 (Medium / MoE),,K2 Horizon 32B
-Tier 3 (Small / Fast),,K2 Horizon 7B / K2 Horizon 3.7B / K2 Horizon MoVA 36B A4B
-Tier 4 (Compact / Nano),K2-V2 / K2 Think V2,K2 Horizon 0.9B / K2 Horizon 375B A23B
+Tier \ Version,K2 Horizon
+Tier 1 (Flagship: 375B A23B),K2 Horizon 375B A23B
+Tier 2 (Mid: 32B / MoVA 36B),K2 Horizon 32B / K2 Horizon MoVA 36B A4B
+Tier 3 (Small: 7B / 3.7B),K2 Horizon 7B / K2 Horizon 3.7B
+Tier 4 (Nano: 0.9B),K2 Horizon 0.9B

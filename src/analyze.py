@@ -191,6 +191,12 @@ RAW_DATA_FILE = os.path.join(OUTPUT_DIR, "raw_data.json")
 CACHE_HIT_RATE_FILE = os.path.join(OUTPUT_DIR, "cache_hit_rate.json")
 HIERARCHY_DIR = os.path.join(OUTPUT_DIR, "model_hierarchy")
 HIERARCHY_RESULTS_FILE = os.path.join(OUTPUT_DIR, "hierarchy_analysis_results.json")
+MAPPING_MODEL_FILE = os.path.join(OUTPUT_DIR, "mapping_model.json")
+
+try:
+    from src.mapping import MonotoneBenchmarkMapper, load_mapping
+except ImportError:
+    from mapping import MonotoneBenchmarkMapper, load_mapping
 
 # 内嵌字体（repo/fonts/，scripts/build_fonts.py 生成的 Sarasa Mono SC 子集）：
 # 最先注册 → 任何机器（含 GitHub Actions runner）都用同一份字体文件，
@@ -593,6 +599,94 @@ def calibrate_benchmark_bounds(models, metric_ranges, min_valid_metrics=MIN_VALI
     return calibration_meta
 
 
+def _load_or_fit_mapper(models, metric_ranges):
+    """Load fitted MonotoneBenchmarkMapper from output/mapping_model.json.
+
+    Fallback when mapping_model.json does not exist (or is unfitted): fit a fresh
+    MonotoneBenchmarkMapper using Stage 1 (+ Stage 2 if hierarchy grids load cleanly).
+    """
+    if os.path.exists(MAPPING_MODEL_FILE):
+        try:
+            mapper = load_mapping(MAPPING_MODEL_FILE)
+            if mapper.is_fitted and mapper.curves and mapper.weights:
+                return mapper, "output/mapping_model.json"
+        except Exception as exc:
+            print(f"  WARNING: failed to load {MAPPING_MODEL_FILE} ({exc}); fitting fallback mapper...")
+
+    metric_keys = list(METRIC_FIELDS.keys())
+    constraints = None
+    try:
+        try:
+            from src import hierarchy
+        except ImportError:
+            import hierarchy
+        all_models_for_mgr = []
+        for m in models:
+            base_nm, t_tag, t_lvl = hierarchy.parse_model_name(
+                m["full_name"], is_reasoning=m.get("is_reasoning")
+            )
+            all_models_for_mgr.append({
+                "name": m["full_name"],
+                "base_name": base_nm,
+                "thinking_tag": t_tag,
+                "thinking_level": t_lvl,
+                "creator": m.get("creator", ""),
+                "slug": m.get("slug", ""),
+                "parsed": dict(m.get("_parsed", {})),
+                "valid_count": m.get("valid_metrics", 0),
+            })
+        mgr = hierarchy.VendorHierarchyManager(all_models=all_models_for_mgr, load_from_disk=True)
+        eval_for_mgr = [x for x in all_models_for_mgr if x["valid_count"] >= MIN_VALID_METRICS]
+        constraints, _ = hierarchy.generate_hierarchy_constraints(eval_for_mgr, mgr)
+    except Exception as exc:
+        print(f"  WARNING: hierarchy constraints unavailable in fallback ({exc}); using Stage-1 unsupervised...")
+        constraints = None
+
+    mapper = MonotoneBenchmarkMapper()
+    eval_models = [
+        {"name": m["full_name"], "creator": m.get("creator", ""), "_parsed": m["_parsed"]}
+        for m in models if m.get("valid_metrics", 0) >= MIN_VALID_METRICS
+    ]
+    mapper.fit(eval_models, metric_keys, metric_ranges, constraints=constraints, verbose=False)
+    source_tag = "fallback_joint_fit" if constraints else "fallback_stage1_unsupervised"
+    return mapper, source_tag
+
+
+def _build_mapping_optimization_summary(mapper, mapping_source, valid_count):
+    """Build JSON-serializable summary of multi-round monotone mapping & LOVO CV."""
+    diag = mapper.diagnostics or {}
+    raw_weights = dict(mapper.weights or {})
+    total_w = sum(raw_weights.values()) if raw_weights else 1.0
+    weights_sorted = [
+        {
+            "metric": k,
+            "label": METRIC_LABELS.get(k, k),
+            "weight": float(w),
+            "share_pct": (100.0 * float(w) / total_w) if total_w > 0 else 0.0,
+        }
+        for k, w in sorted(raw_weights.items(), key=lambda kv: -kv[1])
+    ]
+    final_eval = diag.get("final_evaluation") or {}
+    final_eval_summary = {k: v for k, v in final_eval.items() if k != "top_violations"} if final_eval else {}
+    return {
+        "source": mapping_source,
+        "evaluated_models_scored": valid_count,
+        "benchmark_count": len(mapper.metric_keys),
+        "final_round": diag.get("final_round", "round_1"),
+        "used_supervised_constraints": diag.get("used_supervised_constraints", 0),
+        "aggregation": dict(mapper.aggregation),
+        "monotonicity_verified": diag.get("monotonicity_verified") or mapper.verify_monotonicity(),
+        "rounds": diag.get("rounds", []),
+        "lovo_cv": diag.get("lovo_cv", {}),
+        "flagship_chains": diag.get("flagship_chains", []),
+        "final_evaluation": final_eval_summary,
+        "top_violations": (final_eval.get("top_violations") or [])[:15],
+        "top_weights": weights_sorted[:10],
+        "bottom_weights": list(reversed(weights_sorted[-10:])) if weights_sorted else [],
+        "weights_sorted": weights_sorted,
+    }
+
+
 def compute_scores(data):
     """Compute composite ability and per-request cost for ALL models.
 
@@ -677,11 +771,14 @@ def compute_scores(data):
             else:
                 m["_norm"][key] = (val - rng["min"]) / (rng["max"] - rng["min"])
 
-    # ── Composite ability = exact Fraction mean ──
+    # ── Raw equal-weight min-max composite ability (kept for transparency/reference) ──
     for m in models:
         nv = [v for v in m["_norm"].values() if v is not None]
         m["composite_ability_raw"] = sum(nv) / len(nv) if nv else None
         m["valid_metrics"] = len(nv)
+        m["composite_ability_raw_uncalibrated"] = None
+        m["composite_ability_mapped_raw"] = None
+        m["composite_ability"] = None
 
     # Quality filter (models with too few evaluated metrics cannot be ranked)
     valid = [m for m in models
@@ -695,14 +792,35 @@ def compute_scores(data):
             "Please check that scrape.py successfully extracted the benchmark data."
         )
 
-    # ── Requirement 4: re-normalize composite ability to [0, 1] ──
-    # best-performing model = 1, worst-performing model = 0
+    # Normalize raw equal-weight mean to [0, 1] for reference
     abilities = [m["composite_ability_raw"] for m in valid]
     min_a, max_a = min(abilities), max(abilities)
-    print(f"Composite ability (raw) range: {float(min_a):.4f} – {float(max_a):.4f}")
+    print(f"Composite ability (raw uncalibrated) range: {float(min_a):.4f} – {float(max_a):.4f}")
     for m in valid:
         if max_a > min_a:
-            m["composite_ability"] = (m["composite_ability_raw"] - min_a) / (max_a - min_a)
+            m["composite_ability_raw_uncalibrated"] = (
+                (m["composite_ability_raw"] - min_a) / (max_a - min_a)
+            ).limit_denominator(10**9)
+        else:
+            m["composite_ability_raw_uncalibrated"] = Fraction(1, 2)
+
+    # ── Primary Composite Ability: MonotoneBenchmarkMapper (zero label leakage) ──
+    mapper, mapping_source = _load_or_fit_mapper(models, metric_ranges)
+    for m in valid:
+        mapped_val = mapper.score_model(m["_parsed"])
+        if mapped_val is None:
+            mapped_val = float(m["composite_ability_raw_uncalibrated"])
+        m["composite_ability_mapped_raw"] = Fraction(mapped_val).limit_denominator(10**9)
+
+    mapped_raws = [m["composite_ability_mapped_raw"] for m in valid]
+    min_m, max_m = min(mapped_raws), max(mapped_raws)
+    print(f"Composite ability (monotone-mapped via {mapping_source}) raw range: "
+          f"{float(min_m):.4f} – {float(max_m):.4f}")
+    for m in valid:
+        if max_m > min_m:
+            m["composite_ability"] = (
+                (m["composite_ability_mapped_raw"] - min_m) / (max_m - min_m)
+            ).limit_denominator(10**9)
         else:
             m["composite_ability"] = Fraction(1, 2)
     best = max(valid, key=lambda m: m["composite_ability"])
@@ -749,8 +867,11 @@ def compute_scores(data):
         print(f"\n  Cost range: {cmin:.2f} – {cmax:.2f}  "
               f"({len(priced)} priced, {n_free} free/cost-0)")
 
-    # ── 基准测试动态标定流程（留一交叉迭代映射标定） ──
+    # ── 基准测试动态标定流程（留一交叉迭代映射标定，保留参考字段） ──
     calibration_meta = calibrate_benchmark_bounds(models, metric_ranges)
+    calibration_meta["mapping_optimization"] = _build_mapping_optimization_summary(
+        mapper, mapping_source, len(valid)
+    )
 
     return valid, metric_ranges, calibration_meta
 
@@ -2903,13 +3024,17 @@ def save_results(models, pareto, brand_frontiers, metric_ranges, x_dist, mapping
         }
 
     axis_meta = {k: v for k, v in mapping_meta.items() if k != "map_fn"}
+    mapping_opt = (calibration_meta or {}).get("mapping_optimization")
     output = {
         "metadata": {
             "source": "https://artificialanalysis.ai/leaderboards/models",
             "model_status": "All (including deprecated models)",
             "methodology": (
-                f"{len(METRIC_FIELDS)} evaluation metrics normalized [0,1], averaged → composite ability, "
-                "then re-normalized linearly so best model = 1 and worst = 0; "
+                f"{len(METRIC_FIELDS)} evaluation metrics normalized [0,1] and transformed via "
+                "zero-leakage strictly monotone piecewise-linear curves g_b, bounded learned weights w_b, "
+                "and Pseudo-Huber IRLS robust aggregation (src/mapping.py) → composite ability, "
+                "then re-normalized linearly so best model = 1 and worst = 0 "
+                "(raw equal-weight mean preserved as composite_ability_raw_uncalibrated); "
                 "Pareto = non-dominated by per-request cost (cost 0/free models "
                 "participate); "
                 "chart Y-axis (V17): y = 0 at the FIRST (lowest) level of the "
@@ -2969,6 +3094,7 @@ def save_results(models, pareto, brand_frontiers, metric_ranges, x_dist, mapping
             } if isinstance(v, dict) else v
             for k, v in metric_ranges.items()
         },
+        "mapping_optimization": mapping_opt,
         "benchmark_calibration": calibration_meta,
         "pareto_frontier": [_export_model(m, i + 1) for i, m in enumerate(pareto)],
         "brand_frontiers": {
@@ -2985,7 +3111,8 @@ def save_results(models, pareto, brand_frontiers, metric_ranges, x_dist, mapping
                 "creator_logo_url": resolve_logo_url(m["creator_logo"]) if m["creator_logo"] else None,
                 "is_deprecated": m["is_deprecated"],
                 "composite_ability": float(m["composite_ability"]),
-        "composite_ability_calibrated": (float(m["composite_ability_calibrated"]) if m.get("composite_ability_calibrated") is not None else None),
+                "composite_ability_raw_uncalibrated": (float(m["composite_ability_raw_uncalibrated"]) if m.get("composite_ability_raw_uncalibrated") is not None else None),
+                "composite_ability_calibrated": (float(m["composite_ability_calibrated"]) if m.get("composite_ability_calibrated") is not None else None),
                 "per_request_cost": _frac_to_json(m.get("per_request_cost")),
                 "x_axis_position": _frac_to_json(m.get("axis_x")),
                 "in_chart": m.get("chart_y") is not None and m.get("axis_x") is not None and not m.get("over_max"),
@@ -3017,6 +3144,7 @@ def _export_model(m, rank):
         "is_pareto": True,
         "chart_label": m.get("chart_label"),
         "composite_ability": float(m["composite_ability"]),
+        "composite_ability_raw_uncalibrated": (float(m["composite_ability_raw_uncalibrated"]) if m.get("composite_ability_raw_uncalibrated") is not None else None),
         "composite_ability_calibrated": (float(m["composite_ability_calibrated"]) if m.get("composite_ability_calibrated") is not None else None),
         "per_request_cost": _frac_to_json(m.get("per_request_cost")),
         "x_axis_position": _frac_to_json(m.get("axis_x")),
@@ -3035,6 +3163,20 @@ def _export_model(m, rank):
     }
 
 
+def _load_mapping_diagnostics_for_readme(calibration_meta):
+    """Resolve mapping optimization diagnostics from calibration_meta or output/mapping_model.json."""
+    mapping_opt = (calibration_meta or {}).get("mapping_optimization") or {}
+    if mapping_opt.get("rounds") or not os.path.exists(MAPPING_MODEL_FILE):
+        return mapping_opt
+    try:
+        mapper = load_mapping(MAPPING_MODEL_FILE)
+        return _build_mapping_optimization_summary(
+            mapper, "output/mapping_model.json", len((mapper.diagnostics or {}).get("rounds", []))
+        )
+    except Exception:
+        return mapping_opt
+
+
 def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calibration_meta=None, n_total_scraped=None):
     chr_value, chr_count = None, None
     if os.path.exists(CACHE_HIT_RATE_FILE):
@@ -3043,7 +3185,16 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
         chr_value = chr_data.get("cache_hit_rate")
         chr_count = chr_data.get("valid_count")
 
-    # Load hierarchy diagnostics if available
+    # Load mapping optimization diagnostics dynamically
+    mapping_opt = _load_mapping_diagnostics_for_readme(calibration_meta)
+    rounds_list = mapping_opt.get("rounds", [])
+    lovo_cv = mapping_opt.get("lovo_cv", {})
+    final_eval = mapping_opt.get("final_evaluation", {})
+    weights_sorted = mapping_opt.get("weights_sorted", [])
+    weights_by_metric = {w["metric"]: w for w in weights_sorted}
+    mono_info = mapping_opt.get("monotonicity_verified", {})
+
+    # Load hierarchy diagnostics if available (no stale hardcoded defaults)
     h_diag = {}
     if os.path.exists(HIERARCHY_RESULTS_FILE):
         try:
@@ -3053,17 +3204,43 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
         except Exception:
             pass
 
-    h_models_count = h_diag.get("total_models", 723)
-    h_constraints_count = h_diag.get("total_constraints", 4568)
-    h_sat_rate = h_diag.get("satisfaction_rate", 100.0)
-    h_violations = h_diag.get("violations_count", 0)
-
-    # Series grids count
+    # Series grids count (read live from output/model_hierarchy/, fallback to diagnostics)
     h_grids_count = 0
     if os.path.exists(HIERARCHY_DIR):
-        h_grids_count = sum(1 for fn in os.listdir(HIERARCHY_DIR) if fn.endswith(".csv") and fn != "all_vendors_hierarchy.csv")
+        h_grids_count = sum(
+            1 for fn in os.listdir(HIERARCHY_DIR)
+            if fn.endswith(".csv") and fn != "all_vendors_hierarchy.csv"
+        )
     if h_grids_count == 0:
-        h_grids_count = 86
+        h_grids_count = h_diag.get("series_grids_count", 0)
+
+    h_models_count = h_diag.get("total_models") or len(models)
+    h_constraints_count = (
+        h_diag.get("total_constraints")
+        or final_eval.get("total_constraints")
+        or 0
+    )
+
+    # Real pure-mapping satisfaction rate (zero label clamping)
+    if "mapping_concordance_pct" in h_diag:
+        h_sat_rate = float(h_diag["mapping_concordance_pct"])
+        h_satisfied = int(h_diag.get("mapping_satisfied", 0))
+        h_violations = int(h_diag.get("mapping_violations_count", 0))
+    elif final_eval and final_eval.get("total_constraints", 0) > 0:
+        h_sat_rate = float(final_eval.get("concordance_pct", 0.0))
+        h_satisfied = int(final_eval.get("satisfied", 0))
+        h_violations = int(final_eval.get("violations_count", 0))
+    else:
+        h_sat_rate = float(h_diag.get("satisfaction_rate", 0.0))
+        h_satisfied = int(h_diag.get("satisfied_constraints", 0))
+        h_violations = int(h_diag.get("violations_count", 0))
+
+    h_rule_counts = h_diag.get("rule_counts", {})
+    if not h_rule_counts and final_eval.get("by_rule"):
+        h_rule_counts = {
+            rk: info.get("total", 0)
+            for rk, info in final_eval.get("by_rule", {}).items()
+        }
 
     if n_total_scraped is None:
         if os.path.exists(RAW_DATA_FILE):
@@ -3130,30 +3307,106 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
         logo = fr[0].get("creator_logo")
         lines.append(f"| {_brand_cell(brand, logo)} | `{fr[0].get('creator_color') or '#888888'}` | {len(fr)} |")
 
-    # ── 基准测试动态标定 ─────────────────────────────────────────────────
+    # ── 多轮单调基准映射与留一交叉验证 ───────────────────────────────────
+    lines.append("\n## 多轮单调基准映射与留一交叉验证（Multi-Round Monotone Benchmark Mapping & LOVO Cross-Validation）\n")
+    lines.append(
+        f"为解决不同基准测试覆盖群体差异及个别基准噪声导致的排序倒挂，系统在 `src/mapping.py` 中实现了**零标签泄漏（Zero Label Leakage）的多轮单调基准映射引擎 (`MonotoneBenchmarkMapper`)**：\n"
+        f"- **纯特征函数推理**：`score_model(parsed_metrics)` 仅读取各模型在 {len(METRIC_FIELDS)} 项基准上的原始分数，经自适应分位分段线性单调曲线 $g_b: [0,1] \\to \\mathbb{{R}}$（每段斜率严格约束 $s_{{b,r}} \\ge \\varepsilon_{{\\min}} > 0$）、有界正则化权重 $w_b$ 与 Pseudo-Huber IRLS 稳健 M-估计聚合输出综合能力；**绝不读取模型名称、厂商、等级、版本或思考标签，也绝不执行 Dykstra 标签硬夹逼**。\n"
+    )
+    if mono_info:
+        lines.append(
+            f"- **严格单调性校验**：`all_strictly_monotone = {mono_info.get('all_strictly_monotone')}`，"
+            f"全部 {len(METRIC_FIELDS)} 条曲线最小观测斜率 = `{mono_info.get('min_slope_observed', 0.0):.4f}`"
+            f"（要求 $\\ge {mono_info.get('eps_min_required', 0.05):.2f}$）。\n"
+        )
+
+    if rounds_list:
+        lines.append("### 多轮优化收敛进程（Multi-Round Optimization Progression）\n")
+        lines.append("| 轮次 | 优化方法 | 满足 / 总约束 | 序一致性 (Concordance) | 违背数 | Rule 1 (Tier) | Rule 2 (Version) | Rule 3 (Thinking) | Rule 4 (Date) |")
+        lines.append("| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
+        for r in rounds_list:
+            br = r.get("by_rule", {})
+            r1 = br.get("rule1_tier", {}).get("concordance_pct")
+            r2 = br.get("rule2_version", {}).get("concordance_pct")
+            r3 = br.get("rule3_thinking", {}).get("concordance_pct")
+            r4 = br.get("rule4_date", {}).get("concordance_pct")
+            r1s = f"{r1:.2f}%" if r1 is not None else "—"
+            r2s = f"{r2:.2f}%" if r2 is not None else "—"
+            r3s = f"{r3:.2f}%" if r3 is not None else "—"
+            r4s = f"{r4:.2f}%" if r4 is not None else "—"
+            sat_s = f"{r.get('satisfied', 0):,} / {r.get('total_constraints', 0):,}" if "total_constraints" in r else "—"
+            conc_s = f"**{r['concordance_pct']:.2f}%**" if "concordance_pct" in r else "—"
+            viol_s = f"{r.get('violations_count', 0)}" if "violations_count" in r else "—"
+            lines.append(
+                f"| `{r.get('round', '?')}` | {r.get('label', '?')} | {sat_s} | {conc_s} | {viol_s} | {r1s} | {r2s} | {r3s} | {r4s} |"
+            )
+        lines.append("")
+
+    if lovo_cv and lovo_cv.get("vendors"):
+        lines.append("### 留一厂商交叉验证（Leave-One-Vendor-Out Generalization）\n")
+        lines.append(
+            "Stage 1（单调 IRT 初始化）全程无监督（0 条约束标签）；针对每个主流厂商，Stage 2 严格剔除该厂商全部模型的约束后进行联合训练，"
+            "再在被完全留出的该厂商约束集上评估泛化序一致性：\n"
+        )
+        lines.append("| 留出厂商 (Held-out Vendor) | 模型数 | 留出约束数 | R0 Raw | R0 LOO | R1 无监督 | R4 Held-out | 相对 R0 LOO | 相对 R1 |")
+        lines.append("| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |")
+        for vr in lovo_cv.get("vendors", []):
+            lines.append(
+                f"| {vr['vendor']} | {vr['held_out_models']} | {vr['held_out_constraints']:,} | "
+                f"{vr['r0_raw_pct']:.2f}% | {vr['r0_loo_pct']:.2f}% | {vr['r1_unsup_pct']:.2f}% | "
+                f"**{vr['r4_heldout_pct']:.2f}%** | {vr['delta_vs_r0_loo_pct']:+.2f}% | {vr['delta_vs_r1_pct']:+.2f}% |"
+            )
+        sm = lovo_cv.get("summary", {})
+        if sm:
+            lines.append(
+                f"| **TOTAL LOVO** | — | **{sm.get('total_held_out_constraints', 0):,}** | "
+                f"**{sm.get('r0_raw_pct', 0.0):.2f}%** | **{sm.get('r0_loo_pct', 0.0):.2f}%** | "
+                f"**{sm.get('r1_unsup_pct', 0.0):.2f}%** | **{sm.get('r4_heldout_pct', 0.0):.2f}%** | "
+                f"**{sm.get('delta_vs_r0_loo_pct', 0.0):+.2f}%** | **{sm.get('delta_vs_r1_pct', 0.0):+.2f}%** |"
+            )
+        lines.append("")
+
+    if weights_sorted:
+        top_w = weights_sorted[:8]
+        bot_w = list(reversed(weights_sorted[-8:]))
+        lines.append("### 学习到的基准权重分布（高信噪比增权 vs 噪声降权）\n")
+        lines.append(
+            "优化器在有界单纯形约束下自动识别高信噪比基准并抑制反单调/高噪声基准（如 `healthbench`、`omniscienceNonHallucination`、`enterpriseOps` 等），同时限制单项权重上限以保持评估多样性：\n"
+        )
+        lines.append("| 高权重基准 (Top Informative) | 权重 $w_b$ (占比) | 低权重/降权基准 (Downweighted) | 权重 $w_b$ (占比) |")
+        lines.append("| :--- | :---: | :--- | :---: |")
+        for tw, bw in zip(top_w, bot_w):
+            lines.append(
+                f"| {tw['label']} (`{tw['metric']}`) | `{tw['weight']:.4f}` ({tw['share_pct']:.2f}%) | "
+                f"{bw['label']} (`{bw['metric']}`) | `{bw['weight']:.4f}` ({bw['share_pct']:.2f}%) |"
+            )
+        lines.append("")
+
+    # ── 基准测试动态标定（与学习权重汇总表） ─────────────────────────────────
     if calibration_meta:
-        lines.append("\n## 基准测试动态标定（Leave-One-Out Calibration）\n")
-        lines.append("不同基准测试的参测模型群体能力分布存在差异（例如部分高难度或专业领域基准测试仅覆盖头部高能力模型）。"
-                     "系统在标准归一化之后执行了**留一交叉动态映射标定流程**：\n")
-        lines.append("1. **排除单项基准**：暂时排除某项基准测试，计算各模型在其余测试项上的平均能力；\n"
-                     "2. **全域归一化评估**：将排除后的平均能力归一化至 `[0, 1]`；\n"
-                     "3. **锁定参测区间**：提取实际参测该基准测试的所有模型，以它们排除该项后的能力最高值和最低值分别作为该项的新映射上界和下界；\n"
-                     "4. **并行同步迭代**：所有基准测试以 `[0, 1]` 为初值同步更新，完成一轮后以新上下界作为输入进入下一轮，重复迭代直至收敛。\n")
+        lines.append("\n## 基准测试动态标定与 38 项权重汇总\n")
         fb = calibration_meta.get("final_bounds", {})
         rounds = calibration_meta.get("total_rounds", 0)
         tol = calibration_meta.get("tolerance", 1e-5)
-        lines.append(f"> 标定状态：已完成 **{rounds}** 轮并行迭代收敛（容差阈值 $\\Delta < {tol}$）。"
-                     "标定得到的数据作为新指标独立保存，不覆盖原始基准测试归一化与综合能力。\n")
-        lines.append("| 基准测试项 | 英文标识 | 参测模型数 | 标定映射下界 | 标定映射上界 | 映射跨度 |")
-        lines.append("| :--- | :--- | :---: | :---: | :---: | :---: |")
+        lines.append(
+            f"> Leave-One-Out 线性标定作为参考字段（`composite_ability_calibrated`）同步保留，已完成 **{rounds}** 轮并行迭代收敛（容差阈值 $\\Delta < {tol}$）；"
+            "主综合能力 `composite_ability` 由 `src/mapping.py` 的单调样条与学习权重计算得到。\n"
+        )
+        lines.append("| 基准测试项 | 英文标识 | 参测模型数 | 学习权重 $w_b$ | 权重占比 | LOO 下界 | LOO 上界 | LOO 跨度 |")
+        lines.append("| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |")
         for k in METRIC_FIELDS:
             info = fb.get(k, {})
+            w_info = weights_by_metric.get(k, {})
             label = info.get("metric_label", METRIC_LABELS.get(k, k))
             cnt = info.get("model_count", 0)
+            w_val = w_info.get("weight")
+            w_sh = w_info.get("share_pct")
+            w_str = f"`{w_val:.4f}`" if w_val is not None else "—"
+            sh_str = f"{w_sh:.2f}%" if w_sh is not None else "—"
             low = info.get("lower", 0.0)
             upp = info.get("upper", 1.0)
             span = info.get("span", 1.0)
-            lines.append(f"| {label} | `{k}` | {cnt} | `{low:.4f}` | `{upp:.4f}` | `{span:.4f}` |")
+            lines.append(f"| {label} | `{k}` | {cnt} | {w_str} | {sh_str} | `{low:.4f}` | `{upp:.4f}` | `{span:.4f}` |")
         lines.append("")
 
     # ── 评分方法 ─────────────────────────────────────────────────────────
@@ -3162,7 +3415,7 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
     metric_list = "、".join(METRIC_LABELS[k] for k in METRIC_FIELDS)
     lines.append(f"   （{metric_list}）")
     lines.append("   > 全域基准升级：收录全部 38 项基准测试，涵盖通用推理 (AA Intelligence Index, HLE, HLE Diamond, GPQA Diamond)、数理逻辑 (CritPt, CritPt v2 Hard, AIME 2025)、代码编程 (LiveCodeBench, SciCode, FrontierCode 1.1/2.0)、Agent 智能体 (Terminal-Bench 系列, τ-Bench 系列, AutomationBench, Briefcase, ITBench-SRE, Harvey LAB, HealthBench)、多模态 (MMMU Pro, Code2Video, AA-3D, VIALS)、长上下文 (AA-LCR, MLCR, GDP.pdf) 及事实性 (Omniscience 系列, IFBench) 等核心维度。")
-    lines.append("2. **综合能力值** = 所有有效归一化分数的算术平均")
+    lines.append("2. **综合能力值（零标签泄漏单调映射）**：通过 `src/mapping.py` (`MonotoneBenchmarkMapper`) 对每项已测基准分数经严格单调分段曲线 $g_b(x)$ 校准后，按学习到的稳健权重 $w_b$ 执行 Pseudo-Huber IRLS M-估计聚合；原始等权平均 (`composite_ability_raw_uncalibrated`) 与留一线性标定 (`composite_ability_calibrated`) 同步保留在 `output/analysis_results.json` 中供对照。")
     lines.append("3. **综合能力再归一化**：线性映射到 [0,1]，性能最好的模型 = 1，最差的模型 = 0")
     lines.append("4. **Pareto前沿** = 不被任何其他模型支配的模型（综合能力 ≥ 且成本 ≤，且至少一项严格更优；"
                  "成本为 0 的免费模型同样参与——横轴左端恒为 0，免费模型是合法前沿候选）")
@@ -3178,8 +3431,8 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
     lines.append("为解决多基准评估中由于各模型参测项不齐、评测噪声以及偶然波动导致的反直觉能力倒挂"
                  "（例如同一系列同版本高阶模型得分低于低阶模型、同一系列同等级新版本低于旧版本、"
                  "同一模型高思考程度低于低思考程度、同代更新快照后出版本低于先出版本），"
-                 "系统在 `src/hierarchy.py` 中实现了**分厂商系列层级网格（Vendor Series Hierarchy Grids）"
-                 "与严格单调约束 Dykstra 等保投影（Isotonic Projection）评分引擎**：\n")
+                 "系统在 `src/hierarchy.py` 中实现了**分厂商系列层级网格（Vendor Series Hierarchy Grids）**"
+                 "并与 `src/mapping.py` 的纯特征单调映射引擎协同工作：\n")
     lines.append("### 1. 厂商与系列隔离（Series Isolation）")
     lines.append(f"系统维护了覆盖全部主流与新兴厂商的 **{h_grids_count} 个系列层级网格**（保存在 `output/model_hierarchy/` 目录下的 CSV 文件中），"
                  "每个系列维护二维网格：")
@@ -3187,16 +3440,21 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
     lines.append("- **列（Versions）**：架构代际与版本演进（从旧到新按时间列排布）")
     lines.append("- **严格系列隔离**：不同系列（例如 OpenAI 的 `GPT` 系列与 `o` 推理系列、Google 的 `Gemini` 与 `Gemma` 开源系列、Meta 的 `Llama` 与 `Muse` 系列）物理隔离，绝不产生跨系列强行绑定的单调性约束。\n")
     lines.append("### 2. 四大严格单调序规则（Strict Monotonic Ordering Rules）")
-    lines.append("在系列网格与模型元数据基础上，自动生成有向无环约束图（DAG，$S(u) \\ge S(v)$）：")
+    if h_rule_counts:
+        lines.append(
+            f"在系列网格与模型元数据基础上，自动生成 **{h_constraints_count:,} 条**有向无环约束（DAG，$S(u) \\ge S(v)$："
+            f"Rule 1 = {h_rule_counts.get('rule1_tier', 0):,}，Rule 2 = {h_rule_counts.get('rule2_version', 0):,}，"
+            f"Rule 3 = {h_rule_counts.get('rule3_thinking', 0):,}，Rule 4 = {h_rule_counts.get('rule4_date', 0):,}）："
+        )
+    else:
+        lines.append(f"在系列网格与模型元数据基础上，自动生成 **{h_constraints_count:,} 条**有向无环约束（DAG，$S(u) \\ge S(v)$）：")
     lines.append("- **Rule 1（同系列同版本，高等级 $\\ge$ 低等级）**：同一系列、同一版本列内，高行 Tier 模型能力必须大于等于低行 Tier 模型的所有快照与变体（支持思考程度对齐匹配）。")
     lines.append("- **Rule 2（同系列同等级，新版本 $\\ge$ 旧版本）**：同一系列、同一等级行内，新版本列模型能力必须大于等于旧版本列模型。")
     lines.append("- **Rule 3（同模型基座，高思考程度 $\\ge$ 低思考程度）**：同一基座模型，高思考算力档位能力必须大于等于低思考算力档位（$\\text{max} > \\text{xhigh} > \\text{high} > \\text{medium} > \\text{low} > \\text{minimal} > \\text{non-reasoning}$）。")
     lines.append("- **Rule 4（同模型主干，新日期快照 $\\ge$ 旧日期快照）**：同一模型主干内，后发布的日期快照能力大于等于先发布的快照（如 GPT-4o Nov $\\ge$ Aug $\\ge$ May，Claude 3.5 Sonnet Oct $\\ge$ June，DeepSeek V4 Pro 0813 $\\ge$ 0424）。\n")
-    lines.append("### 3. 去偏隐能力估计与 Dykstra 等保投影（Isotonic Projection）")
-    lines.append("- **留一标定动态去偏**：首先通过动态留一交叉标定（Leave-One-Out Scaling）消除不同评测项覆盖群体的难度偏差；")
-    lines.append("- **Dykstra 凸优化投影**：针对多变量交织的庞大约束集合，采用 Dykstra 循环 Bregman 投影算法寻找满足全部单调性条件的最近凸解：")
-    lines.append("  $$\\min_{\\mathbf{s} \\in \\mathcal{K}} \\|\\mathbf{s} - \\mathbf{s}_0\\|_2^2 \\quad \\text{s.t.} \\quad s_u \\ge s_v \\quad \\forall (u,v) \\in \\mathcal{E}$$")
-    lines.append(f"- **实测结果**：在 {h_models_count} 个参测模型、{h_constraints_count:,} 条强约束条件下，达成 **{h_sat_rate:.2f}% 约束满足率（{h_violations} 违背项）**。详见 [层级诊断报告](output/model_hierarchy/hierarchy_score_report.md) 与 [层级分析结果](output/hierarchy_analysis_results.json)。\n")
+    lines.append("### 3. 零标签泄漏纯特征映射评估（Zero-Clamping Pure Benchmark Mapping）")
+    lines.append("- **纯函数无硬夹逼原则**：主评分完全由 `MonotoneBenchmarkMapper.score_model(parsed_metrics)` 根据模型基准得分直接计算，**不在推理时读取模型身份，也不使用 Dykstra 等保投影对模型分数进行标签硬夹逼（Zero Label Clamping）**；")
+    lines.append(f"- **实测序一致性**：在 {h_models_count} 个参测模型、{h_constraints_count:,} 条清洁约束条件下，纯特征映射直接达成 **{h_sat_rate:.2f}% 序一致性（满足 {h_satisfied:,}/{h_constraints_count:,}，{h_violations} 项真实数据级倒挂）**；可选 Dykstra 等保投影仅作为离线理论诊断上界保留于诊断报告。详见 [层级诊断报告](output/model_hierarchy/hierarchy_score_report.md) 与 [层级分析结果](output/hierarchy_analysis_results.json)。\n")
     lines.append("### 4. 人工校验与 CSV 双向工作流（Calibration & Diff Workflow）")
     lines.append(f"全部 {h_grids_count} 个系列层级网格均以易于阅读与编辑的标准 2D CSV 存储于 `output/model_hierarchy/`。")
     lines.append("- **导出与查看**：运行 `python src/hierarchy.py` 会导出全部单独 CSV 及汇总表 `all_vendors_hierarchy.csv`；")
@@ -3329,9 +3587,10 @@ def generate_readme(models, pareto, brand_frontiers, x_dist, mapping_meta, calib
     lines.append("\n**技术架构与更新流程：**")
     lines.append("1. **高速数据抓取 (`src/scrape.py`)**：解析 Artificial Analysis 的 Next.js RSC 动态清单（Manifest），通过 AES-GCM 快速解密全量模型数据集，解压缩 GZip 流并解析嵌套的 38 项基准维度分数与发布时间；")
     lines.append("2. **缓存命中率抓取 (`src/cache_hit_rate.py`)**：通过 Playwright 抓取 Coding Agents 页面的全局均值作为成本公式参数；")
-    lines.append("3. **帕累托与图表分析 (`src/analyze.py`)**：执行动态留一标定、成本计算、真零点对数坐标映射与多品牌前沿图表绘制；")
-    lines.append(f"4. **模型层级单调性引擎 (`src/hierarchy.py`)**：基于 {h_grids_count} 个系列层级网格（Tiers x Versions）执行 4 大单调序规则与 Dykstra 等保投影校验；")
-    lines.append("5. **自动化 GitHub Actions (`.github/workflows/update-leaderboard.yml`)**：每日定时及手动触发运行抓取、层级计算、单元测试验证与看板自动更新。\n")
+    lines.append(f"3. **单调基准映射引擎 (`src/mapping.py`)**：在无模型身份泄漏、无 Dykstra 标签夹逼的前提下，通过 {len(METRIC_FIELDS)} 项严格单调分段样条 $g_b$、有界权重 $w_b$ 与 Pseudo-Huber IRLS 聚合拟合能力映射并执行 LOVO 交叉验证；")
+    lines.append(f"4. **模型层级约束与诊断 (`src/hierarchy.py`)**：基于 {h_grids_count} 个系列层级网格（Tiers x Versions）生成 {h_constraints_count:,} 条 DAG 单调约束，记录纯映射序一致性（{h_sat_rate:.2f}%）并导出诊断报告；")
+    lines.append("5. **帕累托与图表分析 (`src/analyze.py`)**：基于 `src/mapping.py` 映射的综合能力执行成本计算、真零点对数坐标映射与多品牌前沿图表绘制；")
+    lines.append("6. **自动化 GitHub Actions (`.github/workflows/update-leaderboard.yml`)**：每日定时及手动触发运行抓取、层级与映射计算、单元测试验证与看板自动更新。\n")
 
     # ── 图表说明（V17-A：原先位于表格之前，现移至文末）──────────────────
     lines.append("\n## 图表说明（黑底）\n")

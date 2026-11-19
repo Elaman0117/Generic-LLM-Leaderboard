@@ -22,6 +22,7 @@ from hierarchy import (
     DEFAULT_SERIES_GRIDS,
     HierarchyScoreEngine,
     VendorHierarchyManager,
+    _classify_model_tier,
     extract_benchmarks,
     generate_hierarchy_constraints,
     parse_date_snapshot,
@@ -89,12 +90,61 @@ class TestHierarchyModelParsing(unittest.TestCase):
         self.assertEqual(s_grok1, s_grok2)
         self.assertLess(dt_grok1, dt_grok2)
 
+    def test_is_reasoning_flag_and_backward_compatibility(self):
+        """Untagged is_reasoning=True models must map to reasoning(4), not standard(0)."""
+        self.assertEqual(parse_model_name("Grok 4.20 0309"), ("Grok 4.20 0309", "standard", 0))
+        self.assertEqual(
+            parse_model_name("Grok 4.20 0309", is_reasoning=False),
+            ("Grok 4.20 0309", "standard", 0),
+        )
+        self.assertEqual(
+            parse_model_name("Grok 4.20 0309", is_reasoning=True),
+            ("Grok 4.20 0309", "reasoning", 4),
+        )
+        self.assertEqual(
+            parse_model_name("MiniMax-M2.7", is_reasoning=True),
+            ("MiniMax-M2.7", "reasoning", 4),
+        )
+        self.assertEqual(
+            parse_model_name("GPT-6 Astra (medium)", is_reasoning=True),
+            ("GPT-6 Astra", "medium", 3),
+        )
+        self.assertEqual(
+            parse_model_name("GPT-6 Astra (non-reasoning)", is_reasoning=True),
+            ("GPT-6 Astra", "non-reasoning", 0),
+        )
+
+    def test_classify_model_tier_regex_and_keywords(self):
+        """Verify parameter-size regex and word-boundary tier precedence."""
+        self.assertEqual(_classify_model_tier("K2 Horizon 375B A23B"), 0)
+        self.assertEqual(_classify_model_tier("Ling-2.6-1T"), 0)
+        self.assertEqual(_classify_model_tier("Nemotron 3 Super"), 0)
+        self.assertEqual(_classify_model_tier("Nemotron 3 Nano 4B"), 3)
+        self.assertEqual(_classify_model_tier("K2 Horizon 3.7B"), 3)
+        self.assertEqual(_classify_model_tier("K2 Horizon 7B"), 2)
+        self.assertEqual(_classify_model_tier("K2 Horizon 32B"), 1)
+        self.assertEqual(_classify_model_tier("MiniMax-M2.7"), 1)
+
+
+def _copy_prod_grids_to(dst_dir: str) -> None:
+    """Copy production CSV grids into an isolated temporary directory."""
+    src_h = os.path.join(OUTPUT_DIR, "model_hierarchy")
+    if os.path.exists(src_h):
+        for fn in os.listdir(src_h):
+            if fn.endswith(".csv"):
+                shutil.copy2(os.path.join(src_h, fn), os.path.join(dst_dir, fn))
+
 
 class TestHierarchyConstraintsRules(unittest.TestCase):
     """Test the core ordering rules (Series, Tiers, Versions, Thinking, Dates)."""
 
     def setUp(self):
-        self.mgr = VendorHierarchyManager()
+        self._tmp_dir = tempfile.mkdtemp()
+        _copy_prod_grids_to(self._tmp_dir)
+        self.mgr = VendorHierarchyManager(hierarchy_dir=self._tmp_dir, load_from_disk=True)
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir, ignore_errors=True)
 
     def test_rule1_same_version_tier_ordering(self):
         """Rule 1: Same version, higher tier >= lower tier within same series."""
@@ -194,27 +244,31 @@ class TestHierarchyConstraintsRules(unittest.TestCase):
         with open(os.path.join(OUTPUT_DIR, "raw_data.json"), "r", encoding="utf-8") as f:
             raw_data = json.load(f)
         models_all, _ = extract_benchmarks(raw_data, min_valid=0)
-        mgr = VendorHierarchyManager(all_models=models_all, load_from_disk=True)
-        unmapped = []
-        for m in models_all:
-            bn = m["base_name"]
-            series = mgr.get_model_series(bn)
-            if series is None:
-                unmapped.append((m["name"], bn, m["creator"]))
-        self.assertEqual(len(unmapped), 0, f"Found unmapped models in full dataset: {unmapped}")
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            _copy_prod_grids_to(tmp_dir)
+            mgr = VendorHierarchyManager(hierarchy_dir=tmp_dir, all_models=models_all, load_from_disk=True)
+            unmapped = []
+            for m in models_all:
+                bn = m["base_name"]
+                series = mgr.get_model_series(bn)
+                if series is None:
+                    unmapped.append((m["name"], bn, m["creator"]))
+            self.assertEqual(len(unmapped), 0, f"Found unmapped models in full dataset: {unmapped}")
 
     def test_curated_grids_contain_qwen_palm_saba(self):
         """Verify that curated grids properly contain and position edge-case models."""
         with open(os.path.join(OUTPUT_DIR, "raw_data.json"), "r", encoding="utf-8") as f:
             raw_data = json.load(f)
         models_all, _ = extract_benchmarks(raw_data, min_valid=0)
-        mgr = VendorHierarchyManager(all_models=models_all, load_from_disk=True)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            _copy_prod_grids_to(tmp_dir)
+            mgr = VendorHierarchyManager(hierarchy_dir=tmp_dir, all_models=models_all, load_from_disk=True)
 
-        self.assertEqual(mgr.get_model_series("Qwen Chat 72B"), "Alibaba - Qwen")
-        self.assertEqual(mgr.get_model_series("Qwen1.5 Chat 110B"), "Alibaba - Qwen")
-        self.assertEqual(mgr.get_model_series("Qwen Chat 14B"), "Alibaba - Qwen")
-        self.assertEqual(mgr.get_model_series("PALM-2"), "Google - PaLM")
-        self.assertEqual(mgr.get_model_series("Mistral Saba"), "Mistral - Saba")
+            self.assertEqual(mgr.get_model_series("Qwen Chat 72B"), "Alibaba - Qwen")
+            self.assertEqual(mgr.get_model_series("Qwen1.5 Chat 110B"), "Alibaba - Qwen")
+            self.assertEqual(mgr.get_model_series("Qwen Chat 14B"), "Alibaba - Qwen")
+            self.assertEqual(mgr.get_model_series("PALM-2"), "Google - PaLM")
+            self.assertEqual(mgr.get_model_series("Mistral Saba"), "Mistral - Saba")
 
     def test_curated_vendor_new_model_dynamic_mapping(self):
         """Assert that when an unseen new model is introduced for a curated vendor, it dynamically maps to the correct series."""
@@ -229,12 +283,14 @@ class TestHierarchyConstraintsRules(unittest.TestCase):
             "parsed": {"hle": 0.5, "gpqa": 0.5, "aime2025": 0.5},
             "valid_count": 3
         }
-        mgr = VendorHierarchyManager(all_models=[dummy_model], load_from_disk=True)
-        series = mgr.get_model_series("GPT-7 Sol")
-        self.assertEqual(series, "OpenAI - GPT")
-        pos = mgr.get_model_position("OpenAI - GPT", "GPT-7 Sol")
-        self.assertIsNotNone(pos)
-        self.assertEqual(pos[0], 1, "GPT-7 Sol should be placed in Tier 2 (Sol / Standard)")
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            _copy_prod_grids_to(tmp_dir)
+            mgr = VendorHierarchyManager(hierarchy_dir=tmp_dir, all_models=[dummy_model], load_from_disk=True)
+            series = mgr.get_model_series("GPT-7 Sol")
+            self.assertEqual(series, "OpenAI - GPT")
+            pos = mgr.get_model_position("OpenAI - GPT", "GPT-7 Sol")
+            self.assertIsNotNone(pos)
+            self.assertEqual(pos[0], 1, "GPT-7 Sol should be placed in Tier 2 (Sol / Standard)")
 
     def test_series_isolation(self):
         """Verify strict series isolation: Rule 1 & Rule 2 NEVER cross between distinct series."""
@@ -353,25 +409,67 @@ class TestHierarchyConstraintsRules(unittest.TestCase):
             {"name": "Bottom (non-reasoning)", "base_name": "Bottom", "thinking_level": 0, "thinking_tag": "non-reasoning", "creator": "TestVendor"},
         ]
 
-        test_mgr = VendorHierarchyManager()
-        test_mgr.grids["TestVendor - SeriesA"] = {
-            "vendor": "TestVendor",
-            "series": "SeriesA",
-            "versions": ["v1"],
-            "tiers": ["Tier 1", "Tier 2"],
-            "mapping": {
-                "Tier 1": {"v1": ["Top"]},
-                "Tier 2": {"v1": ["Bottom"]},
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            test_mgr = VendorHierarchyManager(hierarchy_dir=tmp_dir, load_from_disk=False)
+            test_mgr.grids["TestVendor - SeriesA"] = {
+                "vendor": "TestVendor",
+                "series": "SeriesA",
+                "versions": ["v1"],
+                "tiers": ["Tier 1", "Tier 2"],
+                "mapping": {
+                    "Tier 1": {"v1": ["Top"]},
+                    "Tier 2": {"v1": ["Bottom"]},
+                }
             }
-        }
 
-        constraints, _ = generate_hierarchy_constraints(mock_models, test_mgr)
+            constraints, _ = generate_hierarchy_constraints(mock_models, test_mgr)
         pairs = {(u, v) for u, v, _ in constraints}
 
         self.assertIn(("Top (high)", "Bottom (medium)"), pairs)
         self.assertIn(("Top (high)", "Bottom (non-reasoning)"), pairs)
         self.assertIn(("Top (low)", "Bottom (non-reasoning)"), pairs)
         self.assertNotIn(("Top (low)", "Bottom (medium)"), pairs)
+
+    def test_cleaned_series_grids_placements(self):
+        """Verify cleaned grid placements for K2, DeepSeek V3.1 Terminus, GLM-V, and Qwen 3 2507."""
+        # K2 Horizon 375B in Tier 1, 32B in Tier 2, 7B/3.7B in Tier 3, 0.9B in Tier 4
+        k2_375 = self.mgr.get_model_position("Institute of Foundation Models - K2", "K2 Horizon 375B A23B")
+        k2_32 = self.mgr.get_model_position("Institute of Foundation Models - K2", "K2 Horizon 32B")
+        k2_7 = self.mgr.get_model_position("Institute of Foundation Models - K2", "K2 Horizon 7B")
+        k2_37 = self.mgr.get_model_position("Institute of Foundation Models - K2", "K2 Horizon 3.7B")
+        k2_09 = self.mgr.get_model_position("Institute of Foundation Models - K2", "K2 Horizon 0.9B")
+        self.assertEqual(k2_375[0], 0)
+        self.assertEqual(k2_32[0], 1)
+        self.assertEqual(k2_7[0], 2)
+        self.assertEqual(k2_37[0], 2)
+        self.assertEqual(k2_09[0], 3)
+
+        # DeepSeek V3.1 Terminus in Tier 1 between V3.1 and V3.2
+        ds_v31 = self.mgr.get_model_position("DeepSeek - DeepSeek-V", "DeepSeek V3.1")
+        ds_term = self.mgr.get_model_position("DeepSeek - DeepSeek-V", "DeepSeek V3.1 Terminus")
+        ds_v32 = self.mgr.get_model_position("DeepSeek - DeepSeek-V", "DeepSeek V3.2")
+        self.assertEqual(ds_term[0], 0)
+        self.assertEqual(ds_v31[0], 0)
+        self.assertEqual(ds_v32[0], 0)
+        self.assertLess(ds_v31[1], ds_term[1])
+        self.assertLess(ds_term[1], ds_v32[1])
+
+        # Z_AI - GLM-V isolated from Z_AI - GLM
+        self.assertIn("Z_AI - GLM-V", self.mgr.grids)
+        self.assertEqual(self.mgr.get_model_series("GLM-4.5V"), "Z_AI - GLM-V")
+        self.assertEqual(self.mgr.get_model_series("GLM-4.6V"), "Z_AI - GLM-V")
+        self.assertEqual(self.mgr.get_model_series("GLM-4.5-Air"), "Z_AI - GLM")
+
+        # Alibaba - Qwen 3 2507 column ordering after Qwen 3
+        qwen_versions = self.mgr.grids["Alibaba - Qwen"]["versions"]
+        self.assertIn("Qwen 3 2507", qwen_versions)
+        self.assertLess(qwen_versions.index("Qwen 3"), qwen_versions.index("Qwen 3 2507"))
+        p_235_07 = self.mgr.get_model_position("Alibaba - Qwen", "Qwen3 235B A22B 2507")
+        p_30_07 = self.mgr.get_model_position("Alibaba - Qwen", "Qwen3 30B A3B 2507")
+        p_4_07 = self.mgr.get_model_position("Alibaba - Qwen", "Qwen3 4B 2507")
+        self.assertEqual(p_235_07[1], qwen_versions.index("Qwen 3 2507"))
+        self.assertEqual(p_30_07[1], qwen_versions.index("Qwen 3 2507"))
+        self.assertEqual(p_4_07[1], qwen_versions.index("Qwen 3 2507"))
 
 
 class TestDykstraIsotonicEngine(unittest.TestCase):
@@ -412,11 +510,64 @@ class TestEndToEndHierarchyAnalysis(unittest.TestCase):
     """End-to-end integration test running on full AA dataset."""
 
     def test_full_dataset_execution(self):
-        diag = run_hierarchy_analysis(tolerance=1e-3, save_artifacts=False)
-        self.assertGreaterEqual(diag["total_models"], 600)
-        self.assertGreaterEqual(diag["total_constraints"], 3000)
-        self.assertEqual(diag["violations_count"], 0, "All constraints must be 100% satisfied")
-        self.assertEqual(diag["satisfaction_rate"], 100.0)
+        with tempfile.TemporaryDirectory() as tmp_out:
+            tmp_h = os.path.join(tmp_out, "grids")
+            tmp_o = os.path.join(tmp_out, "artifacts")
+            os.makedirs(tmp_h, exist_ok=True)
+            os.makedirs(tmp_o, exist_ok=True)
+            _copy_prod_grids_to(tmp_h)
+
+            diag = run_hierarchy_analysis(
+                tolerance=1e-3,
+                hierarchy_dir=tmp_h,
+                output_dir=tmp_o,
+                save_artifacts=False,
+                run_lovo=False,
+            )
+            self.assertGreaterEqual(diag["total_models"], 600)
+            self.assertGreaterEqual(diag["total_constraints"], 3000)
+            self.assertTrue(diag.get("zero_label_clamping"))
+            self.assertGreaterEqual(diag["satisfaction_rate"], 97.0)
+            self.assertGreaterEqual(diag["mapping_concordance_pct"], 97.0)
+            self.assertTrue(diag["monotonicity_verified"]["all_strictly_monotone"])
+            ref = diag["post_projection_reference"]
+            self.assertEqual(ref["violations_count"], 0, "Dykstra reference must satisfy 100%")
+            self.assertEqual(ref["satisfaction_rate"], 100.0)
+
+    def test_save_artifacts_false_isolation(self):
+        """Ensure save_artifacts=False writes nothing to output_dir or production files."""
+        prod_files = [
+            os.path.join(OUTPUT_DIR, "mapping_model.json"),
+            os.path.join(OUTPUT_DIR, "hierarchy_analysis_results.json"),
+            os.path.join(OUTPUT_DIR, "model_hierarchy", "hierarchy_score_report.md"),
+        ]
+        before_mtimes = {p: os.path.getmtime(p) for p in prod_files if os.path.exists(p)}
+
+        with tempfile.TemporaryDirectory() as tmp_out:
+            tmp_h = os.path.join(tmp_out, "grids")
+            tmp_o = os.path.join(tmp_out, "artifacts")
+            os.makedirs(tmp_h, exist_ok=True)
+            os.makedirs(tmp_o, exist_ok=True)
+            # Copy existing CSVs so VendorHierarchyManager reads without needing writes
+            src_h = os.path.join(OUTPUT_DIR, "model_hierarchy")
+            if os.path.exists(src_h):
+                for fn in os.listdir(src_h):
+                    if fn.endswith(".csv"):
+                        shutil.copy2(os.path.join(src_h, fn), os.path.join(tmp_h, fn))
+
+            diag = run_hierarchy_analysis(
+                tolerance=1e-3,
+                hierarchy_dir=tmp_h,
+                output_dir=tmp_o,
+                save_artifacts=False,
+                run_lovo=False,
+            )
+            self.assertGreaterEqual(diag["total_models"], 600)
+            self.assertEqual(os.listdir(tmp_o), [])
+            self.assertFalse(os.path.exists(os.path.join(tmp_h, "hierarchy_score_report.md")))
+
+        after_mtimes = {p: os.path.getmtime(p) for p in prod_files if os.path.exists(p)}
+        self.assertEqual(before_mtimes, after_mtimes)
 
     def test_zero_case_colliding_csv_files(self):
         """Assert that no CSV files in model_hierarchy collide under case-insensitive filesystems."""
@@ -480,35 +631,36 @@ class TestUserCSVEditingAndDiff(unittest.TestCase):
         with open(os.path.join(OUTPUT_DIR, "raw_data.json"), "r", encoding="utf-8") as f:
             raw_data = json.load(f)
         models, _ = extract_benchmarks(raw_data)
-        mgr = VendorHierarchyManager(all_models=models, load_from_disk=False)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            mgr = VendorHierarchyManager(hierarchy_dir=tmp_dir, all_models=models, load_from_disk=False)
 
-        # Check separate series existence
-        self.assertIn("OpenAI - o", mgr.grids)
-        self.assertIn("OpenAI - GPT", mgr.grids)
-        self.assertIn("OpenAI - GPT-OSS", mgr.grids)
+            # Check separate series existence
+            self.assertIn("OpenAI - o", mgr.grids)
+            self.assertIn("OpenAI - GPT", mgr.grids)
+            self.assertIn("OpenAI - GPT-OSS", mgr.grids)
 
-        self.assertEqual(mgr.grids["OpenAI - o"]["versions"], ["o1", "o3", "o4"])
-        self.assertIn("GPT-5", mgr.grids["OpenAI - GPT"]["versions"])
-        self.assertIn("GPT-6", mgr.grids["OpenAI - GPT"]["versions"])
+            self.assertEqual(mgr.grids["OpenAI - o"]["versions"], ["o1", "o3", "o4"])
+            self.assertIn("GPT-5", mgr.grids["OpenAI - GPT"]["versions"])
+            self.assertIn("GPT-6", mgr.grids["OpenAI - GPT"]["versions"])
 
-        constraints, stats = generate_hierarchy_constraints(models, mgr)
+            constraints, stats = generate_hierarchy_constraints(models, mgr)
 
-        # Ensure no cross-series constraints between o-series and GPT-series
-        for u, v, _ in constraints:
-            self.assertFalse(("o1" in u or "o3" in u or "o4" in u) and "GPT-6" in v,
-                             f"Invalid cross-series constraint found: {u} >= {v}")
-            self.assertFalse("GPT-6" in u and ("o1" in v or "o3" in v or "o4" in v),
-                             f"Invalid cross-series constraint found: {u} >= {v}")
+            # Ensure no cross-series constraints between o-series and GPT-series
+            for u, v, _ in constraints:
+                self.assertFalse(("o1" in u or "o3" in u or "o4" in u) and "GPT-6" in v,
+                                 f"Invalid cross-series constraint found: {u} >= {v}")
+                self.assertFalse("GPT-6" in u and ("o1" in v or "o3" in v or "o4" in v),
+                                 f"Invalid cross-series constraint found: {u} >= {v}")
 
-        # Check stats exact sum
-        self.assertEqual(
-            stats["rule1_tier"] + stats["rule2_version"] + stats["rule3_thinking"] + stats["rule4_date"],
-            len(constraints),
-            "Constraint stats sum must exactly match total unique constraints"
-        )
+            # Check stats exact sum
+            self.assertEqual(
+                stats["rule1_tier"] + stats["rule2_version"] + stats["rule3_thinking"] + stats["rule4_date"],
+                len(constraints),
+                "Constraint stats sum must exactly match total unique constraints"
+            )
 
-        # Check total series grids count >= 50
-        self.assertGreaterEqual(len(mgr.grids), 50, "All creators/series should have a grid")
+            # Check total series grids count >= 50
+            self.assertGreaterEqual(len(mgr.grids), 50, "All creators/series should have a grid")
 
     def test_analyze_log_mapping_pure_python_fallback(self):
         """Verify that src/analyze.py build_axis_mapping works and matches when numpy is absent."""

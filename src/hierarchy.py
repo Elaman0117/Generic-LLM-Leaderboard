@@ -25,7 +25,7 @@ import os
 import re
 import sys
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
@@ -246,8 +246,13 @@ THINKING_LEVELS = {
 # 2. Model Name & Thinking Level Parser
 # ══════════════════════════════════════════════════════════════════════
 
-def parse_model_name(full_name: str) -> Tuple[str, str, int]:
+def parse_model_name(full_name: str, is_reasoning: Optional[bool] = None) -> Tuple[str, str, int]:
     """Parse a full model name into (base_name, thinking_tag, thinking_level).
+
+    Backward compatible with 1-arg calls (is_reasoning=None). When is_reasoning=True
+    and no explicit effort tag is found in the model name, classifies the model as
+    ('reasoning', THINKING_LEVELS['reasoning']) rather than ('standard', 0) so
+    untagged reasoning models never collide with non-reasoning models.
 
     Thinking level order:
       max (6) > xhigh (5) > high/reasoning (4) > medium (3) > low (2) > minimal (1) > non-reasoning/standard (0)
@@ -257,31 +262,44 @@ def parse_model_name(full_name: str) -> Tuple[str, str, int]:
     th_tag = "standard"
     th_lvl = 0
     base_name = clean_name
+    explicit_found = False
 
     if m:
         content = m.group(1).lower()
         if "non-reasoning" in content:
             th_tag, th_lvl = "non-reasoning", 0
-        elif "max" in content:
+            explicit_found = True
+        elif re.search(r'\bmax\b', content):
             th_tag, th_lvl = "max", 6
-        elif "xhigh" in content:
+            explicit_found = True
+        elif re.search(r'\bxhigh\b', content):
             th_tag, th_lvl = "xhigh", 5
-        elif "high" in content:
+            explicit_found = True
+        elif re.search(r'\bhigh\b', content):
             th_tag, th_lvl = "high", 4
-        elif "medium" in content:
+            explicit_found = True
+        elif re.search(r'\bmedium\b', content):
             th_tag, th_lvl = "medium", 3
-        elif "low" in content:
+            explicit_found = True
+        elif re.search(r'\blow\b', content):
             th_tag, th_lvl = "low", 2
-        elif "minimal" in content:
+            explicit_found = True
+        elif re.search(r'\bminimal\b', content):
             th_tag, th_lvl = "minimal", 1
-        elif "fallback" in content or content == "reasoning":
-            th_tag, th_lvl = "reasoning", 4
+            explicit_found = True
+        elif "fallback" in content or content.strip() == "reasoning":
+            th_tag, th_lvl = "reasoning", THINKING_LEVELS["reasoning"]
+            explicit_found = True
 
         # Strip parenthetical suffix if it represents thinking info or fallback
-        if th_lvl > 0 or th_tag == "non-reasoning" or "fallback" in content or content == "reasoning":
+        if explicit_found:
             base_name = clean_name[:m.start()].strip()
             if "daybreak blue" in content:
                 base_name += " (Daybreak Blue)"
+
+    if not explicit_found and is_reasoning is True:
+        th_tag = "reasoning"
+        th_lvl = THINKING_LEVELS["reasoning"]
 
     return base_name, th_tag, th_lvl
 
@@ -316,9 +334,17 @@ def parse_date_snapshot(base_name: str, release_date: Optional[str] = None) -> T
     if m:
         month = MONTH_MAP[m.group(1).lower()]
         year = int(m.group(2)) if m.group(2) else (int(release_date[:4]) if release_date and len(release_date) >= 4 else 2024)
+        day = 15
+        if release_date and len(release_date) >= 10:
+            try:
+                rd_y, rd_m, rd_d = [int(p) for p in release_date[:10].split("-")]
+                if rd_y == year and rd_m == month:
+                    day = rd_d
+            except Exception:
+                pass
         clean_stem = stem[:m.start()].strip()
         disp = m.group(1).capitalize() + (f" {year}" if m.group(2) else "")
-        return clean_stem, (year, month, 15, 0), disp
+        return clean_stem, (year, month, day, 0), disp
 
     # 2. 4-digit code e.g. 0813, 0731, 0905, 0324, 0613, 0309, 1017, optionally with v2
     m = re.search(r'(?:[\s\-_]|\()(\d{4})(?:[\s\-_]+v?(\d+))?\)?$', stem)
@@ -355,13 +381,38 @@ def parse_date_snapshot(base_name: str, release_date: Optional[str] = None) -> T
 # 3. Dynamic Leave-One-Out Calibration (38 Benchmarks)
 # ══════════════════════════════════════════════════════════════════════
 
-def extract_benchmarks(raw_data: List[dict], min_valid: int = 3) -> Tuple[List[dict], Dict[str, dict]]:
-    """Extract and parse all 38 benchmark metrics from raw data items."""
+def extract_benchmarks(
+    raw_data: Union[str, os.PathLike, List[dict]],
+    min_valid: int = 3,
+) -> Tuple[List[dict], Dict[str, dict]]:
+    """Extract and parse all 38 benchmark metrics from raw data items or a JSON file path."""
+    if isinstance(raw_data, (str, os.PathLike)):
+        with open(raw_data, "r", encoding="utf-8") as f:
+            raw_data = json.load(f)
     models = []
     metric_keys = list(BENCHMARK_DEFS.keys())
 
+    # Detect duplicate shortNames across payload (e.g., Qwen3 VL/Omni/Next Instruct vs Reasoning)
+    short_name_counts = defaultdict(int)
     for d in raw_data:
-        full_name = d.get("shortName") or d.get("name") or "Unknown"
+        sn = d.get("shortName") or d.get("name") or "Unknown"
+        short_name_counts[sn] += 1
+
+    seen_names = set()
+    for d in raw_data:
+        short_name = d.get("shortName") or d.get("name") or "Unknown"
+        raw_full_name = d.get("name") or short_name
+        is_reasoning = bool(d.get("reasoningModel", d.get("isReasoning", False)))
+
+        full_name = short_name
+        if short_name_counts[short_name] > 1:
+            cand = f"{short_name} ({'reasoning' if is_reasoning else 'non-reasoning'})"
+            full_name = cand if cand not in seen_names else raw_full_name
+        if full_name in seen_names:
+            slug_part = d.get("slug") or d.get("id") or "dup"
+            full_name = f"{full_name} [{slug_part}]"
+        seen_names.add(full_name)
+
         creator = d.get("modelCreatorName") or "Unknown"
         date = d.get("releaseDate")
         slug = d.get("slug") or ""
@@ -385,13 +436,20 @@ def extract_benchmarks(raw_data: List[dict], min_valid: int = 3) -> Tuple[List[d
                 parsed_metrics[k] = None
 
         if valid_count >= min_valid:
-            base_name, th_tag, th_lvl = parse_model_name(full_name)
+            base_name, th_tag, th_lvl = parse_model_name(full_name, is_reasoning=is_reasoning)
+            # Recover explicit effort tag from raw payload full name if shortName omitted it (e.g. Claude Fable 5 -> Max)
+            if th_tag in ("standard", "reasoning") and raw_full_name and raw_full_name != full_name:
+                _, raw_tag, raw_lvl = parse_model_name(raw_full_name, is_reasoning=is_reasoning)
+                if raw_tag in ("max", "xhigh", "high", "medium", "low", "minimal"):
+                    th_tag, th_lvl = raw_tag, raw_lvl
+
             models.append({
                 "name": full_name,
                 "base_name": base_name,
                 "creator": creator,
                 "slug": slug,
                 "date": date,
+                "is_reasoning": is_reasoning,
                 "thinking_tag": th_tag,
                 "thinking_level": th_lvl,
                 "parsed": parsed_metrics,
@@ -528,15 +586,14 @@ DEFAULT_SERIES_GRIDS = {
             },
             "Tier 2 (Sol / Standard)": {
                 "GPT-3.5": ["GPT-3.5 Turbo", "GPT-3.5 Turbo (0613)"],
-                "GPT-4": ["GPT-4", "GPT-4 Turbo", "GPT-4o (Aug)", "GPT-4o (ChatGPT)", "GPT-4o (Mar)", "GPT-4o (May)", "GPT-4o (Nov)", "GPT-4o Realtime (Dec)"],
+                "GPT-4": ["GPT-4", "GPT-4 Turbo", "GPT-4o (Aug)", "GPT-4o (Mar)", "GPT-4o (May)", "GPT-4o (Nov)", "GPT-4o Realtime (Dec)"],
                 "GPT-4.1": ["GPT-4.1"],
                 "GPT-4.5": ["GPT-4.5 (Preview)"],
-                "GPT-5": ["GPT-5", "GPT-5 (ChatGPT)", "GPT-5 Codex"],
-                "GPT-5.1": ["GPT-5.1", "GPT-5.1 Codex"],
-                "GPT-5.2": ["GPT-5.2", "GPT-5.2 Codex"],
-                "GPT-5.3": ["GPT-5.3 Codex"],
+                "GPT-5": ["GPT-5"],
+                "GPT-5.1": ["GPT-5.1"],
+                "GPT-5.2": ["GPT-5.2"],
                 "GPT-5.4": ["GPT-5.4"],
-                "GPT-5.5": ["GPT-5.5", "GPT-5.5 Instant (May 2026)", "GPT-5.5 Instant (June 2026)"],
+                "GPT-5.5": ["GPT-5.5"],
                 "GPT-5.6": ["GPT-5.6 Sol"],
                 "GPT-6": ["GPT-6 Sol", "GPT-6 Sol (Daybreak Blue)"],
                 "GPT-6.1": ["GPT-6.1 Sol"],
@@ -546,7 +603,6 @@ DEFAULT_SERIES_GRIDS = {
                 "GPT-4": ["GPT-4o mini", "GPT-4o mini Realtime (Dec)"],
                 "GPT-4.1": ["GPT-4.1 mini"],
                 "GPT-5": ["GPT-5 mini"],
-                "GPT-5.1": ["GPT-5.1 Codex mini"],
                 "GPT-5.4": ["GPT-5.4 mini"],
                 "GPT-5.6": ["GPT-5.6 Terra"],
                 "GPT-6.1": ["GPT-6.1 Terra"],
@@ -557,6 +613,41 @@ DEFAULT_SERIES_GRIDS = {
                 "GPT-5.4": ["GPT-5.4 nano"],
                 "GPT-5.6": ["GPT-5.6 Luna"],
                 "GPT-6": ["GPT-6 Luna"],
+            }
+        }
+    },
+    "OpenAI - GPT-Codex": {
+        "vendor": "OpenAI",
+        "series": "GPT-Codex",
+        "versions": ["GPT-5", "GPT-5.1", "GPT-5.2", "GPT-5.3"],
+        "tiers": [
+            "Tier 1 (Codex)",
+            "Tier 2 (Codex Mini)",
+        ],
+        "mapping": {
+            "Tier 1 (Codex)": {
+                "GPT-5": ["GPT-5 Codex"],
+                "GPT-5.1": ["GPT-5.1 Codex"],
+                "GPT-5.2": ["GPT-5.2 Codex"],
+                "GPT-5.3": ["GPT-5.3 Codex"],
+            },
+            "Tier 2 (Codex Mini)": {
+                "GPT-5.1": ["GPT-5.1 Codex mini"],
+            }
+        }
+    },
+    "OpenAI - GPT-Instant": {
+        "vendor": "OpenAI",
+        "series": "GPT-Instant",
+        "versions": ["GPT-4o", "GPT-5", "GPT-5.5"],
+        "tiers": [
+            "Tier 1 (ChatGPT / Instant)",
+        ],
+        "mapping": {
+            "Tier 1 (ChatGPT / Instant)": {
+                "GPT-4o": ["GPT-4o (ChatGPT)"],
+                "GPT-5": ["GPT-5 (ChatGPT)"],
+                "GPT-5.5": ["GPT-5.5 Instant (May 2026)", "GPT-5.5 Instant (June 2026)"],
             }
         }
     },
@@ -667,7 +758,7 @@ DEFAULT_SERIES_GRIDS = {
         "mapping": {
             "Tier 1 (Large: 31B-26B)": {
                 "Gemma 3": ["Gemma 3 27B"],
-                "Gemma 4": ["Gemma 4 31B", "Gemma 4 26B A4B", "DiffusionGemma 26B A4B"],
+                "Gemma 4": ["Gemma 4 31B", "Gemma 4 26B A4B"],
             },
             "Tier 2 (Mid: 12B)": {
                 "Gemma 3": ["Gemma 3 12B"],
@@ -680,6 +771,19 @@ DEFAULT_SERIES_GRIDS = {
             "Tier 4 (Nano: 2B-270M)": {
                 "Gemma 3": ["Gemma 3 1B", "Gemma 3 270M", "Gemma 3n E2B"],
                 "Gemma 4": ["Gemma 4 E2B"],
+            }
+        }
+    },
+    "Google - DiffusionGemma": {
+        "vendor": "Google",
+        "series": "DiffusionGemma",
+        "versions": ["Gemma 4"],
+        "tiers": [
+            "Tier 1 (26B A4B)",
+        ],
+        "mapping": {
+            "Tier 1 (26B A4B)": {
+                "Gemma 4": ["DiffusionGemma 26B A4B"],
             }
         }
     },
@@ -705,13 +809,18 @@ DEFAULT_SERIES_GRIDS = {
             "Claude 4.8", "Claude 5", "Claude 5.1", "Claude 5.2", "Claude 5.5"
         ],
         "tiers": [
-            "Tier 1 (Opus)",
-            "Tier 2 (Fable)",
+            "Tier 1 (Fable)",
+            "Tier 2 (Opus)",
             "Tier 3 (Sonnet)",
             "Tier 4 (Haiku)",
         ],
         "mapping": {
-            "Tier 1 (Opus)": {
+            "Tier 1 (Fable)": {
+                "Claude 4.8": ["Claude Fable 5"],
+                "Claude 5.1": ["Claude Fable 5.1"],
+                "Claude 5.2": ["Claude Fable 5.2"],
+            },
+            "Tier 2 (Opus)": {
                 "Claude 3": ["Claude 3 Opus"],
                 "Claude 4": ["Claude 4 Opus"],
                 "Claude 4.1": ["Claude 4.1 Opus"],
@@ -721,11 +830,6 @@ DEFAULT_SERIES_GRIDS = {
                 "Claude 4.8": ["Claude Opus 4.8"],
                 "Claude 5": ["Claude Opus 5"],
                 "Claude 5.5": ["Claude Opus 5.5"],
-            },
-            "Tier 2 (Fable)": {
-                "Claude 5": ["Claude Fable 5"],
-                "Claude 5.1": ["Claude Fable 5.1"],
-                "Claude 5.2": ["Claude Fable 5.2"],
             },
             "Tier 3 (Sonnet)": {
                 "Claude 3": ["Claude 3 Sonnet"],
@@ -751,11 +855,12 @@ DEFAULT_SERIES_GRIDS = {
         "series": "DeepSeek-V",
         "versions": [
             "DeepSeek V1", "DeepSeek V2", "DeepSeek V2.5", "DeepSeek V3",
-            "DeepSeek V3.1", "DeepSeek V3.2", "DeepSeek V4", "DeepSeek V4.1"
+            "DeepSeek V3.1", "DeepSeek V3.1 Terminus", "DeepSeek V3.2",
+            "DeepSeek V4", "DeepSeek V4.1"
         ],
         "tiers": [
             "Tier 1 (Pro / Full)",
-            "Tier 2 (Flash / Terminus)",
+            "Tier 2 (Flash)",
             "Tier 3 (Lite)",
         ],
         "mapping": {
@@ -765,11 +870,11 @@ DEFAULT_SERIES_GRIDS = {
                 "DeepSeek V2.5": ["DeepSeek-V2.5", "DeepSeek-V2.5 (Dec)"],
                 "DeepSeek V3": ["DeepSeek V3 (Dec)", "DeepSeek V3 0324"],
                 "DeepSeek V3.1": ["DeepSeek V3.1"],
+                "DeepSeek V3.1 Terminus": ["DeepSeek V3.1 Terminus"],
                 "DeepSeek V3.2": ["DeepSeek V3.2", "DeepSeek V3.2 Exp", "DeepSeek V3.2 Speciale"],
                 "DeepSeek V4": ["DeepSeek V4 Pro", "DeepSeek V4 Pro 0813"],
             },
-            "Tier 2 (Flash / Terminus)": {
-                "DeepSeek V3.1": ["DeepSeek V3.1 Terminus"],
+            "Tier 2 (Flash)": {
                 "DeepSeek V4": ["DeepSeek V4 Flash", "DeepSeek V4 Flash 0731", "DeepSeek V4 Flash Vision"],
                 "DeepSeek V4.1": ["DeepSeek V4.1 Flash", "DeepSeek V4.1 Flash 1017"],
             },
@@ -790,13 +895,14 @@ DEFAULT_SERIES_GRIDS = {
         "mapping": {
             "Tier 1 (Full / R1)": {
                 "DeepSeek R1": ["DeepSeek R1 (Jan)"],
-                "DeepSeek R1 0528": ["DeepSeek R1 0528", "DeepSeek R1 0528 Qwen3 8B"],
+                "DeepSeek R1 0528": ["DeepSeek R1 0528"],
             },
             "Tier 2 (Distill 70B / 32B)": {
                 "DeepSeek R1": ["DeepSeek R1 Distill Llama 70B", "DeepSeek R1 Distill Qwen 32B"],
             },
             "Tier 3 (Distill 14B / 8B / 1.5B)": {
                 "DeepSeek R1": ["DeepSeek R1 Distill Qwen 14B", "DeepSeek R1 Distill Llama 8B", "DeepSeek R1 Distill Qwen 1.5B"],
+                "DeepSeek R1 0528": ["DeepSeek R1 0528 Qwen3 8B"],
             }
         }
     },
@@ -810,7 +916,7 @@ DEFAULT_SERIES_GRIDS = {
         "tiers": [
             "Tier 1 (Large / High-MoE)",
             "Tier 2 (Medium)",
-            "Tier 3 (Small / Ministral / 7B)",
+            "Tier 3 (Small / 7B)",
         ],
         "mapping": {
             "Tier 1 (Large / High-MoE)": {
@@ -825,13 +931,28 @@ DEFAULT_SERIES_GRIDS = {
                 "Mistral v3.1": ["Mistral Medium 3.1"],
                 "Mistral v3.5": ["Mistral Medium 3.5"],
             },
-            "Tier 3 (Small / Ministral / 7B)": {
+            "Tier 3 (Small / 7B)": {
                 "Mistral v1": ["Mistral 7B", "Mistral Small (Feb)", "Mistral Small (Sep)"],
-                "Mistral v3": ["Mistral Small 3", "Ministral 3 8B", "Ministral 3 14B", "Ministral 3 3B"],
+                "Mistral v3": ["Mistral Small 3"],
                 "Mistral v3.1": ["Mistral Small 3.1"],
                 "Mistral v3.2": ["Mistral Small 3.2"],
                 "Mistral v4": ["Mistral Small 4"],
             }
+        }
+    },
+    "Mistral - Ministral": {
+        "vendor": "Mistral",
+        "series": "Ministral",
+        "versions": ["Ministral 3"],
+        "tiers": [
+            "Tier 1 (14B)",
+            "Tier 2 (8B)",
+            "Tier 3 (3B)",
+        ],
+        "mapping": {
+            "Tier 1 (14B)": {"Ministral 3": ["Ministral 3 14B"]},
+            "Tier 2 (8B)": {"Ministral 3": ["Ministral 3 8B"]},
+            "Tier 3 (3B)": {"Ministral 3": ["Ministral 3 3B"]},
         }
     },
     "Mistral - Devstral": {
@@ -890,51 +1011,129 @@ DEFAULT_SERIES_GRIDS = {
         "series": "Qwen",
         "versions": [
             "Qwen 1", "Qwen 1.5",
-            "Qwen 2", "Qwen 2.5", "Qwen 3", "Qwen 3.5",
-            "Qwen 3.6", "Qwen 3.7", "Qwen 3.8", "Qwen 4"
+            "Qwen 2", "Qwen 2.5", "Qwen 3", "Qwen 3 2507", "Qwen 3 Next",
+            "Qwen 3.5", "Qwen 3.6", "Qwen 3.7", "Qwen 3.8", "Qwen 4"
         ],
         "tiers": [
             "Tier 1 (Max / Reasoning)",
             "Tier 2 (Plus / Ultra MoE)",
-            "Tier 3 (Large: 122B-27B)",
-            "Tier 4 (Small: 14B-4B)",
-            "Tier 5 (Nano: 2B-0.6B)",
+            "Tier 3 (Dense Large: 110B-27B)",
+            "Tier 4 (MoE Upper: 122B A10B)",
+            "Tier 5 (MoE Mid: 35B-30B A3B)",
+            "Tier 6 (Small: 14B-4B)",
+            "Tier 7 (Nano: 2B-1.7B)",
+            "Tier 8 (Micro: 0.8B-0.6B)",
         ],
         "mapping": {
             "Tier 1 (Max / Reasoning)": {
                 "Qwen 2.5": ["Qwen2.5 Max"],
-                "Qwen 3": ["Qwen3 Max", "Qwen3 Max Thinking", "Qwen3 Max (Preview)", "Qwen3 Max Thinking (Preview)"],
+                "Qwen 3": ["Qwen3 Max (Preview)", "Qwen3 Max", "Qwen3 Max Thinking (Preview)", "Qwen3 Max Thinking"],
                 "Qwen 3.6": ["Qwen3.6 Max Preview"],
                 "Qwen 3.7": ["Qwen3.7 Max"],
                 "Qwen 3.8": ["Qwen3.8 Max", "Qwen3.8 Max (0902)"],
                 "Qwen 4": ["Qwen4 Max"],
             },
             "Tier 2 (Plus / Ultra MoE)": {
-                "Qwen 3": ["Qwen3 235B 2507", "Qwen3 235B A22B 2507", "Qwen3 VL 235B A22B"],
-                "Qwen 3.5": ["Qwen3.5 Omni Plus", "Qwen3.5 397B A17B"],
+                "Qwen 3": ["Qwen3 235B"],
+                "Qwen 3 2507": ["Qwen3 235B 2507", "Qwen3 235B A22B 2507"],
+                "Qwen 3.5": ["Qwen3.5 397B A17B"],
                 "Qwen 3.6": ["Qwen3.6 Plus"],
                 "Qwen 3.7": ["Qwen3.7 Plus"],
-                "Qwen 3.8": ["Qwen3.8 2.4T A95B"],
+                "Qwen 3.8": ["Qwen3.8 2.4T A95B", "Qwen3.8-Flash-Next"],
             },
-            "Tier 3 (Large: 122B-27B)": {
+            "Tier 3 (Dense Large: 110B-27B)": {
                 "Qwen 1": ["Qwen Chat 72B"],
                 "Qwen 1.5": ["Qwen1.5 Chat 110B"],
                 "Qwen 2": ["Qwen2 72B"],
-                "Qwen 2.5": ["Qwen2.5 72B", "Qwen2.5 Coder 32B", "Qwen2.5 Instruct 32B", "Qwen2.5 Turbo"],
-                "Qwen 3": ["Qwen3 30B", "Qwen3 32B", "Qwen3 235B", "Qwen3 Coder 480B", "Qwen3 Next 80B A3B", "Qwen3 Coder Next", "Qwen3 Omni 30B A3B", "Qwen3 VL 30B A3B", "Qwen3 30B A3B 2507", "Qwen3 VL 32B", "Qwen3 Coder 30B A3B"],
-                "Qwen 3.5": ["Qwen3.5 122B A10B", "Qwen3.5 35B A3B", "Qwen3.5 27B", "Qwen3.5 Omni Flash"],
-                "Qwen 3.6": ["Qwen3.6 35B A3B", "Qwen3.6 27B"],
-                "Qwen 3.8": ["Qwen3.8 27B", "Qwen3.8-Flash-Next"],
+                "Qwen 2.5": ["Qwen2.5 72B", "Qwen2.5 Instruct 32B", "Qwen2.5 Turbo"],
+                "Qwen 3": ["Qwen3 32B"],
+                "Qwen 3 Next": ["Qwen3 Next 80B A3B"],
+                "Qwen 3.5": ["Qwen3.5 27B"],
+                "Qwen 3.6": ["Qwen3.6 27B"],
+                "Qwen 3.8": ["Qwen3.8 27B"],
             },
-            "Tier 4 (Small: 14B-4B)": {
+            "Tier 4 (MoE Upper: 122B A10B)": {
+                "Qwen 3.5": ["Qwen3.5 122B A10B"],
+            },
+            "Tier 5 (MoE Mid: 35B-30B A3B)": {
+                "Qwen 3": ["Qwen3 30B"],
+                "Qwen 3 2507": ["Qwen3 30B A3B 2507"],
+                "Qwen 3.5": ["Qwen3.5 35B A3B"],
+                "Qwen 3.6": ["Qwen3.6 35B A3B"],
+            },
+            "Tier 6 (Small: 14B-4B)": {
                 "Qwen 1": ["Qwen Chat 14B"],
-                "Qwen 2.5": ["Qwen2.5 Coder 7B"],
-                "Qwen 3": ["Qwen3 14B", "Qwen3 8B", "Qwen3 4B", "Qwen3 VL 8B", "Qwen3 4B 2507", "Qwen3 VL 4B"],
+                "Qwen 3": ["Qwen3 14B", "Qwen3 8B", "Qwen3 4B"],
+                "Qwen 3 2507": ["Qwen3 4B 2507"],
                 "Qwen 3.5": ["Qwen3.5 9B", "Qwen3.5 4B"],
             },
-            "Tier 5 (Nano: 2B-0.6B)": {
-                "Qwen 3": ["Qwen3 1.7B", "Qwen3 0.6B"],
-                "Qwen 3.5": ["Qwen3.5 2B", "Qwen3.5 0.8B"],
+            "Tier 7 (Nano: 2B-1.7B)": {
+                "Qwen 3": ["Qwen3 1.7B"],
+                "Qwen 3.5": ["Qwen3.5 2B"],
+            },
+            "Tier 8 (Micro: 0.8B-0.6B)": {
+                "Qwen 3": ["Qwen3 0.6B"],
+                "Qwen 3.5": ["Qwen3.5 0.8B"],
+            }
+        }
+    },
+    "Alibaba - Qwen-VL": {
+        "vendor": "Alibaba",
+        "series": "Qwen-VL",
+        "versions": ["Qwen 3"],
+        "tiers": [
+            "Tier 1 (235B A22B)",
+            "Tier 2 (32B)",
+            "Tier 3 (30B A3B)",
+            "Tier 4 (8B)",
+            "Tier 5 (4B)",
+        ],
+        "mapping": {
+            "Tier 1 (235B A22B)": {"Qwen 3": ["Qwen3 VL 235B A22B"]},
+            "Tier 2 (32B)": {"Qwen 3": ["Qwen3 VL 32B"]},
+            "Tier 3 (30B A3B)": {"Qwen 3": ["Qwen3 VL 30B A3B"]},
+            "Tier 4 (8B)": {"Qwen 3": ["Qwen3 VL 8B"]},
+            "Tier 5 (4B)": {"Qwen 3": ["Qwen3 VL 4B"]},
+        }
+    },
+    "Alibaba - Qwen-Omni": {
+        "vendor": "Alibaba",
+        "series": "Qwen-Omni",
+        "versions": ["Qwen 3", "Qwen 3.5"],
+        "tiers": [
+            "Tier 1 (Plus / 30B A3B)",
+            "Tier 2 (Flash)",
+        ],
+        "mapping": {
+            "Tier 1 (Plus / 30B A3B)": {
+                "Qwen 3": ["Qwen3 Omni 30B A3B"],
+                "Qwen 3.5": ["Qwen3.5 Omni Plus"],
+            },
+            "Tier 2 (Flash)": {
+                "Qwen 3.5": ["Qwen3.5 Omni Flash"],
+            }
+        }
+    },
+    "Alibaba - Qwen-Coder": {
+        "vendor": "Alibaba",
+        "series": "Qwen-Coder",
+        "versions": ["Qwen 2.5", "Qwen 3", "Qwen 3 Next"],
+        "tiers": [
+            "Tier 1 (Flagship Coder: 480B / Next / 32B)",
+            "Tier 2 (Mid Coder: 30B A3B)",
+            "Tier 3 (Small Coder: 7B)",
+        ],
+        "mapping": {
+            "Tier 1 (Flagship Coder: 480B / Next / 32B)": {
+                "Qwen 2.5": ["Qwen2.5 Coder 32B"],
+                "Qwen 3": ["Qwen3 Coder 480B"],
+                "Qwen 3 Next": ["Qwen3 Coder Next"],
+            },
+            "Tier 2 (Mid Coder: 30B A3B)": {
+                "Qwen 3": ["Qwen3 Coder 30B A3B"],
+            },
+            "Tier 3 (Small Coder: 7B)": {
+                "Qwen 2.5": ["Qwen2.5 Coder 7B"],
             }
         }
     },
@@ -966,7 +1165,7 @@ DEFAULT_SERIES_GRIDS = {
                 "Grok-1": ["Grok-1"],
                 "Grok 2": ["Grok 2", "Grok Beta"],
                 "Grok 3": ["Grok 3", "Grok 3 Reasoning Beta"],
-                "Grok 4": ["Grok 4", "Grok Build 0.1 0616"],
+                "Grok 4": ["Grok 4"],
                 "Grok 4.20": ["Grok 4.20 0309", "Grok 4.20 0309 v2"],
                 "Grok 4.3": ["Grok 4.3"],
                 "Grok 4.5": ["Grok 4.5"],
@@ -975,8 +1174,34 @@ DEFAULT_SERIES_GRIDS = {
             },
             "Tier 2 (Fast / Mini)": {
                 "Grok 3": ["Grok 3 mini Reasoning"],
-                "Grok 4": ["Grok 4 Fast", "Grok Code Fast 1"],
+                "Grok 4": ["Grok 4 Fast"],
                 "Grok 4.1": ["Grok 4.1 Fast"],
+            }
+        }
+    },
+    "SpaceXAI - Grok Build": {
+        "vendor": "SpaceXAI",
+        "series": "Grok Build",
+        "versions": ["Grok Build 0.1"],
+        "tiers": [
+            "Tier 1 (Agentic / Build)",
+        ],
+        "mapping": {
+            "Tier 1 (Agentic / Build)": {
+                "Grok Build 0.1": ["Grok Build 0.1 0616"],
+            }
+        }
+    },
+    "SpaceXAI - Grok Code": {
+        "vendor": "SpaceXAI",
+        "series": "Grok Code",
+        "versions": ["Grok Code Fast 1"],
+        "tiers": [
+            "Tier 1 (Code Fast)",
+        ],
+        "mapping": {
+            "Tier 1 (Code Fast)": {
+                "Grok Code Fast 1": ["Grok Code Fast 1"],
             }
         }
     },
@@ -989,32 +1214,54 @@ DEFAULT_SERIES_GRIDS = {
         ],
         "tiers": [
             "Tier 1 (Wonder / 405B / 65B)",
-            "Tier 2 (Spark / 70B / 90B)",
-            "Tier 3 (Glimmer / Scout / 13B / 11B)",
-            "Tier 4 (Compact / Small: 8B / 7B / 3B / 1B)",
+            "Tier 2 (Spark / 70B)",
+            "Tier 3 (Glimmer / Scout / 13B)",
+            "Tier 4 (Small: 8B / 7B)",
+            "Tier 5 (Compact: 3B)",
+            "Tier 6 (Nano: 1B)",
         ],
         "mapping": {
             "Tier 1 (Wonder / 405B / 65B)": {
                 "Llama 1": ["Llama 65B"],
                 "Llama 3.1": ["Llama 3.1 405B"],
             },
-            "Tier 2 (Spark / 70B / 90B)": {
+            "Tier 2 (Spark / 70B)": {
                 "Llama 2": ["Llama 2 Chat 70B"],
                 "Llama 3": ["Llama 3 70B"],
                 "Llama 3.1": ["Llama 3.1 70B"],
-                "Llama 3.2": ["Llama 3.2 90B (Vision)"],
                 "Llama 3.3": ["Llama 3.3 70B"],
             },
-            "Tier 3 (Glimmer / Scout / 13B / 11B)": {
+            "Tier 3 (Glimmer / Scout / 13B)": {
                 "Llama 2": ["Llama 2 Chat 13B"],
-                "Llama 3.2": ["Llama 3.2 11B (Vision)"],
                 "Llama 4": ["Llama 4 Maverick", "Llama 4 Scout"],
             },
-            "Tier 4 (Compact / Small: 8B / 7B / 3B / 1B)": {
+            "Tier 4 (Small: 8B / 7B)": {
                 "Llama 2": ["Llama 2 Chat 7B"],
                 "Llama 3": ["Llama 3 8B"],
                 "Llama 3.1": ["Llama 3.1 8B"],
-                "Llama 3.2": ["Llama 3.2 3B", "Llama 3.2 1B"],
+            },
+            "Tier 5 (Compact: 3B)": {
+                "Llama 3.2": ["Llama 3.2 3B"],
+            },
+            "Tier 6 (Nano: 1B)": {
+                "Llama 3.2": ["Llama 3.2 1B"],
+            }
+        }
+    },
+    "Meta - Llama-Vision": {
+        "vendor": "Meta",
+        "series": "Llama-Vision",
+        "versions": ["Llama 3.2"],
+        "tiers": [
+            "Tier 1 (90B Vision)",
+            "Tier 2 (11B Vision)",
+        ],
+        "mapping": {
+            "Tier 1 (90B Vision)": {
+                "Llama 3.2": ["Llama 3.2 90B (Vision)"],
+            },
+            "Tier 2 (11B Vision)": {
+                "Llama 3.2": ["Llama 3.2 11B (Vision)"],
             }
         }
     },
@@ -1060,8 +1307,8 @@ DEFAULT_SERIES_GRIDS = {
         ],
         "mapping": {
             "Tier 1 (Flagship / Pro)": {
-                "GLM-4.5": ["GLM-4.5", "GLM-4.5V"],
-                "GLM-4.6": ["GLM-4.6", "GLM-4.6V"],
+                "GLM-4.5": ["GLM-4.5"],
+                "GLM-4.6": ["GLM-4.6"],
                 "GLM-4.7": ["GLM-4.7"],
                 "GLM-5": ["GLM-5"],
                 "GLM-5.1": ["GLM-5.1"],
@@ -1070,11 +1317,29 @@ DEFAULT_SERIES_GRIDS = {
             },
             "Tier 2 (Turbo / Air)": {
                 "GLM-4.5": ["GLM-4.5-Air"],
-                "GLM-5": ["GLM-5-Turbo", "GLM 5V Turbo"],
+                "GLM-5": ["GLM-5-Turbo"],
             },
             "Tier 3 (Flash)": {
                 "GLM-4.7": ["GLM-4.7-Flash"],
                 "GLM-5.3": ["GLM-5.3-Flash"],
+            }
+        }
+    },
+    "Z_AI - GLM-V": {
+        "vendor": "Z_AI",
+        "series": "GLM-V",
+        "versions": ["GLM-4.5V", "GLM-4.6V", "GLM-5V"],
+        "tiers": [
+            "Tier 1 (Vision Flagship)",
+            "Tier 2 (Vision Turbo)",
+        ],
+        "mapping": {
+            "Tier 1 (Vision Flagship)": {
+                "GLM-4.5V": ["GLM-4.5V"],
+                "GLM-4.6V": ["GLM-4.6V"],
+            },
+            "Tier 2 (Vision Turbo)": {
+                "GLM-5V": ["GLM 5V Turbo"],
             }
         }
     },
@@ -1132,12 +1397,12 @@ DEFAULT_SERIES_GRIDS = {
         "series": "MiMo",
         "versions": ["MiMo V2", "MiMo V2.5", "MiMo V2.6"],
         "tiers": [
-            "Tier 1 (Pro / Omni)",
+            "Tier 1 (Pro)",
             "Tier 2 (Flash / Base)",
         ],
         "mapping": {
-            "Tier 1 (Pro / Omni)": {
-                "MiMo V2": ["MiMo-V2-Pro", "MiMo-V2-Omni", "MiMo-V2-Omni-0327"],
+            "Tier 1 (Pro)": {
+                "MiMo V2": ["MiMo-V2-Pro"],
                 "MiMo V2.5": ["MiMo-V2.5-Pro"],
                 "MiMo V2.6": ["MiMo-V2.6-Pro"],
             },
@@ -1145,6 +1410,303 @@ DEFAULT_SERIES_GRIDS = {
                 "MiMo V2": ["MiMo-V2-Flash", "MiMo-V2-Flash (Feb 2026)"],
                 "MiMo V2.5": ["MiMo-V2.5"],
                 "MiMo V2.6": ["MiMo-V2.6-Flash"],
+            }
+        }
+    },
+    "Xiaomi - MiMo-Omni": {
+        "vendor": "Xiaomi",
+        "series": "MiMo-Omni",
+        "versions": ["MiMo V2"],
+        "tiers": [
+            "Tier 1 (Omni)",
+        ],
+        "mapping": {
+            "Tier 1 (Omni)": {
+                "MiMo V2": ["MiMo-V2-Omni", "MiMo-V2-Omni-0327"],
+            }
+        }
+    },
+    "Institute of Foundation Models - K2": {
+        "vendor": "Institute of Foundation Models",
+        "series": "K2",
+        "versions": ["K2 Horizon"],
+        "tiers": [
+            "Tier 1 (Flagship: 375B A23B)",
+            "Tier 2 (Mid: 32B / MoVA 36B)",
+            "Tier 3 (Small: 7B / 3.7B)",
+            "Tier 4 (Nano: 0.9B)",
+        ],
+        "mapping": {
+            "Tier 1 (Flagship: 375B A23B)": {
+                "K2 Horizon": ["K2 Horizon 375B A23B"],
+            },
+            "Tier 2 (Mid: 32B / MoVA 36B)": {
+                "K2 Horizon": ["K2 Horizon 32B", "K2 Horizon MoVA 36B A4B"],
+            },
+            "Tier 3 (Small: 7B / 3.7B)": {
+                "K2 Horizon": ["K2 Horizon 7B", "K2 Horizon 3.7B"],
+            },
+            "Tier 4 (Nano: 0.9B)": {
+                "K2 Horizon": ["K2 Horizon 0.9B"],
+            }
+        }
+    },
+    "Institute of Foundation Models - K2-V2": {
+        "vendor": "Institute of Foundation Models",
+        "series": "K2-V2",
+        "versions": ["K2-V2"],
+        "tiers": [
+            "Tier 1 (Full / Thinking)",
+        ],
+        "mapping": {
+            "Tier 1 (Full / Thinking)": {
+                "K2-V2": ["K2-V2", "K2 Think V2"],
+            }
+        }
+    },
+    "NVIDIA - Nemotron": {
+        "vendor": "NVIDIA",
+        "series": "Nemotron",
+        "versions": [
+            "Nemotron Llama 3.1",
+            "Nemotron Llama 3.3",
+            "Nemotron Llama Ultra",
+            "Nemotron Llama v1.5",
+            "Nemotron 2",
+            "Nemotron 3",
+            "Nemotron 3 Ultra",
+            "Nemotron 3.5",
+        ],
+        "tiers": [
+            "Tier 1 (Ultra / Super / 70B)",
+            "Tier 2 (Mid: Cascade / Bolt)",
+            "Tier 3 (Nano 9B / 3 Nano / Lightning)",
+            "Tier 4 (Nano 4B / E4B)",
+        ],
+        "mapping": {
+            "Tier 1 (Ultra / Super / 70B)": {
+                "Nemotron Llama 3.1": ["Llama 3.1 Nemotron 70B"],
+                "Nemotron Llama 3.3": ["Llama 3.3 Nemotron Super 49B"],
+                "Nemotron Llama Ultra": ["Llama Nemotron Ultra"],
+                "Nemotron Llama v1.5": ["Llama Nemotron Super 49B v1.5"],
+                "Nemotron 3": ["Nemotron 3 Super"],
+                "Nemotron 3 Ultra": ["Nemotron 3 Ultra"],
+                "Nemotron 3.5": ["Nemotron 3.5 Super VL"],
+            },
+            "Tier 2 (Mid: Cascade / Bolt)": {
+                "Nemotron 3": ["Nemotron Cascade 2 30B A3B"],
+                "Nemotron 3.5": ["Nemotron 3.5 Bolt 74B-A9B"],
+            },
+            "Tier 3 (Nano 9B / 3 Nano / Lightning)": {
+                "Nemotron 2": ["NVIDIA Nemotron Nano 9B V2"],
+                "Nemotron 3": ["Nemotron 3 Nano"],
+                "Nemotron 3.5": ["Nemotron 3.5 Lightning"],
+            },
+            "Tier 4 (Nano 4B / E4B)": {
+                "Nemotron Llama 3.1": ["Llama 3.1 Nemotron Nano 4B v1.1"],
+                "Nemotron 3": ["Nemotron 3 Nano 4B"],
+                "Nemotron 3.5": ["Nemotron 3.5 Bolt E4B 4GB"],
+            }
+        }
+    },
+    "NVIDIA - Nemotron-VL": {
+        "vendor": "NVIDIA",
+        "series": "Nemotron-VL",
+        "versions": ["Nemotron 2", "Nemotron 3"],
+        "tiers": [
+            "Tier 1 (VL / Omni)",
+        ],
+        "mapping": {
+            "Tier 1 (VL / Omni)": {
+                "Nemotron 2": ["NVIDIA Nemotron Nano 12B v2 VL"],
+                "Nemotron 3": ["Nemotron 3 Nano Omni 30B A3B"],
+            }
+        }
+    },
+    "InclusionAI - Ling": {
+        "vendor": "InclusionAI",
+        "series": "Ling",
+        "versions": ["Ling 2.0", "Ling 2.6", "Ling 3.0", "Ling 3.1"],
+        "tiers": [
+            "Tier 1 (1T / Flagship)",
+            "Tier 2 (Mid)",
+            "Tier 3 (Flash)",
+            "Tier 4 (Tiny / Mini)",
+        ],
+        "mapping": {
+            "Tier 1 (1T / Flagship)": {
+                "Ling 2.0": ["Ling-1T"],
+                "Ling 2.6": ["Ling-2.6-1T"],
+            },
+            "Tier 2 (Mid)": {},
+            "Tier 3 (Flash)": {
+                "Ling 2.0": ["Ling-flash-2.0"],
+                "Ling 2.6": ["Ling 2.6 Flash"],
+                "Ling 3.0": ["Ling 3.0 Flash"],
+                "Ling 3.1": ["Ling 3.1 Flash", "Ling 3.1 Flash 1019"],
+            },
+            "Tier 4 (Tiny / Mini)": {
+                "Ling 2.0": ["Ling-mini-2.0"],
+                "Ling 3.0": ["Ling 3.0 Tiny"],
+            }
+        }
+    },
+    "InclusionAI - Ling-VL": {
+        "vendor": "InclusionAI",
+        "series": "Ling-VL",
+        "versions": ["Ling 3.0"],
+        "tiers": [
+            "Tier 1 (Flash VL)",
+        ],
+        "mapping": {
+            "Tier 1 (Flash VL)": {
+                "Ling 3.0": ["Ling-3.0-flash-VL"],
+            }
+        }
+    },
+    "InclusionAI - Ling-Fin": {
+        "vendor": "InclusionAI",
+        "series": "Ling-Fin",
+        "versions": ["Ling 3.0"],
+        "tiers": [
+            "Tier 1 (Flash Fin)",
+        ],
+        "mapping": {
+            "Tier 1 (Flash Fin)": {
+                "Ling 3.0": ["Ling-3.0-flash-Fin"],
+            }
+        }
+    },
+    "InclusionAI - Ring": {
+        "vendor": "InclusionAI",
+        "series": "Ring",
+        "versions": ["Ring 2.0", "Ring 2.6"],
+        "tiers": [
+            "Tier 1 (1T / Flagship)",
+            "Tier 2 (Mid)",
+            "Tier 3 (Flash)",
+        ],
+        "mapping": {
+            "Tier 1 (1T / Flagship)": {
+                "Ring 2.0": ["Ring-1T"],
+                "Ring 2.6": ["Ring-2.6-1T"],
+            },
+            "Tier 2 (Mid)": {},
+            "Tier 3 (Flash)": {
+                "Ring 2.0": ["Ring-flash-2.0"],
+            }
+        }
+    },
+    "IBM - Granite": {
+        "vendor": "IBM",
+        "series": "Granite",
+        "versions": ["Granite 3.3", "Granite 4.0", "Granite 4.1", "Granite 4.2"],
+        "tiers": [
+            "Tier 1 (Small / 30B)",
+            "Tier 2 (8B)",
+            "Tier 3 (Micro / 3B)",
+            "Tier 4 (1B)",
+            "Tier 5 (350M)",
+        ],
+        "mapping": {
+            "Tier 1 (Small / 30B)": {
+                "Granite 4.0": ["Granite 4.0 H Small"],
+                "Granite 4.1": ["Granite 4.1 30B"],
+                "Granite 4.2": ["Granite 4.2 30B"],
+            },
+            "Tier 2 (8B)": {
+                "Granite 3.3": ["Granite 3.3 8B"],
+                "Granite 4.1": ["Granite 4.1 8B"],
+                "Granite 4.2": ["Granite 4.2 8B"],
+            },
+            "Tier 3 (Micro / 3B)": {
+                "Granite 4.0": ["Granite 4.0 Micro"],
+                "Granite 4.1": ["Granite 4.1 3B"],
+                "Granite 4.2": ["Granite 4.2 3B"],
+            },
+            "Tier 4 (1B)": {
+                "Granite 4.0": ["Granite 4.0 1B", "Granite 4.0 H 1B"],
+            },
+            "Tier 5 (350M)": {
+                "Granite 4.0": ["Granite 4.0 350M", "Granite 4.0 H 350M"],
+            }
+        }
+    },
+    "Liquid AI - LFM": {
+        "vendor": "Liquid AI",
+        "series": "LFM",
+        "versions": ["LFM 1", "LFM 2", "LFM 2.5", "LFM 3"],
+        "tiers": [
+            "Tier 1 (Large: 40B)",
+            "Tier 2 (Mid: 24B)",
+            "Tier 3 (Small: 8B)",
+            "Tier 4 (Compact: 2.6B-1.7B)",
+            "Tier 5 (Nano: 1.2B)",
+        ],
+        "mapping": {
+            "Tier 1 (Large: 40B)": {
+                "LFM 1": ["LFM 40B"],
+            },
+            "Tier 2 (Mid: 24B)": {
+                "LFM 2": ["LFM2 24B A2B"],
+            },
+            "Tier 3 (Small: 8B)": {
+                "LFM 2": ["LFM2 8B A1B"],
+                "LFM 2.5": ["LFM2.5-8B-A1B"],
+            },
+            "Tier 4 (Compact: 2.6B-1.7B)": {
+                "LFM 2": ["LFM2 2.6B"],
+                "LFM 2.5": ["LFM2.5-2.6B"],
+                "LFM 3": ["LFM3-1.7B"],
+            },
+            "Tier 5 (Nano: 1.2B)": {
+                "LFM 2": ["LFM2 1.2B"],
+                "LFM 2.5": ["LFM2.5-1.2B-Instruct", "LFM2.5-1.2B-Thinking"],
+            }
+        }
+    },
+    "Liquid AI - LFM-VL": {
+        "vendor": "Liquid AI",
+        "series": "LFM-VL",
+        "versions": ["LFM 2.5", "LFM 3"],
+        "tiers": [
+            "Tier 1 (Vision)",
+        ],
+        "mapping": {
+            "Tier 1 (Vision)": {
+                "LFM 2.5": ["LFM2.5-VL-1.6B"],
+                "LFM 3": ["LFM3-VL-2B"],
+            }
+        }
+    },
+    "Microsoft - Phi": {
+        "vendor": "Microsoft",
+        "series": "Phi",
+        "versions": ["Phi-3", "Phi-4"],
+        "tiers": [
+            "Tier 1 (Standard: 14B)",
+            "Tier 2 (Mini)",
+        ],
+        "mapping": {
+            "Tier 1 (Standard: 14B)": {
+                "Phi-4": ["Phi-4"],
+            },
+            "Tier 2 (Mini)": {
+                "Phi-3": ["Phi-3 Mini"],
+                "Phi-4": ["Phi-4 Mini"],
+            }
+        }
+    },
+    "Microsoft - Phi-Multimodal": {
+        "vendor": "Microsoft",
+        "series": "Phi-Multimodal",
+        "versions": ["Phi-4"],
+        "tiers": [
+            "Tier 1 (Multimodal)",
+        ],
+        "mapping": {
+            "Tier 1 (Multimodal)": {
+                "Phi-4": ["Phi-4 Multimodal"],
             }
         }
     }
@@ -1165,17 +1727,61 @@ def clean_series_name(token: str) -> str:
     return token or "Default"
 
 
+_PARAM_SIZE_RE = re.compile(r'(?<![.\da-zA-Z])(\d+(?:\.\d+)?)\s*([tbm])(?![a-zA-Z])', re.I)
+_TIER4_KW_RE = re.compile(r'(?<![a-zA-Z])(nano|tiny|micro|lite|luna|e2b|e4b)(?![a-zA-Z])', re.I)
+_TIER1_KW_RE = re.compile(r'(?<![a-zA-Z])(ultra|max|pro|large|astra|premier|super|wonder)(?![a-zA-Z])', re.I)
+_TIER2_KW_RE = re.compile(r'(?<![a-zA-Z])(medium|plus|mid|sol|standard|spark|cascade)(?![a-zA-Z])', re.I)
+_TIER3_KW_RE = re.compile(r'(?<![a-zA-Z])(small|flash|mini|terra|fast|instant|air|turbo|glimmer|haiku)(?![a-zA-Z])', re.I)
+
+
+def _classify_model_tier(base_name: str) -> int:
+    """Classify a model name into a 0-based tier bucket (0=Tier 1 .. 3=Tier 4)."""
+    if _TIER4_KW_RE.search(base_name):
+        return 3
+    if _TIER1_KW_RE.search(base_name):
+        return 0
+
+    sizes_b = []
+    for num_str, unit in _PARAM_SIZE_RE.findall(base_name):
+        val = float(num_str)
+        u = unit.lower()
+        if u == 't':
+            val *= 1000.0
+        elif u == 'm':
+            val *= 0.001
+        sizes_b.append(val)
+
+    if sizes_b:
+        max_b = max(sizes_b)
+        if max_b >= 60.0:
+            return 0
+        if max_b >= 20.0:
+            return 1
+        if max_b >= 4.0:
+            return 2
+        return 3
+
+    if _TIER2_KW_RE.search(base_name):
+        return 1
+    if _TIER3_KW_RE.search(base_name):
+        return 2
+    # Default untagged standard models to Tier 2 so Small/Flash/Mini never outrank base
+    return 1
+
+
 def detect_creator_series(creator: str, models: List[dict]) -> Dict[str, List[dict]]:
     """Group an unlisted creator's models into distinct series."""
     series_groups = defaultdict(list)
     series_canonical = {}
     for m in models:
         base_name = m["base_name"]
-        words = re.split(r'[\s\-_]+', base_name.strip())
+        words = [w for w in re.split(r'[\s\-_]+', base_name.strip()) if w]
         first = words[0] if words else creator
-        if first.lower() in ('openchat', 'deep', 'meta', 'llama', 'tencent'):
-            if len(words) > 1:
-                first = words[1]
+        if first.lower() in ('openchat', 'deep', 'meta', 'llama', 'tencent', 'nvidia'):
+            for w in words[1:]:
+                if re.match(r'^[A-Za-z]{2,}', w) and not re.match(r'^\d+(?:\.\d+)*[tbm]$', w, re.I):
+                    first = w
+                    break
         raw_series = clean_series_name(first)
         key_lower = raw_series.lower()
         if key_lower not in series_canonical:
@@ -1204,17 +1810,6 @@ def auto_generate_series_grid(vendor: str, series: str, series_models: List[dict
 
     sorted_bases = sorted(base_info.values(), key=lambda x: x["date"])
 
-    def get_tier(name):
-        n = name.lower()
-        if any(w in n for w in ["ultra", "max", "pro", "large", "405b", "397b", "235b", "120b", "70b", "67b", "65b"]):
-            return "Tier 1 (Flagship / Large)"
-        elif any(w in n for w in ["medium", "plus", "mid", "32b", "30b", "27b", "24b", "20b", "14b"]):
-            return "Tier 2 (Medium / MoE)"
-        elif any(w in n for w in ["small", "flash", "mini", "8b", "7b", "4b"]):
-            return "Tier 3 (Small / Fast)"
-        else:
-            return "Tier 4 (Compact / Nano)"
-
     ver_clusters = defaultdict(list)
     for b in sorted_bases:
         d = b["date"][:7] if b["date"] else "2025-01"
@@ -1229,7 +1824,7 @@ def auto_generate_series_grid(vendor: str, series: str, series_models: List[dict
     ]
     mapping = {t: {v: [] for v in versions} for t in tiers}
     for b in sorted_bases:
-        t = get_tier(b["name"])
+        t = tiers[_classify_model_tier(b["name"])]
         d = b["date"][:7] if b["date"] else "2025-01"
         mapping[t][d].append(b["name"])
 
@@ -1256,15 +1851,10 @@ class VendorHierarchyManager:
         """Infer the appropriate tier from base_name given grid's available tiers."""
         if not tiers:
             return "Tier 1"
-        n = base_name.lower()
-        if any(w in n for w in ["ultra", "max", "pro", "large", "astra", "405b", "397b", "235b", "120b", "70b", "67b", "65b"]):
-            return tiers[0]
-        elif any(w in n for w in ["medium", "plus", "mid", "sol", "standard", "32b", "30b", "27b", "24b", "20b", "14b"]):
-            return tiers[min(1, len(tiers) - 1)]
-        elif any(w in n for w in ["small", "flash", "mini", "terra", "8b", "7b", "4b"]):
-            return tiers[min(2, len(tiers) - 1)]
-        else:
+        idx = _classify_model_tier(base_name)
+        if idx >= 3:
             return tiers[-1]
+        return tiers[min(idx, len(tiers) - 1)]
 
     @staticmethod
     def _infer_version_for_grid(base_name: str, release_date: Optional[str], versions: List[str]) -> str:
@@ -1362,20 +1952,31 @@ class VendorHierarchyManager:
                 if not unmapped_for_creator:
                     continue
 
+                candidate_grids = sorted(
+                    (
+                        (s_k, g, g.get("series", s_k.split(" - ")[-1]))
+                        for s_k, g in self.grids.items()
+                        if g.get("vendor", s_k.split(" - ")[0]).lower().strip() in (
+                            creator.lower().strip(),
+                            creator.replace("_", " ").lower().strip(),
+                            creator.replace(" ", "_").lower().strip(),
+                        )
+                    ),
+                    key=lambda item: (-len(item[2]), -len(item[0]), item[0]),
+                )
+
                 remaining = []
                 for m in unmapped_for_creator:
                     bn = m["base_name"]
                     matched_series_key = None
-                    for s_k, g in self.grids.items():
-                        v_name = g.get("vendor", s_k.split(" - ")[0])
-                        s_name = g.get("series", s_k.split(" - ")[-1])
-                        c_match = v_name.lower().strip() in (
-                            creator.lower().strip(),
-                            creator.replace("_", " ").lower().strip(),
-                            creator.replace(" ", "_").lower().strip()
-                        )
-                        if c_match:
-                            if re.search(r'\b' + re.escape(s_name) + r'\b', bn, re.I) or s_name.lower() in bn.lower():
+                    for s_k, g, s_name in candidate_grids:
+                        if re.search(r'\b' + re.escape(s_name) + r'\b', bn, re.I):
+                            matched_series_key = s_k
+                            break
+                    if not matched_series_key:
+                        bn_low = bn.lower()
+                        for s_k, g, s_name in candidate_grids:
+                            if s_name.lower() in bn_low:
                                 matched_series_key = s_k
                                 break
 
@@ -1681,13 +2282,14 @@ def generate_hierarchy_constraints(
         for hm in h_models:
             h_lvl = hm["thinking_level"]
             if h_lvl in common_lvls:
-                for lm in l_models:
-                    if lm["thinking_level"] == h_lvl:
-                        constraints.append((
-                            hm["name"], lm["name"],
-                            f"{reason} [matching thinking {hm['thinking_tag']}]",
-                            stat_key
-                        ))
+                same_lvl_l = [lm for lm in l_models if lm["thinking_level"] == h_lvl]
+                exact_tag_l = [lm for lm in same_lvl_l if lm["thinking_tag"] == hm["thinking_tag"]]
+                for lm in (exact_tag_l if exact_tag_l else same_lvl_l):
+                    constraints.append((
+                        hm["name"], lm["name"],
+                        f"{reason} [matching thinking {hm['thinking_tag']}]",
+                        stat_key
+                    ))
             else:
                 for lm in l_models:
                     if h_lvl > lm["thinking_level"]:
@@ -1955,13 +2557,43 @@ class HierarchyScoreEngine:
 # 7. Main Execution & CLI
 # ══════════════════════════════════════════════════════════════════════
 
+def load_hierarchy_dataset(
+    raw_data_file: str = RAW_DATA_FILE,
+    hierarchy_dir: str = HIERARCHY_DIR,
+    min_valid: int = 3,
+    load_from_disk: bool = True,
+) -> dict:
+    """Load evaluated/catalog models, hierarchy grids, and ordering constraints."""
+    with open(raw_data_file, "r", encoding="utf-8") as f:
+        raw_data = json.load(f)
+
+    models_all, _ = extract_benchmarks(raw_data, min_valid=0)
+    models, metric_ranges = extract_benchmarks(raw_data, min_valid=min_valid)
+    manager = VendorHierarchyManager(
+        hierarchy_dir=hierarchy_dir,
+        all_models=models_all,
+        load_from_disk=load_from_disk,
+    )
+    constraints, stats = generate_hierarchy_constraints(models, manager)
+    return {
+        "raw_data": raw_data,
+        "models_all": models_all,
+        "models": models,
+        "metric_ranges": metric_ranges,
+        "manager": manager,
+        "constraints": constraints,
+        "stats": stats,
+    }
+
+
 def run_hierarchy_analysis(
     tolerance: float = 1e-4,
     hierarchy_dir: Optional[str] = None,
     output_dir: Optional[str] = None,
-    save_artifacts: bool = True
+    save_artifacts: bool = True,
+    run_lovo: bool = True,
 ) -> dict:
-    """Execute complete end-to-end hierarchy analysis, calibration, and scoring."""
+    """Execute complete end-to-end hierarchy analysis, monotone mapping, and diagnostics."""
     h_dir = hierarchy_dir or HIERARCHY_DIR
     o_dir = output_dir or OUTPUT_DIR
 
@@ -1975,7 +2607,7 @@ def run_hierarchy_analysis(
     models, metric_ranges = extract_benchmarks(raw_data, min_valid=3)
     print(f"   Evaluated {len(models)} models across {len(BENCHMARK_DEFS)} benchmarks (catalog total: {len(models_all)}).")
 
-    print("3. Running leave-one-out dynamic calibration...")
+    print("3. Running leave-one-out dynamic calibration (reference bounds)...")
     bounds, converged_round = calibrate_benchmark_bounds(models, metric_ranges, tolerance=tolerance)
     print(f"   Dynamic calibration converged at round {converged_round}!")
 
@@ -1993,48 +2625,235 @@ def run_hierarchy_analysis(
     print(f"     - Rule 3 (Thinking ordering):   {stats['rule3_thinking']}")
     print(f"     - Rule 4 (Date ordering):       {stats['rule4_date']}")
 
-    print("6. Computing debiased latent ability & running Dykstra Isotonic Projection...")
-    engine = HierarchyScoreEngine(models, constraints)
-    diag = engine.run_pipeline()
+    print("6. Fitting zero-leakage MonotoneBenchmarkMapper (src/mapping.py)...")
+    try:
+        from src.mapping import (
+            MonotoneBenchmarkMapper,
+            evaluate_constraints as evaluate_mapping_constraints,
+        )
+    except ImportError:
+        from mapping import (
+            MonotoneBenchmarkMapper,
+            evaluate_constraints as evaluate_mapping_constraints,
+        )
 
-    print("\n" + "=" * 70)
-    print("FINAL SCORECARD:")
-    print(f"  Total Constraints:       {diag['total_constraints']}")
-    print(f"  Satisfied Constraints:   {diag['satisfied_constraints']}")
-    print(f"  Satisfaction Rate:       {diag['satisfaction_rate']:.2f}%")
-    print(f"  Inversions / Violations: {diag['violations_count']}")
-    print("=" * 70 + "\n")
+    metric_keys = list(BENCHMARK_DEFS.keys())
+    mapper = MonotoneBenchmarkMapper()
+    mapper.fit(models, metric_keys, metric_ranges, constraints=constraints, verbose=True)
+
+    if run_lovo:
+        print("   Running Leave-One-Vendor-Out (LOVO) cross-validation...")
+        lovo_res = mapper.cross_validate_lovo(
+            models, metric_keys, metric_ranges, constraints, verbose=True
+        )
+        mapper.diagnostics["lovo_cv"] = lovo_res
 
     if save_artifacts:
+        os.makedirs(o_dir, exist_ok=True)
+        mapping_model_file = os.path.join(o_dir, "mapping_model.json")
+        mapper.save_mapping(mapping_model_file)
+        print(f"   Saved monotone mapping model to {mapping_model_file}")
+
+    # Score every model purely from its 38 benchmark values (ZERO label leakage / ZERO clamping)
+    raw_mapped = []
+    for m in models:
+        sc = mapper.score_model(m["parsed"])
+        if sc is None:
+            valid_cal = [v for v in m["calibrated_scores"].values() if v is not None]
+            sc = sum(valid_cal) / len(valid_cal) if valid_cal else 0.5
+        raw_mapped.append(float(sc))
+
+    mn_map = min(raw_mapped) if raw_mapped else 0.0
+    mx_map = max(raw_mapped) if raw_mapped else 1.0
+    span_map = (mx_map - mn_map) if mx_map > mn_map else 1.0
+    for i, m in enumerate(models):
+        valid_vals = [v for v in m["calibrated_scores"].values() if v is not None]
+        m["raw_composite_avg"] = sum(valid_vals) / len(valid_vals) if valid_vals else 0.0
+        m["mapped_ability_raw"] = raw_mapped[i]
+        m["composite_ability"] = (raw_mapped[i] - mn_map) / span_map
+        m["composite_score_100"] = m["composite_ability"] * 100.0
+
+    mapping_score_map = {m["name"]: m["composite_ability"] for m in models}
+    mapping_eval = evaluate_mapping_constraints(mapping_score_map, constraints, top_k=50)
+
+    print("7. Computing optional Dykstra post-projection reference (diagnostic only, NOT applied to primary scores)...")
+    ref_models = [
+        {
+            "name": m["name"],
+            "valid_count": m["valid_count"],
+            "calibrated_scores": dict(m["calibrated_scores"]),
+        }
+        for m in models
+    ]
+    dykstra_engine = HierarchyScoreEngine(ref_models, constraints)
+    dykstra_diag = dykstra_engine.run_pipeline()
+
+    diag = {
+        "total_models": len(models),
+        "catalog_total_models": len(models_all),
+        "series_grids_count": len(hierarchy_mgr.grids),
+        "total_constraints": mapping_eval["total_constraints"],
+        "rule_counts": stats,
+        "satisfied_constraints": mapping_eval["satisfied"],
+        "satisfaction_rate": mapping_eval["concordance_pct"],
+        "violations_count": mapping_eval["violations_count"],
+        "violations": mapping_eval["top_violations"],
+        "by_rule": mapping_eval["by_rule"],
+        "mapping_concordance_pct": mapping_eval["concordance_pct"],
+        "mapping_satisfied": mapping_eval["satisfied"],
+        "mapping_violations_count": mapping_eval["violations_count"],
+        "rounds": mapper.diagnostics.get("rounds", []),
+        "lovo_cv": mapper.diagnostics.get("lovo_cv", {}),
+        "monotonicity_verified": mapper.diagnostics.get("monotonicity_verified", {}),
+        "flagship_chains": mapper.diagnostics.get("flagship_chains", []),
+        "zero_label_clamping": True,
+        "converged_epochs": dykstra_diag["converged_epochs"],
+        "post_projection_reference": {
+            "method": "Dykstra Isotonic Projection (offline reference diagnostic only; NOT applied to primary scores)",
+            "satisfied_constraints": dykstra_diag["satisfied_constraints"],
+            "satisfaction_rate": dykstra_diag["satisfaction_rate"],
+            "violations_count": dykstra_diag["violations_count"],
+            "converged_epochs": dykstra_diag["converged_epochs"],
+        },
+    }
+
+    print("\n" + "=" * 70)
+    print("FINAL SCORECARD (Pure Benchmark Mapping — Zero Label Clamping):")
+    print(f"  Total Constraints:            {diag['total_constraints']}")
+    print(f"  Satisfied (Pure Mapping):     {diag['satisfied_constraints']} ({diag['satisfaction_rate']:.2f}%)")
+    print(f"  Residual Genuine Inversions:  {diag['violations_count']}")
+    lovo_sum = (diag.get("lovo_cv") or {}).get("summary") or {}
+    if lovo_sum:
+        print(
+            f"  LOVO Held-Out Concordance:    {lovo_sum.get('r4_heldout_pct', 0.0):.2f}% "
+            f"(N={lovo_sum.get('total_held_out_constraints', 0)}, "
+            f"vs R0_LOO: {lovo_sum.get('delta_vs_r0_loo_pct', 0.0):+.2f}%)"
+        )
+    print(
+        f"  [Ref Only] Post-Projection:   {dykstra_diag['satisfied_constraints']}/{dykstra_diag['total_constraints']} "
+        f"= {dykstra_diag['satisfaction_rate']:.2f}% (NOT applied to primary scores)"
+    )
+    print("=" * 70 + "\n")
+
+    sorted_models = sorted(models, key=lambda x: -x["composite_ability"])
+
+    if save_artifacts:
+        os.makedirs(hierarchy_mgr.hierarchy_dir, exist_ok=True)
+        os.makedirs(o_dir, exist_ok=True)
         report_file = os.path.join(hierarchy_mgr.hierarchy_dir, "hierarchy_score_report.md")
         with open(report_file, "w", encoding="utf-8") as f:
             f.write("# Model Hierarchy & Monotonic Scoring Diagnostic Report\n\n")
-            f.write(f"- **Total Evaluated Models**: {diag['total_models']}\n")
-            f.write(f"- **Benchmarks Calibrated**: {len(BENCHMARK_DEFS)}\n")
-            f.write(f"- **Calibration Rounds**: {converged_round}\n")
+            f.write(f"- **Total Evaluated Models**: {diag['total_models']} (Catalog Total: {diag['catalog_total_models']})\n")
+            f.write(f"- **Series Hierarchy Grids**: {diag['series_grids_count']}\n")
+            f.write(f"- **Benchmarks Mapped**: {len(BENCHMARK_DEFS)}\n")
+            f.write(f"- **Primary Scoring Method**: Zero-Leakage Monotone Benchmark Mapping (`src/mapping.py`, ZERO Dykstra label-clamping)\n")
+            mono_v = diag.get("monotonicity_verified") or {}
+            if mono_v:
+                f.write(
+                    f"- **Strict Curve Monotonicity**: `{mono_v.get('all_strictly_monotone')}` "
+                    f"(min slope `{mono_v.get('min_slope_observed', 0.0):.4f}` >= `{mono_v.get('eps_min_required', 0.05):.2f}`)\n"
+                )
             f.write(f"- **Total Constraints Evaluated**: {diag['total_constraints']}\n")
-            f.write(f"- **Satisfied Constraints**: {diag['satisfied_constraints']} ({diag['satisfaction_rate']:.2f}%)\n")
-            f.write(f"- **Inversions / Violations**: {diag['violations_count']}\n\n")
+            f.write(f"- **Pure-Mapping Concordance**: {diag['satisfied_constraints']} / {diag['total_constraints']} ({diag['satisfaction_rate']:.2f}%)\n")
+            f.write(f"- **Residual Genuine Inversions**: {diag['violations_count']}\n")
+            if lovo_sum:
+                f.write(
+                    f"- **LOVO Held-Out Generalization**: {lovo_sum.get('r4_heldout_pct', 0.0):.2f}% "
+                    f"across {lovo_sum.get('total_held_out_constraints', 0)} held-out pairs "
+                    f"(R0_raw={lovo_sum.get('r0_raw_pct', 0.0):.2f}%, R0_LOO={lovo_sum.get('r0_loo_pct', 0.0):.2f}%, "
+                    f"R1={lovo_sum.get('r1_unsup_pct', 0.0):.2f}%)\n"
+                )
+            f.write(
+                f"- **Optional Post-Projection Reference (Dykstra, NOT used in primary scores)**: "
+                f"{dykstra_diag['satisfied_constraints']} / {dykstra_diag['total_constraints']} "
+                f"({dykstra_diag['satisfaction_rate']:.2f}%, {dykstra_diag['violations_count']} violations, "
+                f"converged in {dykstra_diag['converged_epochs']} epochs)\n\n"
+            )
 
-            f.write("## Constraint Distribution by Rule\n")
-            f.write(f"1. **Rule 1 (Tier Ordering within same series & version)**: {stats['rule1_tier']} constraints\n")
-            f.write(f"2. **Rule 2 (Version Ordering within same series & tier)**: {stats['rule2_version']} constraints\n")
-            f.write(f"3. **Rule 3 (Thinking Level Ordering within same model)**: {stats['rule3_thinking']} constraints\n")
-            f.write(f"4. **Rule 4 (Date Snapshot Ordering within same model stem)**: {stats['rule4_date']} constraints\n\n")
+            f.write("## Constraint Distribution & Pure-Mapping Concordance by Rule\n")
+            by_rule = diag.get("by_rule", {})
+            for idx, (rk, r_label) in enumerate([
+                ("rule1_tier", "Rule 1 (Tier Ordering within same series & version)"),
+                ("rule2_version", "Rule 2 (Version Ordering within same series & tier)"),
+                ("rule3_thinking", "Rule 3 (Thinking Level Ordering within same model)"),
+                ("rule4_date", "Rule 4 (Date Snapshot Ordering within same model stem)"),
+            ], 1):
+                r_info = by_rule.get(rk, {})
+                tot_r = r_info.get("total", stats.get(rk, 0))
+                ok_r = r_info.get("satisfied", 0)
+                pct_r = r_info.get("concordance_pct", 0.0)
+                f.write(f"{idx}. **{r_label}**: {ok_r}/{tot_r} ({pct_r:.2f}%)\n")
+            f.write("\n")
 
-            f.write("## Top 30 Models by Final Composite Score\n\n")
-            f.write("| Rank | Model | Creator | Thinking | Final Score (100) | Raw Avg | Status |\n")
+            if diag.get("rounds"):
+                f.write("## Multi-Round Mapping Progression (Pure Benchmark Scores)\n\n")
+                f.write("| Round | Method | Satisfied / Total | Concordance | Inversions | Rule 1 | Rule 2 | Rule 3 | Rule 4 |\n")
+                f.write("|---|---|---|---|---|---|---|---|---|\n")
+                for rnd in diag["rounds"]:
+                    br = rnd.get("by_rule", {})
+                    f.write(
+                        f"| `{rnd.get('round')}` | {rnd.get('label')} | "
+                        f"{rnd.get('satisfied', 0)}/{rnd.get('total_constraints', 0)} | "
+                        f"**{rnd.get('concordance_pct', 0.0):.2f}%** | {rnd.get('violations_count', 0)} | "
+                        f"{br.get('rule1_tier', {}).get('concordance_pct', 0.0):.1f}% | "
+                        f"{br.get('rule2_version', {}).get('concordance_pct', 0.0):.1f}% | "
+                        f"{br.get('rule3_thinking', {}).get('concordance_pct', 0.0):.1f}% | "
+                        f"{br.get('rule4_date', {}).get('concordance_pct', 0.0):.1f}% |\n"
+                    )
+                f.write("\n")
+
+            lovo_vendors = (diag.get("lovo_cv") or {}).get("vendors") or []
+            if lovo_vendors:
+                f.write("## Leave-One-Vendor-Out (LOVO) Cross-Validation\n\n")
+                f.write("| Held-Out Vendor | Models | Held-Out Constraints | R0 Raw | R0 LOO | R1 Unsup | R4 Held-Out | vs R0 LOO |\n")
+                f.write("|---|---|---|---|---|---|---|---|\n")
+                for vr in lovo_vendors:
+                    f.write(
+                        f"| {vr['vendor']} | {vr['held_out_models']} | {vr['held_out_constraints']} | "
+                        f"{vr['r0_raw_pct']:.2f}% | {vr['r0_loo_pct']:.2f}% | {vr['r1_unsup_pct']:.2f}% | "
+                        f"**{vr['r4_heldout_pct']:.2f}%** | {vr['delta_vs_r0_loo_pct']:+.2f}% |\n"
+                    )
+                if lovo_sum:
+                    f.write(
+                        f"| **TOTAL LOVO** | — | **{lovo_sum.get('total_held_out_constraints', 0)}** | "
+                        f"**{lovo_sum.get('r0_raw_pct', 0.0):.2f}%** | **{lovo_sum.get('r0_loo_pct', 0.0):.2f}%** | "
+                        f"**{lovo_sum.get('r1_unsup_pct', 0.0):.2f}%** | **{lovo_sum.get('r4_heldout_pct', 0.0):.2f}%** | "
+                        f"**{lovo_sum.get('delta_vs_r0_loo_pct', 0.0):+.2f}%** |\n"
+                    )
+                f.write("\n")
+
+            if diag.get("flagship_chains"):
+                f.write("## Flagship Ordering Chains\n\n")
+                for fc in diag["flagship_chains"]:
+                    status = "PASS" if fc.get("passed") else "FAIL"
+                    chain_str = " > ".join(f"{x['model']} ({x['score']:.4f})" for x in fc.get("scores", []))
+                    f.write(f"- **[{status}]** {chain_str}\n")
+                f.write("\n")
+
+            f.write("## Top 30 Models by Pure Benchmark-Mapped Score\n\n")
+            f.write("| Rank | Model | Creator | Thinking | Final Score (100) | Raw Avg | Mode |\n")
             f.write("|---|---|---|---|---|---|---|\n")
-            sorted_models = sorted(models, key=lambda x: -x["composite_ability"])
             for rk, m in enumerate(sorted_models[:30], 1):
                 f.write(f"| {rk} | `{m['name']}` | {m['creator']} | {m['thinking_tag']} | "
-                        f"**{m['composite_score_100']:.2f}** | {m['raw_composite_avg']:.4f} | PASS |\n")
+                        f"**{m['composite_score_100']:.2f}** | {m['raw_composite_avg']:.4f} | PURE-MAP |\n")
+
+            if diag.get("violations"):
+                f.write("\n## Top Genuine Residual Data Inversions\n\n")
+                f.write("| Higher Model | Lower Model | Score Higher | Score Lower | Diff | Reason |\n")
+                f.write("|---|---|---|---|---|---|\n")
+                for v in diag["violations"][:25]:
+                    f.write(
+                        f"| `{v['higher_model']}` | `{v['lower_model']}` | "
+                        f"{v['score_higher']:.4f} | {v['score_lower']:.4f} | "
+                        f"{v['diff']:+.4f} | {v['reason']} |\n"
+                    )
 
         json_results_file = os.path.join(o_dir, "hierarchy_analysis_results.json")
         with open(json_results_file, "w", encoding="utf-8") as f:
             json.dump({
                 "diagnostics": diag,
                 "benchmark_bounds": bounds,
+                "learned_weights": mapper.diagnostics.get("learned_weights_sorted", []),
                 "models": [{
                     "name": m["name"],
                     "creator": m["creator"],
@@ -2057,6 +2876,7 @@ def main():
     parser.add_argument("--tolerance", type=float, default=1e-4, help="Calibration convergence tolerance")
     parser.add_argument("--export-csv", action="store_true", help="Force re-export all CSV hierarchy templates from defaults")
     parser.add_argument("--diff", type=str, nargs="?", const="all", help="Show differences between active CSV grids and default templates (pass vendor or series name, or omit for all)")
+    parser.add_argument("--skip-lovo", action="store_true", help="Skip LOVO cross-validation during mapping fit")
     args = parser.parse_args()
 
     if args.diff:
@@ -2083,7 +2903,7 @@ def main():
         print(f"Exported {len(mgr.grids)} series hierarchy CSVs to {mgr.hierarchy_dir}")
         return
 
-    run_hierarchy_analysis(tolerance=args.tolerance)
+    run_hierarchy_analysis(tolerance=args.tolerance, run_lovo=not args.skip_lovo)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 Tier \ Version,2026-04,2026-05,2026-07,2026-11
-Tier 1 (Flagship / Large),,,,
-Tier 2 (Medium / MoE),,,,
-Tier 3 (Small / Fast),JT-MINI,JT-35B-Flash,JT-4.1 Flash 236B A21B 0709,JT-4.1 Flash 236B A21B
+Tier 1 (Flagship / Large),,,JT-4.1 Flash 236B A21B 0709,JT-4.1 Flash 236B A21B
+Tier 2 (Medium / MoE),,JT-35B-Flash,,
+Tier 3 (Small / Fast),JT-MINI,,,
 Tier 4 (Compact / Nano),,,,
