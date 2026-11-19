@@ -1168,6 +1168,7 @@ def clean_series_name(token: str) -> str:
 def detect_creator_series(creator: str, models: List[dict]) -> Dict[str, List[dict]]:
     """Group an unlisted creator's models into distinct series."""
     series_groups = defaultdict(list)
+    series_canonical = {}
     for m in models:
         base_name = m["base_name"]
         words = re.split(r'[\s\-_]+', base_name.strip())
@@ -1175,8 +1176,18 @@ def detect_creator_series(creator: str, models: List[dict]) -> Dict[str, List[di
         if first.lower() in ('openchat', 'deep', 'meta', 'llama', 'tencent'):
             if len(words) > 1:
                 first = words[1]
-        series_name = clean_series_name(first)
-        series_groups[series_name].append(m)
+        raw_series = clean_series_name(first)
+        key_lower = raw_series.lower()
+        if key_lower not in series_canonical:
+            series_canonical[key_lower] = raw_series
+        elif sum(1 for c in raw_series if c.isupper()) > sum(1 for c in series_canonical[key_lower] if c.isupper()):
+            # Prefer representation with more uppercase letters (e.g., 'OLMo' over 'Olmo', 'EXAONE' over 'Exaone')
+            old_canonical = series_canonical[key_lower]
+            if old_canonical in series_groups:
+                series_groups[raw_series] = series_groups.pop(old_canonical)
+            series_canonical[key_lower] = raw_series
+        canonical_series = series_canonical[key_lower]
+        series_groups[canonical_series].append(m)
     return dict(series_groups)
 
 
@@ -1272,10 +1283,13 @@ class VendorHierarchyManager:
         d = release_date[:7] if release_date else "2025-01"
         if d not in versions:
             versions.append(d)
+            if all(re.match(r'^\d{4}-\d{2}$', x) for x in versions):
+                versions.sort()
         return d
 
     def _initialize_grids(self, all_models: List[dict], load_from_disk: bool = True):
         """Initialize series grids from disk if CSVs exist, else load default or auto-generate and export."""
+        modified_grids = set()
         curated_vendors = set()
         for series_key, default_data in DEFAULT_SERIES_GRIDS.items():
             vendor_name = default_data.get("vendor", series_key.split(" - ")[0])
@@ -1315,11 +1329,18 @@ class VendorHierarchyManager:
 
         # 2. Load any extra custom series CSVs on disk
         if load_from_disk and os.path.exists(self.hierarchy_dir):
-            for fname in os.listdir(self.hierarchy_dir):
+            for fname in sorted(os.listdir(self.hierarchy_dir)):
                 if fname.endswith(".csv") and fname != "all_vendors_hierarchy.csv" and " - " in fname:
                     s_key = fname[:-4]
-                    if s_key not in self.grids:
-                        self.grids[s_key] = self._load_csv_grid(os.path.join(self.hierarchy_dir, fname))
+                    # Avoid loading case-colliding duplicates (e.g. Olmo vs OLMo)
+                    existing_match = None
+                    for existing_k in self.grids:
+                        if existing_k.lower() == s_key.lower():
+                            existing_match = existing_k
+                            break
+                    if existing_match:
+                        continue
+                    self.grids[s_key] = self._load_csv_grid(os.path.join(self.hierarchy_dir, fname))
 
         # 3. Dynamic mapping / Auto-generate for models
         if all_models:
@@ -1334,7 +1355,7 @@ class VendorHierarchyManager:
             for m in all_models:
                 creator_models[m["creator"]].append(m)
 
-            for creator, mlist in creator_models.items():
+            for creator, mlist in sorted(creator_models.items()):
                 unmapped_for_creator = [
                     m for m in mlist if m["base_name"].lower().strip() not in mapped_names
                 ]
@@ -1365,6 +1386,7 @@ class VendorHierarchyManager:
                         grid.setdefault("mapping", {}).setdefault(tier, {}).setdefault(version, [])
                         if bn not in grid["mapping"][tier][version]:
                             grid["mapping"][tier][version].append(bn)
+                            modified_grids.add((matched_series_key, os.path.join(self.hierarchy_dir, f"{matched_series_key}.csv")))
                         mapped_names.add(bn.lower().strip())
                     else:
                         remaining.append(m)
@@ -1383,6 +1405,7 @@ class VendorHierarchyManager:
                                 grid.setdefault("mapping", {}).setdefault(tier, {}).setdefault(version, [])
                                 if bn not in grid["mapping"][tier][version]:
                                     grid["mapping"][tier][version].append(bn)
+                                    modified_grids.add((series_key, csv_path))
                                 mapped_names.add(bn.lower().strip())
                         elif load_from_disk and os.path.exists(csv_path):
                             grid = self._load_csv_grid(csv_path)
@@ -1396,6 +1419,7 @@ class VendorHierarchyManager:
                                     version = self._infer_version_for_grid(bn, sm.get("date"), grid["versions"])
                                     grid.setdefault("mapping", {}).setdefault(tier, {}).setdefault(version, [])
                                     grid["mapping"][tier][version].append(bn)
+                                    modified_grids.add((series_key, csv_path))
                                 mapped_names.add(bn.lower().strip())
                         else:
                             auto_grid = auto_generate_series_grid(creator, series_name, s_models)
@@ -1403,6 +1427,9 @@ class VendorHierarchyManager:
                             self._save_csv_grid(csv_path, auto_grid)
                             for sm in s_models:
                                 mapped_names.add(sm["base_name"].lower().strip())
+
+            for s_key, c_path in modified_grids:
+                self._save_csv_grid(c_path, self.grids[s_key])
 
     def _save_csv_grid(self, filepath: str, grid_data: dict):
         """Export a 2D hierarchy grid to CSV."""
@@ -1464,7 +1491,8 @@ class VendorHierarchyManager:
 
     def export_all_csvs(self, overwrite_existing: bool = True):
         """Export individual series CSVs and a combined master CSV."""
-        for series_key, data in self.grids.items():
+        for series_key in sorted(self.grids.keys()):
+            data = self.grids[series_key]
             path = os.path.join(self.hierarchy_dir, f"{series_key}.csv")
             if overwrite_existing or not os.path.exists(path):
                 self._save_csv_grid(path, data)
@@ -1473,7 +1501,8 @@ class VendorHierarchyManager:
         with open(master_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(["Vendor", "Series", "Tier", "Version", "Base Models"])
-            for series_key, data in self.grids.items():
+            for series_key in sorted(self.grids.keys()):
+                data = self.grids[series_key]
                 vendor = data.get("vendor", series_key.split(" - ")[0])
                 series = data.get("series", series_key.split(" - ")[-1])
                 tiers = data["tiers"]
@@ -1926,8 +1955,16 @@ class HierarchyScoreEngine:
 # 7. Main Execution & CLI
 # ══════════════════════════════════════════════════════════════════════
 
-def run_hierarchy_analysis(tolerance: float = 1e-4) -> dict:
+def run_hierarchy_analysis(
+    tolerance: float = 1e-4,
+    hierarchy_dir: Optional[str] = None,
+    output_dir: Optional[str] = None,
+    save_artifacts: bool = True
+) -> dict:
     """Execute complete end-to-end hierarchy analysis, calibration, and scoring."""
+    h_dir = hierarchy_dir or HIERARCHY_DIR
+    o_dir = output_dir or OUTPUT_DIR
+
     print("=" * 70)
     print("1. Loading raw model data...")
     with open(RAW_DATA_FILE, "r", encoding="utf-8") as f:
@@ -1943,8 +1980,9 @@ def run_hierarchy_analysis(tolerance: float = 1e-4) -> dict:
     print(f"   Dynamic calibration converged at round {converged_round}!")
 
     print("4. Initializing Series Hierarchy Grids (Tiers x Versions)...")
-    hierarchy_mgr = VendorHierarchyManager(all_models=models_all)
-    hierarchy_mgr.export_all_csvs(overwrite_existing=False)
+    hierarchy_mgr = VendorHierarchyManager(hierarchy_dir=h_dir, all_models=models_all)
+    if save_artifacts:
+        hierarchy_mgr.export_all_csvs(overwrite_existing=False)
     print(f"   Exported / Loaded {len(hierarchy_mgr.grids)} series CSV grids to {hierarchy_mgr.hierarchy_dir}")
 
     print("5. Generating ordering constraints (Rules 1, 2, 3, 4)...")
@@ -1967,49 +2005,50 @@ def run_hierarchy_analysis(tolerance: float = 1e-4) -> dict:
     print(f"  Inversions / Violations: {diag['violations_count']}")
     print("=" * 70 + "\n")
 
-    report_file = os.path.join(hierarchy_mgr.hierarchy_dir, "hierarchy_score_report.md")
-    with open(report_file, "w", encoding="utf-8") as f:
-        f.write("# Model Hierarchy & Monotonic Scoring Diagnostic Report\n\n")
-        f.write(f"- **Total Evaluated Models**: {diag['total_models']}\n")
-        f.write(f"- **Benchmarks Calibrated**: {len(BENCHMARK_DEFS)}\n")
-        f.write(f"- **Calibration Rounds**: {converged_round}\n")
-        f.write(f"- **Total Constraints Evaluated**: {diag['total_constraints']}\n")
-        f.write(f"- **Satisfied Constraints**: {diag['satisfied_constraints']} ({diag['satisfaction_rate']:.2f}%)\n")
-        f.write(f"- **Inversions / Violations**: {diag['violations_count']}\n\n")
+    if save_artifacts:
+        report_file = os.path.join(hierarchy_mgr.hierarchy_dir, "hierarchy_score_report.md")
+        with open(report_file, "w", encoding="utf-8") as f:
+            f.write("# Model Hierarchy & Monotonic Scoring Diagnostic Report\n\n")
+            f.write(f"- **Total Evaluated Models**: {diag['total_models']}\n")
+            f.write(f"- **Benchmarks Calibrated**: {len(BENCHMARK_DEFS)}\n")
+            f.write(f"- **Calibration Rounds**: {converged_round}\n")
+            f.write(f"- **Total Constraints Evaluated**: {diag['total_constraints']}\n")
+            f.write(f"- **Satisfied Constraints**: {diag['satisfied_constraints']} ({diag['satisfaction_rate']:.2f}%)\n")
+            f.write(f"- **Inversions / Violations**: {diag['violations_count']}\n\n")
 
-        f.write("## Constraint Distribution by Rule\n")
-        f.write(f"1. **Rule 1 (Tier Ordering within same series & version)**: {stats['rule1_tier']} constraints\n")
-        f.write(f"2. **Rule 2 (Version Ordering within same series & tier)**: {stats['rule2_version']} constraints\n")
-        f.write(f"3. **Rule 3 (Thinking Level Ordering within same model)**: {stats['rule3_thinking']} constraints\n")
-        f.write(f"4. **Rule 4 (Date Snapshot Ordering within same model stem)**: {stats['rule4_date']} constraints\n\n")
+            f.write("## Constraint Distribution by Rule\n")
+            f.write(f"1. **Rule 1 (Tier Ordering within same series & version)**: {stats['rule1_tier']} constraints\n")
+            f.write(f"2. **Rule 2 (Version Ordering within same series & tier)**: {stats['rule2_version']} constraints\n")
+            f.write(f"3. **Rule 3 (Thinking Level Ordering within same model)**: {stats['rule3_thinking']} constraints\n")
+            f.write(f"4. **Rule 4 (Date Snapshot Ordering within same model stem)**: {stats['rule4_date']} constraints\n\n")
 
-        f.write("## Top 30 Models by Final Composite Score\n\n")
-        f.write("| Rank | Model | Creator | Thinking | Final Score (100) | Raw Avg | Status |\n")
-        f.write("|---|---|---|---|---|---|---|\n")
-        sorted_models = sorted(models, key=lambda x: -x["composite_ability"])
-        for rk, m in enumerate(sorted_models[:30], 1):
-            f.write(f"| {rk} | `{m['name']}` | {m['creator']} | {m['thinking_tag']} | "
-                    f"**{m['composite_score_100']:.2f}** | {m['raw_composite_avg']:.4f} | PASS |\n")
+            f.write("## Top 30 Models by Final Composite Score\n\n")
+            f.write("| Rank | Model | Creator | Thinking | Final Score (100) | Raw Avg | Status |\n")
+            f.write("|---|---|---|---|---|---|---|\n")
+            sorted_models = sorted(models, key=lambda x: -x["composite_ability"])
+            for rk, m in enumerate(sorted_models[:30], 1):
+                f.write(f"| {rk} | `{m['name']}` | {m['creator']} | {m['thinking_tag']} | "
+                        f"**{m['composite_score_100']:.2f}** | {m['raw_composite_avg']:.4f} | PASS |\n")
 
-    json_results_file = os.path.join(OUTPUT_DIR, "hierarchy_analysis_results.json")
-    with open(json_results_file, "w", encoding="utf-8") as f:
-        json.dump({
-            "diagnostics": diag,
-            "benchmark_bounds": bounds,
-            "models": [{
-                "name": m["name"],
-                "creator": m["creator"],
-                "base_name": m["base_name"],
-                "thinking_tag": m["thinking_tag"],
-                "thinking_level": m["thinking_level"],
-                "composite_ability": m["composite_ability"],
-                "composite_score_100": m["composite_score_100"],
-                "raw_composite_avg": m["raw_composite_avg"],
-                "valid_count": m["valid_count"],
-            } for m in sorted_models]
-        }, f, indent=2, ensure_ascii=False)
+        json_results_file = os.path.join(o_dir, "hierarchy_analysis_results.json")
+        with open(json_results_file, "w", encoding="utf-8") as f:
+            json.dump({
+                "diagnostics": diag,
+                "benchmark_bounds": bounds,
+                "models": [{
+                    "name": m["name"],
+                    "creator": m["creator"],
+                    "base_name": m["base_name"],
+                    "thinking_tag": m["thinking_tag"],
+                    "thinking_level": m["thinking_level"],
+                    "composite_ability": m["composite_ability"],
+                    "composite_score_100": m["composite_score_100"],
+                    "raw_composite_avg": m["raw_composite_avg"],
+                    "valid_count": m["valid_count"],
+                } for m in sorted_models]
+            }, f, indent=2, ensure_ascii=False)
 
-    print(f"Results written to:\n  - {report_file}\n  - {json_results_file}")
+        print(f"Results written to:\n  - {report_file}\n  - {json_results_file}")
     return diag
 
 

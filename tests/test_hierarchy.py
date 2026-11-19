@@ -11,6 +11,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from collections import defaultdict
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
@@ -411,11 +412,23 @@ class TestEndToEndHierarchyAnalysis(unittest.TestCase):
     """End-to-end integration test running on full AA dataset."""
 
     def test_full_dataset_execution(self):
-        diag = run_hierarchy_analysis(tolerance=1e-3)
+        diag = run_hierarchy_analysis(tolerance=1e-3, save_artifacts=False)
         self.assertGreaterEqual(diag["total_models"], 600)
         self.assertGreaterEqual(diag["total_constraints"], 3000)
         self.assertEqual(diag["violations_count"], 0, "All constraints must be 100% satisfied")
         self.assertEqual(diag["satisfaction_rate"], 100.0)
+
+    def test_zero_case_colliding_csv_files(self):
+        """Assert that no CSV files in model_hierarchy collide under case-insensitive filesystems."""
+        h_dir = os.path.join(OUTPUT_DIR, "model_hierarchy")
+        if not os.path.exists(h_dir):
+            return
+        files = [f for f in os.listdir(h_dir) if f.endswith(".csv")]
+        lower_map = defaultdict(list)
+        for f in files:
+            lower_map[f.lower()].append(f)
+        collisions = {k: v for k, v in lower_map.items() if len(v) > 1}
+        self.assertEqual(collisions, {}, f"Found case-colliding files in {h_dir}: {collisions}")
 
 
 class TestUserCSVEditingAndDiff(unittest.TestCase):
