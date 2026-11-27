@@ -1,5 +1,5 @@
-Tier \ Version,2025-06,2025-11
-Tier 1 (Flagship / Large),ERNIE 4.5 300B A47B,
-Tier 2 (Medium / MoE),,ERNIE 5.0 Thinking Preview
-Tier 3 (Small / Fast),,
-Tier 4 (Compact / Nano),,
+Tier \ Version,2025-06,2025-11,2026-11
+Tier 1 (Flagship / Large),ERNIE 4.5 300B A47B,,
+Tier 2 (Medium / MoE),,ERNIE 5.0 Thinking Preview,
+Tier 3 (Small / Fast),,,ERNIE 5.5 Flash Preview
+Tier 4 (Compact / Nano),,,

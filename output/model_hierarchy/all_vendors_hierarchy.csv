@@ -100,6 +100,7 @@ Apodex,Apodex,Tier 2 (Medium / MoE),2026-08,Apodex 1.1
 Arcee AI,Trinity,Tier 1 (Flagship / Large),2026-04,Trinity Large Thinking
 Baidu,ERNIE,Tier 1 (Flagship / Large),2025-06,ERNIE 4.5 300B A47B
 Baidu,ERNIE,Tier 2 (Medium / MoE),2025-11,ERNIE 5.0 Thinking Preview
+Baidu,ERNIE,Tier 3 (Small / Fast),2026-11,ERNIE 5.5 Flash Preview
 ByteDance Seed,Doubao,Tier 2 (Medium / MoE),2025-11,Doubao Seed Code
 ByteDance Seed,Seed,Tier 2 (Medium / MoE),2025-08,Seed-OSS-36B-Instruct
 Celeris,Celeris,Tier 2 (Medium / MoE),2026-07,Celeris-1
@@ -292,6 +293,7 @@ Motif Technologies,Motif,Tier 2 (Medium / MoE),2026-08,Motif 3
 Motif Technologies,Motif,Tier 3 (Small / Fast),2025-12,Motif-2-12.7B
 Multiverse Computing,HyperNova,Tier 1 (Flagship / Large),2026-05,HyperNova 60B 2605
 Multiverse Computing,Quasar,Tier 1 (Flagship / Large),2026-08,Quasar 438B
+Multiverse Computing,Quasar,Tier 1 (Flagship / Large),2026-10,Quasar 1.2 358B
 NVIDIA,Nemotron,Tier 1 (Ultra / Super / 70B),Nemotron Llama 3.1,Llama 3.1 Nemotron 70B
 NVIDIA,Nemotron,Tier 1 (Ultra / Super / 70B),Nemotron Llama 3.3,Llama 3.3 Nemotron Super 49B
 NVIDIA,Nemotron,Tier 1 (Ultra / Super / 70B),Nemotron Llama Ultra,Llama Nemotron Ultra
