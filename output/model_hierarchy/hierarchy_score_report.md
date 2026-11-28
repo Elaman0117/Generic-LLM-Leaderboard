@@ -45,16 +45,16 @@
 
 ## Flagship Ordering Chains
 
-- **[PASS]** GPT-6.2 Astra (max) (0.9829) > GPT-6 Astra (max) (0.8757) > GPT-6 Astra (xhigh) (0.8466) > GPT-6 Astra (high) (0.8323) > GPT-6 Astra (medium) (0.8159)
-- **[PASS]** GPT-6.2 Sol (max) (0.9472) > GPT-6.1 Sol (max) (0.8927) > GPT-6 Sol (max) (0.8104) > GPT-5.6 Sol (max) (0.7532)
+- **[PASS]** GPT-6.2 Astra (max) (0.9829) > GPT-6 Astra (max) (0.8757) > GPT-6 Astra (xhigh) (0.8467) > GPT-6 Astra (high) (0.8323) > GPT-6 Astra (medium) (0.8159)
+- **[PASS]** GPT-6.2 Sol (max) (0.9472) > GPT-6.1 Sol (max) (0.8927) > GPT-6 Sol (max) (0.8105) > GPT-5.6 Sol (max) (0.7532)
 - **[PASS]** GPT-6.2 Astra (max) (0.9829) > GPT-6.2 Sol (max) (0.9472)
 - **[PASS]** Gemini 4 Neon (xhigh) (0.9640) > Gemini 4 Neon (high) (0.9553) > Gemini 4 Neon (medium) (0.9248)
 - **[PASS]** Gemini 4 Carbon (high) (0.9440) > Gemini 4 Carbon (medium) (0.9258) > Gemini 4 Carbon (low) (0.8915)
 - **[PASS]** Gemini 4 Carbon (high) (0.9440) > Gemini 4 Argon (high) (0.8471)
-- **[PASS]** Claude Fable 5.2 (max) (1.0000) > Claude Fable 5.1 (max) (0.8527) > Claude Fable 5 (0.7375)
+- **[PASS]** Claude Fable 5.2 (max) (1.0000) > Claude Fable 5.1 (max) (0.8527) > Claude Fable 5 (0.7376)
 - **[PASS]** Claude Opus 5.5 (max) (0.9211) > Claude Opus 5.5 (xhigh) (0.9007) > Claude Opus 5.5 (high) (0.8647) > Claude Opus 5.5 (medium) (0.8359)
 - **[PASS]** Grok 4.3 (high) (0.4925) > Grok 4.3 (medium) (0.4874)
-- **[PASS]** MiniMax-M2.7 (0.4723) > MiniMax-M2.5 (0.4339)
+- **[PASS]** MiniMax-M2.7 (0.4723) > MiniMax-M2.5 (0.4340)
 
 ## Top 30 Models by Pure Benchmark-Mapped Score
 
@@ -71,25 +71,25 @@
 | 9 | `GPT-6.2 Sol (max)` | OpenAI | max | **94.72** | 0.8304 | PURE-MAP |
 | 10 | `Gemini 4 Carbon (high)` | Google | high | **94.40** | 0.8589 | PURE-MAP |
 | 11 | `Gemini 4 Carbon (medium)` | Google | medium | **92.58** | 0.8503 | PURE-MAP |
-| 12 | `Gemini 4 Neon (medium)` | Google | medium | **92.48** | 0.8349 | PURE-MAP |
+| 12 | `Gemini 4 Neon (medium)` | Google | medium | **92.48** | 0.8350 | PURE-MAP |
 | 13 | `Claude Opus 5.5 (max)` | Anthropic | max | **92.11** | 0.8542 | PURE-MAP |
 | 14 | `GPT-6.2 Astra (medium)` | OpenAI | medium | **91.64** | 0.8002 | PURE-MAP |
-| 15 | `GPT-6.2 Sol (xhigh)` | OpenAI | xhigh | **91.58** | 0.7835 | PURE-MAP |
+| 15 | `GPT-6.2 Sol (xhigh)` | OpenAI | xhigh | **91.58** | 0.7836 | PURE-MAP |
 | 16 | `Gemini 4 Hydrogen (xhigh)` | Google | xhigh | **91.50** | 0.8106 | PURE-MAP |
 | 17 | `Claude Fable 5.2 (medium)` | Anthropic | medium | **91.32** | 0.8526 | PURE-MAP |
-| 18 | `GPT-6.2 Sol (high)` | OpenAI | high | **90.86** | 0.7703 | PURE-MAP |
+| 18 | `GPT-6.2 Sol (high)` | OpenAI | high | **90.87** | 0.7703 | PURE-MAP |
 | 19 | `Claude Opus 5.5 (xhigh)` | Anthropic | xhigh | **90.07** | 0.8421 | PURE-MAP |
-| 20 | `Claude Sonnet 5.5 (max)` | Anthropic | max | **89.36** | 0.8366 | PURE-MAP |
+| 20 | `Claude Sonnet 5.5 (max)` | Anthropic | max | **89.37** | 0.8366 | PURE-MAP |
 | 21 | `GPT-6.2 Sol (medium)` | OpenAI | medium | **89.32** | 0.7459 | PURE-MAP |
 | 22 | `Claude Fable 5.2 (low)` | Anthropic | low | **89.29** | 0.8312 | PURE-MAP |
 | 23 | `GPT-6.1 Sol (max)` | OpenAI | max | **89.27** | 0.8337 | PURE-MAP |
 | 24 | `Gemini 4 Carbon (low)` | Google | low | **89.15** | 0.7865 | PURE-MAP |
 | 25 | `Gemini 4 Hydrogen (high)` | Google | high | **89.05** | 0.7882 | PURE-MAP |
 | 26 | `GPT-6 Astra (max)` | OpenAI | max | **87.57** | 0.8528 | PURE-MAP |
-| 27 | `Claude Opus 5.5 (high)` | Anthropic | high | **86.47** | 0.7909 | PURE-MAP |
+| 27 | `Claude Opus 5.5 (high)` | Anthropic | high | **86.47** | 0.7910 | PURE-MAP |
 | 28 | `GPT-6.1 Sol (xhigh)` | OpenAI | xhigh | **86.36** | 0.8121 | PURE-MAP |
 | 29 | `Muse Wonder Full (max)` | Meta | max | **85.97** | 0.8036 | PURE-MAP |
-| 30 | `Gemini 4 Neon (low)` | Google | low | **85.74** | 0.7302 | PURE-MAP |
+| 30 | `Gemini 4 Neon (low)` | Google | low | **85.74** | 0.7303 | PURE-MAP |
 
 ## Top Genuine Residual Data Inversions
 
@@ -98,9 +98,9 @@
 | `Mistral Small 4 (non-reasoning)` | `Mistral Small 3.1` | 0.1581 | 0.2220 | -0.0639 | Rule 2: Series [Mistral - Mistral] tier [Tier 3 (Small / 7B)] Mistral v4 > Mistral v3.1 [matching thinking non-reasoning] |
 | `GLM-5.2 (non-reasoning)` | `GLM-5.1 (non-reasoning)` | 0.3605 | 0.4187 | -0.0582 | Rule 2: Series [Z_AI - GLM] tier [Tier 1 (Flagship / Pro)] GLM-5.2 > GLM-5.1 [matching thinking non-reasoning] |
 | `Mistral Small 3.2` | `Mistral Small 3.1` | 0.1676 | 0.2220 | -0.0544 | Rule 2: Series [Mistral - Mistral] tier [Tier 3 (Small / 7B)] Mistral v3.2 > Mistral v3.1 [matching thinking standard] |
-| `Muse Spark 1.1 (xhigh)` | `Muse Spark Open (xhigh)` | 0.5951 | 0.6465 | -0.0514 | Rule 2: Series [Meta - Muse] tier [Tier 2 (Spark)] Muse 1.1 > Muse 1.0 [matching thinking xhigh] |
+| `Muse Spark 1.1 (xhigh)` | `Muse Spark Open (xhigh)` | 0.5952 | 0.6466 | -0.0514 | Rule 2: Series [Meta - Muse] tier [Tier 2 (Spark)] Muse 1.1 > Muse 1.0 [matching thinking xhigh] |
 | `DeepSeek V4 Pro (max)` | `DeepSeek V4 Flash 0731 (max)` | 0.5711 | 0.6169 | -0.0458 | Rule 1: Series [DeepSeek - DeepSeek-V] version [DeepSeek V4] Tier 1 (Pro / Full) > Tier 2 (Flash) [matching thinking max] |
-| `Ling-3.2-air` | `Ling 3.1 Flash 1019` | 0.6563 | 0.6981 | -0.0418 | Rule 2: Series [InclusionAI - Ling] tier [Tier 3 (Flash)] 2025-01 > Ling 3.1 [matching thinking reasoning] |
+| `Ling-3.2-air` | `Ling 3.1 Flash 1019` | 0.6563 | 0.6982 | -0.0418 | Rule 2: Series [InclusionAI - Ling] tier [Tier 3 (Flash)] 2025-01 > Ling 3.1 [matching thinking reasoning] |
 | `Mixtral 8x7B` | `Mistral Small (Sep)` | 0.0378 | 0.0776 | -0.0398 | Rule 1: Series [Mistral - Mistral] version [Mistral v1] Tier 2 (Medium) > Tier 3 (Small / 7B) [matching thinking standard] |
 | `Gemini 2.5 Flash (Apr) (non-reasoning)` | `Gemini 2.5 Flash-Lite (Sep) (non-reasoning)` | 0.1946 | 0.2308 | -0.0362 | Rule 1: Series [Google - Gemini] version [Gemini 2.5] Tier 3 (Flash) > Tier 4 (Flash-Lite / Nano) [matching thinking non-reasoning] |
 | `Claude 4 Opus (non-reasoning)` | `Claude 4 Sonnet (non-reasoning)` | 0.2278 | 0.2594 | -0.0317 | Rule 1: Series [Anthropic - Claude] version [Claude 4] Tier 2 (Opus) > Tier 3 (Sonnet) [matching thinking non-reasoning] |
@@ -113,10 +113,10 @@
 | `Nova 2.0 Omni (medium)` | `Nova 2.0 Lite (medium)` | 0.2844 | 0.3016 | -0.0171 | Rule 1: Series [Amazon - Nova] version [Nova 2.0] Tier 1 (Omni / Pro / Premier) > Tier 2 (Lite) [matching thinking medium] |
 | `GPT-5.1 Codex (high)` | `GPT-5 Codex (high)` | 0.4362 | 0.4513 | -0.0151 | Rule 2: Series [OpenAI - GPT-Codex] tier [Tier 1 (Codex)] GPT-5.1 > GPT-5 [matching thinking high] |
 | `Grok 4.3 (high)` | `Grok 4.20 0309 v2` | 0.4925 | 0.5076 | -0.0151 | Rule 2: Series [SpaceXAI - Grok] tier [Tier 1 (Full / Flagship)] Grok 4.3 > Grok 4.20 [matching thinking high] |
-| `Ling-3.2-air` | `Ling 3.1 Flash` | 0.6563 | 0.6710 | -0.0147 | Rule 2: Series [InclusionAI - Ling] tier [Tier 3 (Flash)] 2025-01 > Ling 3.1 [matching thinking reasoning] |
+| `Ling-3.2-air` | `Ling 3.1 Flash` | 0.6563 | 0.6711 | -0.0147 | Rule 2: Series [InclusionAI - Ling] tier [Tier 3 (Flash)] 2025-01 > Ling 3.1 [matching thinking reasoning] |
 | `Gemini 1.5 Pro (May)` | `Gemini 1.5 Flash (Sep)` | 0.0947 | 0.1080 | -0.0132 | Rule 1: Series [Google - Gemini] version [Gemini 1.5] Tier 2 (Pro) > Tier 3 (Flash) [matching thinking standard] |
 | `Mixtral 8x7B` | `Mistral Small (Feb)` | 0.0378 | 0.0504 | -0.0126 | Rule 1: Series [Mistral - Mistral] version [Mistral v1] Tier 2 (Medium) > Tier 3 (Small / 7B) [matching thinking standard] |
 | `Qwen3 32B (non-reasoning)` | `Qwen2.5 72B` | 0.1277 | 0.1381 | -0.0104 | Rule 2: Series [Alibaba - Qwen] tier [Tier 3 (Dense Large: 110B-27B)] Qwen 3 > Qwen 2.5 [matching thinking non-reasoning] |
-| `Motif 3` | `Motif 3 (Beta)` | 0.5339 | 0.5437 | -0.0099 | Rule 2: Series [Motif Technologies - Motif] tier [Tier 2 (Medium / MoE)] 2026-08 > 2026-07 [matching thinking reasoning] |
+| `Motif 3` | `Motif 3 (Beta)` | 0.5339 | 0.5438 | -0.0099 | Rule 2: Series [Motif Technologies - Motif] tier [Tier 2 (Medium / MoE)] 2026-08 > 2026-07 [matching thinking reasoning] |
 | `Qwen3.5 0.8B` | `Qwen3.5 0.8B (non-reasoning)` | 0.0586 | 0.0684 | -0.0098 | Rule 3: Same model [Qwen3.5 0.8B] higher thinking (reasoning > non-reasoning) |
 | `LFM2.5-8B-A1B` | `LFM2.5-2.6B` | 0.1559 | 0.1656 | -0.0097 | Rule 1: Series [Liquid AI - LFM] version [LFM 2.5] Tier 3 (Small: 8B) > Tier 4 (Compact: 2.6B-1.7B) [matching thinking reasoning] |
